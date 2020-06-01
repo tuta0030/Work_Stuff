@@ -26,6 +26,7 @@ import time
 """
 # 保存文件时用的时间戳 [:10] 来获取时间到当日
 FILE_TIME = str(datetime.datetime.now()).replace('-', '_').replace(':', '_').replace(' ', '_').replace('.', '_')
+AMAZON_MAIN_FOLDER = open(os.curdir+'\\main_folder_path.txt', 'r', encoding='utf-8').read()
 
 
 class DownloadBrands(object):
@@ -151,7 +152,7 @@ class DownloadBrands(object):
             html = open(folder_path+'\\'+html_file, 'r', encoding='utf-8').read()
             self.find_brand(html)
 
-    def save_brand(self, my_brand: str, brand_file_path: str):
+    def save_brand(self, my_brand: str, brand_file_path: str):  # TODO 修这个bug
         for each_brand in self.brand_list:
             if brand_file_path.split('\\')[-1] in os.listdir(self.folder_path):
                 with open(brand_file_path, 'r', encoding='utf-8') as r:
@@ -171,11 +172,10 @@ if __name__ == '__main__':
     _html = open(f'D:\\Amazon_html_for_brand_search\\{_file_name}',
                  'r',
                  encoding='utf-8').read()
-    _folder_path = 'D:\\Amazon_html_for_brand_search'
     # 创建实例
-    download_brand = DownloadBrands(_url, _folder_path)
+    download_brand = DownloadBrands(_url, AMAZON_MAIN_FOLDER)
     download_brand.check_url()
     # download_brand.download_all_listing_htmls(_html, _folder_path+'\\'+'listing_folder_2020_05_30')
-    download_brand.find_all_brand(_folder_path+'\\'+'listing_folder_2020_05_30')
-    brand_file_name = _folder_path+'\\'+'品牌名替换文件_'+FILE_TIME[:10]+'.txt'
+    download_brand.find_all_brand(AMAZON_MAIN_FOLDER+'\\'+'listing_folder_2020_05_30')
+    brand_file_name = AMAZON_MAIN_FOLDER+'\\品牌名替换文件_'+FILE_TIME[:10]+'.txt'
     download_brand.save_brand('DALUXE', brand_file_name)
