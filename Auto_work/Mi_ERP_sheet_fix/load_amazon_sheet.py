@@ -1,0 +1,45 @@
+import os
+import openpyxl
+
+
+COLUMN_RANGE_RESTRICTION = 2000
+ROW_RANGE_RESTRICTION = 10
+
+
+class LoadAmazonSheet(object):
+
+    def __init__(self, sheet_path: str):
+        self.wb = openpyxl.load_workbook(sheet_path)
+        self.sheet = self.wb['sheet1']
+
+        def find_cell(sheet, cell_name: str):
+            for _r in range(1, ROW_RANGE_RESTRICTION):
+                for _c in range(1, COLUMN_RANGE_RESTRICTION):
+                    if sheet.cell(_r, _c).value == cell_name:
+                        return sheet.cell(_r, _c)
+
+        # find "item_name" cell
+        self.item_name_cell = find_cell(self.sheet, 'item_name')
+
+        # find "bullet_point1" cell
+        self.bullet_point_cell = find_cell(self.sheet, 'bullet_point1')
+
+        # find "standard_price" cell
+        self.price_cell = find_cell(self.sheet, 'standard_price')
+
+        # find "node" cell
+        self.node_cell = find_cell(self.sheet, 'recommended_browse_nodes')
+
+        # find "keywords" cell
+        self.keywords_cell = find_cell(self.sheet, 'generic_keywords1')
+
+        # find "item_type" cell
+        self.item_type_cell = find_cell(self.sheet, 'item_type')
+
+        # find "product_description" cell
+        self.description = find_cell(self.sheet, 'product_description')
+
+
+if __name__ == '__main__':
+    _sheet_path = os.curdir + "\\水龙头UK_亚马逊表_20200511134434.xlsx"
+    load_as = LoadAmazonSheet(_sheet_path)
