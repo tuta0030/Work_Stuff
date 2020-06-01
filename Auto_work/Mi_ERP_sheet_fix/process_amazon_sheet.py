@@ -7,7 +7,6 @@ import pas_utilits
 TODO:
     1.完成brand模组
     2.优化交互，操作流程
-    3.尝试使用git
 """
 
 
