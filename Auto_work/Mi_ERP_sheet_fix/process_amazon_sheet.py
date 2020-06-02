@@ -11,15 +11,6 @@ TODO:
 """
 
 
-def find_main_path() -> str:
-    main_path = open(os.curdir+'\\path.txt', 'r', encoding='utf-8').read()
-    if os.path.isdir(main_path) is not True:
-        main_path = input("查找主路径失败，请输入包含产品文件夹的路径：")
-        with open(os.curdir+'\\path.txt', 'w', encoding='utf-8') as p:
-            p.write(main_path)
-    return main_path
-
-
 class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 
     def __init__(self, sheet_path):
@@ -89,11 +80,11 @@ if __name__ == '__main__':
         try:
             print(pas_utilits.INTRO)
 
+            _main_path = pas_utilits.validate_main_path()
             _time = pas_utilits.select_time()
-            _product = str(input("输入文件名中的产品类别："))
+            _product = str(input("输入产品类别："))
             _country = str(input("输入文件中的国家："))
             _lang = str(input("输出文件中的国家："))
-            _main_path = find_main_path()
 
             original_file = f"{_main_path}\\{_time}_{_product}\\{_product}{_country}_亚马逊表_{_time}.xlsx"
             working_path = f"{_main_path}\\{_time}_{_product}"

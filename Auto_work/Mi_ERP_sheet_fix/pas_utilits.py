@@ -19,6 +19,24 @@ def get_date() -> str:
     return str(time)
 
 
+def validate_main_path() -> str:
+    while True:
+        if os.path.isdir(MAIN_PATH) is not True:
+            main_path = input("查找主路径失败，请输入包含产品文件夹的路径：")
+            with open(os.curdir + '\\path.txt', 'w', encoding='utf-8') as p:
+                p.write(main_path)
+        files = os.listdir(MAIN_PATH)
+        for f in files:
+            for char in f:
+                if '.' in char:
+                    main_path = input("主文件夹中必须全部为文件夹,请输入正确的文件夹：")
+                    with open(os.curdir + '\\path.txt', 'w', encoding='utf-8') as p:
+                        p.write(main_path)
+                        break
+        else:
+            return MAIN_PATH
+
+
 def select_time() -> str:
     which_time = int(input("选择<需要处理的文件>名中的时间：0:默认时间（当前日期）， 1:自定义时间："))
     if which_time == 0:
