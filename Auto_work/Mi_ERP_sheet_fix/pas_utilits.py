@@ -1,9 +1,17 @@
-import brands
+import os
 import datetime
 import re
 
 ROW_RESTRICTION = 2000
-STANDARD_MESSAGE = 'The photo was taken in natural light because there is a slight chromatic aberration between the device and the monitor, please understand'
+MAIN_PATH = open(os.curdir+'\\path.txt', 'r', encoding='utf-8').read()
+INTRO = r"""图沓的亚马逊表格处理工具
+请注意文件命名方式：
+    1. <文件夹> 命名方式: <日期_产品名称>  例如（根目录\20200601_游泳圈）
+    2. <文件> 命名方式: <产品名称+国家_亚马逊表_日期>  例如（游泳圈UK_亚马逊表_20200601.xlsx）
+"""+f'当前设置的主路径为：{MAIN_PATH}\n'
+NO_FILE = '\n'+r'没有找到文件，请确认表格在正确的路径下，并确定表格文件名称格式正确'
+STANDARD_MESSAGE = 'The photo was taken in natural light because there is a slight chromatic aberration between the ' \
+                   'device and the monitor, please understand '
 
 
 def get_date() -> str:
@@ -12,12 +20,12 @@ def get_date() -> str:
 
 
 def select_time() -> str:
-    which_time = int(input("选择文件名中的时间：0:默认时间（当前日期）， 1:自定义时间(格式:年月日-比如：20200501)："))
+    which_time = int(input("选择<需要处理的文件>名中的时间：0:默认时间（当前日期）， 1:自定义时间："))
     if which_time == 0:
         time = get_date()
         return time
     elif which_time == 1:
-        time = str(input("请输入需要设置的时间："))
+        time = str(input("请输入需要设置的时间(格式:年月日-比如：20200501 可省略年份)："))
         if len(time) == 4:
             time = str(datetime.datetime.now())[:4]+time
         return time

@@ -25,9 +25,9 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
     def __init__(self, sheet_path):
         try:
             load_amazon_sheet.LoadAmazonSheet.__init__(self, sheet_path)
-        except FileNotFoundError as e:
-            print("没有找到文件")
-            print(str(e))
+        except FileNotFoundError as _e:
+            print(pas_utilits.NO_FILE)
+            raise _e
 
     def process_title(self):
         item_name_coordinate = coordinate_to_tuple(str(self.item_name_cell).split('.')[-1][:-1])
@@ -85,16 +85,26 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 
 
 if __name__ == '__main__':
-    _time = pas_utilits.select_time()
-    product = str(input("输入文件名中的产品类别："))
-    _country = str(input("输入文件中的国家："))
-    lang = str(input("输出文件中的国家："))
-    main_path = find_main_path()
+    while True:
+        try:
+            print(pas_utilits.INTRO)
 
-    original_file = f"{main_path}\\{_time}_{product}\\{product}{_country}_亚马逊表_{_time}.xlsx"
-    working_path = f"{main_path}\\{_time}_{product}"
+            _time = pas_utilits.select_time()
+            _product = str(input("输入文件名中的产品类别："))
+            _country = str(input("输入文件中的国家："))
+            _lang = str(input("输出文件中的国家："))
+            _main_path = find_main_path()
 
-    pas = ProcessAmazonSheet(original_file)
-    pas.process_sheet()
-    pas.save_sheet(working_path, lang, _time)
-    os.startfile(working_path)
+            original_file = f"{_main_path}\\{_time}_{_product}\\{_product}{_country}_亚马逊表_{_time}.xlsx"
+            working_path = f"{_main_path}\\{_time}_{_product}"
+
+            pas = ProcessAmazonSheet(original_file)
+            pas.process_sheet()
+            pas.save_sheet(working_path, _lang, _time)
+            os.startfile(working_path)
+        except Exception as e:
+            print(e)
+            print('\n')
+            pass
+        else:
+            break
