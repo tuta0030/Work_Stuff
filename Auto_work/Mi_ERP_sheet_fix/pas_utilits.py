@@ -18,6 +18,8 @@ def select_time() -> str:
         return time
     elif which_time == 1:
         time = str(input("请输入需要设置的时间："))
+        if len(time) == 4:
+            time = str(datetime.datetime.now())[:4]+time
         return time
     else:
         print("只能输入0和1")
@@ -33,18 +35,6 @@ def get_column_until_none_cell(sheet, row_start: int, column_const: int) -> list
                 replace('||', ' ')
             cell_list.append(sheet.cell(i, column_const))
     return cell_list
-
-
-#  TODO 重写 低优先级
-def __check_brand(text_need_to_check: str, _brands: list, my_brand: str) -> str:
-    _new_item_name = '-'
-    for i in _brands:
-        if i in text_need_to_check:
-            text_need_to_check = text_need_to_check.replace(i, my_brand)
-            __check_brand(text_need_to_check, _brands, my_brand)
-        elif i not in text_need_to_check:
-            _new_item_name = text_need_to_check
-    return _new_item_name
 
 
 def __random_title(item_name: str) -> str:

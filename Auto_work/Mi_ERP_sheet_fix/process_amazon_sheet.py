@@ -3,11 +3,21 @@ import load_amazon_sheet
 from openpyxl.utils import coordinate_to_tuple
 import pas_utilits
 
+
 """ 
 TODO:
     1.完成brand模组
     2.优化交互，操作流程
 """
+
+
+def find_main_path() -> str:
+    main_path = open(os.curdir+'\\path.txt', 'r', encoding='utf-8').read()
+    if os.path.isdir(main_path) is not True:
+        main_path = input("查找主路径失败，请输入包含产品文件夹的路径：")
+        with open(os.curdir+'\\path.txt', 'w', encoding='utf-8') as p:
+            p.write(main_path)
+    return main_path
 
 
 class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
@@ -75,17 +85,14 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 
 
 if __name__ == '__main__':
-    # test_original_path = os.curdir + "\\水龙头UK_亚马逊表_20200511134434.xlsx"
-    # test_working_path = os.curdir
-
-    # time = pas_utilits.get_date()  # "20200522"
     _time = pas_utilits.select_time()
     product = str(input("输入文件名中的产品类别："))
     _country = str(input("输入文件中的国家："))
-
     lang = str(input("输出文件中的国家："))
-    original_file = f"D:\\小米ERP相关数据\\上传产品表格\\{_time}_{product}\\{product}{_country}_亚马逊表_{_time}.xlsx"
-    working_path = f"D:\\小米ERP相关数据\\上传产品表格\\{_time}_{product}"
+    main_path = find_main_path()
+
+    original_file = f"{main_path}\\{_time}_{product}\\{product}{_country}_亚马逊表_{_time}.xlsx"
+    working_path = f"{main_path}\\{_time}_{product}"
 
     pas = ProcessAmazonSheet(original_file)
     pas.process_sheet()
