@@ -8,6 +8,8 @@ import pas_utilits
 TODO:
     1.完成brand模组
     2.优化交互，操作流程
+        2.1 添加默认前一次的产品名称
+        2.2 兼容erp直接输出的文件日期名称
 """
 
 
@@ -82,7 +84,7 @@ if __name__ == '__main__':
 
             _main_path = pas_utilits.validate_main_path()
             _time = pas_utilits.select_time()
-            _product = str(input("输入产品类别："))
+            _product = pas_utilits.validate_product()
             _country = str(input("输入文件中的国家："))
             _lang = str(input("输出文件中的国家："))
 
