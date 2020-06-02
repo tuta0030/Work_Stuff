@@ -1,7 +1,6 @@
 import os
 import datetime
 import re
-from bcolor import BColors
 
 ROW_RESTRICTION = 2000
 MAIN_PATH = open(os.curdir+'\\path.txt', 'r', encoding='utf-8').read()
@@ -9,9 +8,9 @@ PRODUCT_TYPE = open(os.curdir+'\\product_type.txt', 'r', encoding='utf-8').read(
 INTRO = r"""
 图沓的亚马逊表格处理工具
 请注意文件命名方式：
-    """+BColors.WARNING+r"""1. <文件夹> 命名方式: <日期_产品名称>  例如（根目录\20200601_游泳圈）
+    1. <文件夹> 命名方式: <日期_产品名称>  例如（根目录\20200601_游泳圈）
     2. <文件> 命名方式: <产品名称+国家_亚马逊表_日期>  例如（游泳圈UK_亚马逊表_20200601.xlsx）
-"""+BColors.ENDC+f'当前设置的主路径为：{MAIN_PATH}\n'
+"""+f'当前设置的主路径为：{MAIN_PATH}\n'
 NO_FILE = '\n'+r'没有找到文件，请确认表格在正确的路径下，并确定表格文件名称格式正确'
 STANDARD_MESSAGE = 'The photo was taken in natural light because there is a slight chromatic aberration between the ' \
                    'device and the monitor, please understand '
@@ -23,25 +22,21 @@ def get_date() -> str:
 
 
 def validate_main_path() -> str:
-    while True:
-        if os.path.isdir(MAIN_PATH) is not True:
-            main_path = input("查找主路径失败，请输入包含产品文件夹的路径：")
-            with open(os.curdir + '\\path.txt', 'w', encoding='utf-8') as p:
-                p.write(main_path)
-        files = os.listdir(MAIN_PATH)[:-1]
-        for f in files:
-            if os.path.isdir(MAIN_PATH+'\\'+f'{f}') is not True:
-                main_path = input("主文件夹中必须全部为文件夹,请输入正确的文件夹：")
-                with open(os.curdir + '\\path.txt', 'w', encoding='utf-8') as p:
-                    p.write(main_path)
-                    break
-        else:
-            return MAIN_PATH
+    if os.path.isdir(MAIN_PATH) is not True:
+        main_path = input("查找主路径失败，请输入包含产品文件夹的路径：")
+        with open(os.curdir + '\\path.txt', 'w', encoding='utf-8') as p:
+            p.write(main_path)
+        _main_path = open(os.curdir+'\\path.txt', 'r', encoding='utf-8').read()
+        return _main_path
+    else:
+        return MAIN_PATH
+
 
 
 def validate_product() -> str:
+    print('')
     print(f'当前产品类别：{PRODUCT_TYPE}')
-    wanna_change = str(input("0：继续，1：修改"))
+    wanna_change = str(input("(0：继续，1：修改)："))
     if wanna_change == str(1):
         with open(os.curdir+'\\product_type.txt', 'w', encoding='utf-8') as pt:
             pt.write(input("请输入产品类别："))
