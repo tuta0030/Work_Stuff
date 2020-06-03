@@ -27,6 +27,14 @@ import time
 # 保存文件时用的时间戳 [:10] 来获取时间到当日
 FILE_TIME = str(datetime.datetime.now()).replace('-', '_').replace(':', '_').replace(' ', '_').replace('.', '_')
 AMAZON_MAIN_FOLDER = open(os.curdir+'\\main_folder_path.txt', 'r', encoding='utf-8').read()
+BRAND_FILE = AMAZON_MAIN_FOLDER+'\\品牌名替换文件_'+FILE_TIME[:10]+'.txt'
+
+
+def intro():
+    print("请选择需要的操作：")
+    print("1: 下载元url")
+    print("2: 下载所有listing的html")
+    print("3: 创建品牌关键词替换文本文件")
 
 
 class DownloadBrands(object):
@@ -53,6 +61,7 @@ class DownloadBrands(object):
                        "session-id-time": "2082758401l",
                        "csm-hit": "tb:CY69MPPSJNFECB3Y8YV8+s-YWBTVJQGA3E145WPM9EH|1590564415011&t:1590564415012&adb"
                                   ":adblk_yes"}
+        intro()
 
     def check_url(self):
         if 's?k=' in self.url and 'me=' not in self.url:
@@ -165,6 +174,10 @@ class DownloadBrands(object):
                 with open(brand_file_path, 'a', encoding='utf-8') as b:
                     b.write(each_brand + '|' + my_brand)
                     b.write('\n')
+            else:
+                class BrandFileError(Exception):
+                    pass
+                raise BrandFileError
         os.startfile(brand_file_path)
 
 
@@ -181,5 +194,4 @@ if __name__ == '__main__':
     download_brand.check_url()
     # download_brand.download_all_listing_htmls(_html, _folder_path+'\\'+'listing_folder_2020_05_30')
     download_brand.find_all_brand(AMAZON_MAIN_FOLDER+'\\'+'listing_folder_2020_05_30')
-    brand_file_name = AMAZON_MAIN_FOLDER+'\\品牌名替换文件_'+FILE_TIME[:10]+'.txt'
-    download_brand.save_brand('DALUXE', brand_file_name)
+    download_brand.save_brand('DALUXE', BRAND_FILE)
