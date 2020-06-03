@@ -31,10 +31,13 @@ BRAND_FILE = AMAZON_MAIN_FOLDER+'\\品牌名替换文件_'+FILE_TIME[:10]+'.txt'
 
 
 def intro():
+    print('')
     print("请选择需要的操作：")
+    print('')
     print("1: 下载元url")
     print("2: 下载所有listing的html")
     print("3: 创建品牌关键词替换文本文件")
+    print('')
 
 
 class DownloadBrands(object):
@@ -180,6 +183,12 @@ class DownloadBrands(object):
                 raise BrandFileError
         os.startfile(brand_file_path)
 
+    def main_menu(self):
+        ui = str(input("输入需要的功能："))
+        if ui == '1':
+            self.download_meta_html(input("请输入需要下载的url"))
+        elif ui == '2':
+            self.download_all_listing_htmls(open(os.curdir+'\\meta_html_path', 'r', encoding='utf-8').read(), AMAZON_MAIN_FOLDER)
 
 if __name__ == '__main__':
     _file_name = r'2020_05_27_15_37_43_568600'+'.html'
@@ -194,4 +203,4 @@ if __name__ == '__main__':
     download_brand.check_url()
     # download_brand.download_all_listing_htmls(_html, _folder_path+'\\'+'listing_folder_2020_05_30')
     download_brand.find_all_brand(AMAZON_MAIN_FOLDER+'\\'+'listing_folder_2020_05_30')
-    download_brand.save_brand('DALUXE', BRAND_FILE)
+    # download_brand.save_brand('DALUXE', BRAND_FILE)
