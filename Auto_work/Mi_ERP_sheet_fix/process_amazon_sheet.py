@@ -59,6 +59,8 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 
         # ========= PROCESS TITLE =========
         self.process_title()
+        # ========= PROCESS TITLE =========
+        # self.process_bulletpoints()
         # ========= PROCESS PRICE =========
         self.process_price(float(input("输入汇率：")))
         # ========= PROCESS NODE =========
@@ -96,7 +98,7 @@ if __name__ == '__main__':
             os.startfile(working_path)
         except Exception as e:
             print(e)
+            # raise e
             print('\n')
-            pass
         else:
             break
