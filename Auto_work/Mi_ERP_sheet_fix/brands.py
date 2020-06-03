@@ -152,7 +152,7 @@ class DownloadBrands(object):
             html = open(folder_path+'\\'+html_file, 'r', encoding='utf-8').read()
             self.find_brand(html)
 
-    def save_brand(self, my_brand: str, brand_file_path: str):  # TODO 修这个bug
+    def save_brand(self, my_brand: str, brand_file_path: str):
         for each_brand in self.brand_list:
             if brand_file_path.split('\\')[-1] in os.listdir(self.folder_path):
                 with open(brand_file_path, 'r', encoding='utf-8') as r:
@@ -161,6 +161,10 @@ class DownloadBrands(object):
                         with open(brand_file_path, 'a', encoding='utf-8') as b:
                             b.write(each_brand+'|'+my_brand)
                             b.write('\n')
+            elif brand_file_path.split('\\')[-1] not in os.listdir(self.folder_path):
+                with open(brand_file_path, 'a', encoding='utf-8') as b:
+                    b.write(each_brand + '|' + my_brand)
+                    b.write('\n')
         os.startfile(brand_file_path)
 
 
