@@ -38,6 +38,7 @@ menu_item = {}
 
 def intro():
     print('')
+    print('图沓的处理亚马逊品牌工具')
     print("请选择需要的操作：")
     print('')
     for key, value in menu_item.items():
@@ -47,7 +48,7 @@ def intro():
     print('')
 
 
-def add_menu_item(index: int, name: str, func):
+def add_function(index: int, name: str, func):
     menu_item[index] = (name, func)
 
 
@@ -253,11 +254,11 @@ class DownloadBrands(object):
 
     def main_menu(self):
         self.check_meta_url()
-        add_menu_item(1, '下载元url', self.function_one)
-        add_menu_item(2, '查看元html中所有listing的url', self.function_two)
-        add_menu_item(3, '创建品牌关键词替换文本文件', self.function_three)
-        add_menu_item(4, '(慎用) 清除html文件', self.function_four)
-        add_menu_item(5, '(慎用) 下载所有的元html中所有listing的html文件', self.function_five)
+        add_function(1, '下载元url', self.function_one)
+        add_function(2, '查看元html中所有listing的url', self.function_two)
+        add_function(3, '创建品牌关键词替换文本文件', self.function_three)
+        add_function(4, '(慎用) 清除html文件', self.function_four)
+        add_function(5, '(慎用) 下载所有的元html中所有listing的html文件', self.function_five)
         intro()
         ui = str(input("输入需要的功能："))
 
