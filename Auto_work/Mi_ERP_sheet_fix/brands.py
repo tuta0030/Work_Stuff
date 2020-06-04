@@ -4,6 +4,7 @@ from lxml import etree
 import datetime
 import xpath_database
 import time
+from send2trash import send2trash as d
 
 
 """
@@ -27,6 +28,7 @@ import time
 # 保存文件时用的时间戳 [:10] 来获取时间到当日
 FILE_TIME = str(datetime.datetime.now()).replace('-', '_').replace(':', '_').replace(' ', '_').replace('.', '_')
 AMAZON_MAIN_FOLDER = open(os.curdir+'\\main_folder_path.txt', 'r', encoding='utf-8').read()
+PATH_LISTING_FOLDER = AMAZON_MAIN_FOLDER + '\\listing_folder'
 BRAND_FILE = AMAZON_MAIN_FOLDER+'\\品牌名替换文件_'+FILE_TIME[:10]+'.txt'
 
 
@@ -37,14 +39,15 @@ def intro():
     print("1: 下载元url")
     print("2: 下载所有listing的html")
     print("3: 创建品牌关键词替换文本文件")
+    print("4: (慎用) 清除html文件")
     print('')
 
 
 class DownloadBrands(object):
 
-    def __init__(self, url: str, path: str):
+    def __init__(self, path: str):
         """传入列表页面的url，和需要保存文件的文件夹路径"""
-        self.url = url
+        self.url = "http://www.amazon.com/default_url"
         self.url_type = 'None'
         self.folder_path = path
         self.info_list = []
@@ -64,18 +67,20 @@ class DownloadBrands(object):
                        "session-id-time": "2082758401l",
                        "csm-hit": "tb:CY69MPPSJNFECB3Y8YV8+s-YWBTVJQGA3E145WPM9EH|1590564415011&t:1590564415012&adb"
                                   ":adblk_yes"}
-        intro()
 
     def check_url(self):
+        self.url = input("输入url:")
         if 's?k=' in self.url and 'me=' not in self.url:
             print(self.time_stamp+"这个是搜索页面")
             self.url_type = 'search_page'
         elif 's?k=' in self.url and 'me=' in self.url:
             print(self.time_stamp+"这个是店铺里的搜索页面")
             self.url_type = 'store_search_page'
+        elif self.url == '-1':
+            self.main_menu()
         else:
-            print(self.time_stamp+"这个是未识别的页面，按照搜索页处理")
-            self.url_type = 'search_page'
+            print(self.time_stamp+"这个是未识别的页面，请重新输入")
+            self.check_url()
 
     def download_meta_html(self, url: str):  # 如果不是必要的情况下不要调用，这个会向亚马逊请求下载html
         html = requests.get(url, headers=self.user_agent, cookies=self.cookie, timeout=5)
@@ -183,24 +188,40 @@ class DownloadBrands(object):
                 raise BrandFileError
         os.startfile(brand_file_path)
 
+    def detele_listing_html(self, lisitng_html_folder_path: str):
+        _make_sure = input("确定？（Y/N）:")
+        if _make_sure == 'y' or _make_sure == 'Y':
+            for folder, subfolder, file in os.walk(lisitng_html_folder_path):
+                for item in file:
+                    file_path = folder + '\\' + item
+                    print(self.time_stamp+'已删除 '+file_path)
+                    d(file_path)
+            input("完成，按回车回到主菜单")
+            self.main_menu()
+        elif _make_sure == 'n' or _make_sure == 'N':
+            self.main_menu()
+        else:
+            print("无法识别")
+            self.detele_listing_html(PATH_LISTING_FOLDER)
+
     def main_menu(self):
+        intro()
         ui = str(input("输入需要的功能："))
         if ui == '1':
+            self.check_url()
             self.download_meta_html(input("请输入需要下载的url"))
         elif ui == '2':
             self.download_all_listing_htmls(open(os.curdir+'\\meta_html_path', 'r', encoding='utf-8').read(), AMAZON_MAIN_FOLDER)
+        elif ui == '3':
+            self.find_all_brand()
+        elif ui == '4':
+            self.detele_listing_html(PATH_LISTING_FOLDER)
+        else:
+            input('无法识别输入的选项,按回车继续')
+            self.main_menu()
+
 
 if __name__ == '__main__':
-    _file_name = r'2020_05_27_15_37_43_568600'+'.html'
-    # https://www.amazon.co.uk/s?k=3+Tier+plastic+stackable+Storage+box&ref=nb_sb_noss
-    # https://www.amazon.com/s?k=Gloves&i=merchant-items&me=A3NTN1MMYANFVX&qid=1590805429&ref=sr_pg_3
-    _url = r'https://www.amazon.com/s?k=Gloves&i=merchant-items&me=A3NTN1MMYANFVX&qid=1590805429&ref=sr_pg_3'
-    _html = open(f'D:\\Amazon_html_for_brand_search\\{_file_name}',
-                 'r',
-                 encoding='utf-8').read()
     # 创建实例
-    download_brand = DownloadBrands(_url, AMAZON_MAIN_FOLDER)
-    download_brand.check_url()
-    # download_brand.download_all_listing_htmls(_html, _folder_path+'\\'+'listing_folder_2020_05_30')
-    download_brand.find_all_brand(AMAZON_MAIN_FOLDER+'\\'+'listing_folder_2020_05_30')
-    # download_brand.save_brand('DALUXE', BRAND_FILE)
+    download_brand = DownloadBrands(AMAZON_MAIN_FOLDER)
+    download_brand.main_menu()
