@@ -31,7 +31,7 @@ FILE_TIME = str(datetime.datetime.now()).replace('-', '_').replace(':', '_').rep
 MAIN_FOLDER = open(os.curdir+'\\main_folder_path.txt', 'r', encoding='utf-8').read()
 PATH_LISTING_FOLDER = MAIN_FOLDER + '\\listing_folder'
 PATH_META_HTML = MAIN_FOLDER + '\\META.html'
-BRAND_FILE = MAIN_FOLDER+'\\品牌名替换文件_'+FILE_TIME[:10]+'.txt'
+FILE_NAME_BRAND_FILE = MAIN_FOLDER+'\\品牌名替换文件_'+FILE_TIME[:10]+'.txt'
 
 menu_item = {}
 
@@ -220,6 +220,7 @@ class DownloadBrands(object):
             self.detele_listing_html(PATH_LISTING_FOLDER)
 
     def function_one(self):
+        # 下载元url
         self.url = input("请输入url:")
         with open('meta_html_url.txt', 'w', encoding='utf-8') as f:
             f.write(self.url)
@@ -228,17 +229,24 @@ class DownloadBrands(object):
         self.main_menu()
 
     def function_two(self):
+        # 查看元html中所有listing的url
         self.check_url()
         self.listing_urls = self.find_all_listing(open(PATH_META_HTML, 'r', encoding='utf-8').read())
         self.main_menu()
 
     def function_three(self):
-        self.find_all_brand()
+        # 创建品牌关键词替换文本文件
+        _my_brand = input('输入自己的品牌名：')
+        self.find_all_brand(PATH_LISTING_FOLDER)
+        self.save_brand(_my_brand, FILE_NAME_BRAND_FILE)
+        self.main_menu()
 
     def function_four(self):
+        # (慎用) 清除html文件
         self.detele_listing_html(PATH_LISTING_FOLDER)
 
     def function_five(self):
+        # TODO (慎用) 下载所有的元html中所有listing的html文件
         self.check_url()
         self.check_if_lisitng_html_downloaded()
         self.download_all_listing_htmls()
