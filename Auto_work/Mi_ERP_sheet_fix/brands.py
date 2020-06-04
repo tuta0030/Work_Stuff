@@ -27,9 +27,10 @@ from send2trash import send2trash as d
 """
 # 保存文件时用的时间戳 [:10] 来获取时间到当日
 FILE_TIME = str(datetime.datetime.now()).replace('-', '_').replace(':', '_').replace(' ', '_').replace('.', '_')
-AMAZON_MAIN_FOLDER = open(os.curdir+'\\main_folder_path.txt', 'r', encoding='utf-8').read()
-PATH_LISTING_FOLDER = AMAZON_MAIN_FOLDER + '\\listing_folder'
-BRAND_FILE = AMAZON_MAIN_FOLDER+'\\品牌名替换文件_'+FILE_TIME[:10]+'.txt'
+MAIN_FOLDER = open(os.curdir+'\\main_folder_path.txt', 'r', encoding='utf-8').read()
+PATH_LISTING_FOLDER = MAIN_FOLDER + '\\listing_folder'
+PATH_META_HTML = MAIN_FOLDER + '\\META.html'
+BRAND_FILE = MAIN_FOLDER+'\\品牌名替换文件_'+FILE_TIME[:10]+'.txt'
 
 
 def intro():
@@ -37,9 +38,10 @@ def intro():
     print("请选择需要的操作：")
     print('')
     print("1: 下载元url")
-    print("2: 下载所有listing的html")
+    print("2: 查看元html中所有listing的url")
     print("3: 创建品牌关键词替换文本文件")
     print("4: (慎用) 清除html文件")
+    print("5: (慎用) 下载所有的元html中所有listing的html文件")
     print('')
 
 
@@ -47,8 +49,9 @@ class DownloadBrands(object):
 
     def __init__(self, path: str):
         """传入列表页面的url，和需要保存文件的文件夹路径"""
-        self.url = "http://www.amazon.com/default_url"
+        self.url = 'https://www.amazon.com/default'
         self.url_type = 'None'
+        self.listing_urls = []
         self.folder_path = path
         self.info_list = []
         self.amazon_head = self.url.split('/')[2]
@@ -68,8 +71,16 @@ class DownloadBrands(object):
                        "csm-hit": "tb:CY69MPPSJNFECB3Y8YV8+s-YWBTVJQGA3E145WPM9EH|1590564415011&t:1590564415012&adb"
                                   ":adblk_yes"}
 
+    def check_meta_url(self):
+        if os.path.isfile(os.curdir+'\\meta_html_url.txt') and \
+                open(os.curdir+'\\meta_html_url.txt', 'r', encoding='utf-8').read()[:5] == 'https':
+            self.url = open(os.curdir+'\\meta_html_url.txt', 'r', encoding='utf-8').read()
+        else:
+            self.url = input("未找到meta_url文件，请输入url:")
+            with open('meta_html_url.txt', 'w', encoding='utf-8') as f:
+                f.write(self.url)
+
     def check_url(self):
-        self.url = input("输入url:")
         if 's?k=' in self.url and 'me=' not in self.url:
             print(self.time_stamp+"这个是搜索页面")
             self.url_type = 'search_page'
@@ -82,14 +93,14 @@ class DownloadBrands(object):
             print(self.time_stamp+"这个是未识别的页面，请重新输入")
             self.check_url()
 
-    def download_meta_html(self, url: str):  # 如果不是必要的情况下不要调用，这个会向亚马逊请求下载html
-        html = requests.get(url, headers=self.user_agent, cookies=self.cookie, timeout=5)
+    def download_meta_html(self, url: str):
+        self.url = input("输入url:")
+
+        html = requests.get(url, headers=self.user_agent, cookies=self.cookie, timeout=10)
         html.raise_for_status()
         html.encoding = html.apparent_encoding
         # 保存html文件
-        with open(self.folder_path+'\\' +
-                  FILE_TIME +
-                  '.html',
+        with open(PATH_META_HTML,
                   'w',
                   encoding='utf-8') as h:
             h.write(html.text)
@@ -130,13 +141,11 @@ class DownloadBrands(object):
         print(self.time_stamp+f'保存 {links[index]}')
 
     def check_if_lisitng_html_downloaded(self, lisitng_url: str, brand_file_path: str):
-        # TODO 写一个处理和查找文件夹的方法来检查html文件是否已经下载
         # 检查listing_url 是否在 brand_file_path里
         pass
 
     def download_all_listing_htmls(self, meta_html: str, listing_folder_path: str):
         listing_url_list = self.find_all_listing(meta_html)
-        # TODO 验证链接是否已经下载，解决404问题
         for listing_url in listing_url_list:
             try:
                 self.check_if_lisitng_html_downloaded(listing_url)
@@ -205,17 +214,29 @@ class DownloadBrands(object):
             self.detele_listing_html(PATH_LISTING_FOLDER)
 
     def main_menu(self):
+        self.check_meta_url()
         intro()
         ui = str(input("输入需要的功能："))
-        if ui == '1':
+
+        if ui == '1':  # 1: 下载元url
+            self.url = input("请输入url:")
+            with open('meta_html_url.txt', 'w', encoding='utf-8') as f:
+                f.write(self.url)
             self.check_url()
-            self.download_meta_html(input("请输入需要下载的url"))
-        elif ui == '2':
-            self.download_all_listing_htmls(open(os.curdir+'\\meta_html_path', 'r', encoding='utf-8').read(), AMAZON_MAIN_FOLDER)
-        elif ui == '3':
+            self.download_meta_html(self.url)
+            self.main_menu()
+        elif ui == '2':  # 2: 查看元html中所有listing的url
+            self.check_url()
+            self.listing_urls = self.find_all_listing(open(PATH_META_HTML, 'r', encoding='utf-8').read())
+            self.main_menu()
+        elif ui == '3':  # 3: 创建品牌关键词替换文本文件
             self.find_all_brand()
-        elif ui == '4':
+        elif ui == '4':  # 4: (慎用) 清除html文件
             self.detele_listing_html(PATH_LISTING_FOLDER)
+        elif ui == '5':  # 5: (慎用) 下载所有的元html中所有listing的html文件
+            self.check_url()
+            self.check_if_lisitng_html_downloaded()
+            self.download_all_listing_htmls()
         else:
             input('无法识别输入的选项,按回车继续')
             self.main_menu()
@@ -223,5 +244,5 @@ class DownloadBrands(object):
 
 if __name__ == '__main__':
     # 创建实例
-    download_brand = DownloadBrands(AMAZON_MAIN_FOLDER)
+    download_brand = DownloadBrands(MAIN_FOLDER)
     download_brand.main_menu()
