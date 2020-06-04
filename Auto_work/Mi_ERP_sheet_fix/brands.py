@@ -5,6 +5,7 @@ import datetime
 import xpath_database
 import time
 from send2trash import send2trash as d
+import random
 
 
 """
@@ -32,17 +33,22 @@ PATH_LISTING_FOLDER = MAIN_FOLDER + '\\listing_folder'
 PATH_META_HTML = MAIN_FOLDER + '\\META.html'
 BRAND_FILE = MAIN_FOLDER+'\\品牌名替换文件_'+FILE_TIME[:10]+'.txt'
 
+menu_item = {}
+
 
 def intro():
     print('')
     print("请选择需要的操作：")
     print('')
-    print("1: 下载元url")
-    print("2: 查看元html中所有listing的url")
-    print("3: 创建品牌关键词替换文本文件")
-    print("4: (慎用) 清除html文件")
-    print("5: (慎用) 下载所有的元html中所有listing的html文件")
+    for key, value in menu_item.items():
+        print(key, end='')
+        print(': ', end='')
+        print(value[0])
     print('')
+
+
+def add_menu_item(index: int, name: str, func):
+    menu_item[index] = (name, func)
 
 
 class DownloadBrands(object):
@@ -138,7 +144,7 @@ class DownloadBrands(object):
             link_file.write(self.time_stamp)
             link_file.write(links[index])
             link_file.write('\n')
-        print(self.time_stamp+f'保存 {links[index]}')
+        print(self.time_stamp+links[index])
 
     def check_if_lisitng_html_downloaded(self, lisitng_url: str, brand_file_path: str):
         # 检查listing_url 是否在 brand_file_path里
@@ -156,7 +162,7 @@ class DownloadBrands(object):
                 html.encoding = html.apparent_encoding
                 with open(listing_folder_path+'\\'+f'{FILE_TIME}.html', 'w', encoding='utf-8') as listing_html:
                     listing_html.write(html.text)
-                time.sleep(1)
+                time.sleep(random.randint(1, 10))
             except requests.exceptions.HTTPError:
                 print(self.time_stamp+'下载失败，页面404')
                 print('http://'+listing_url)
@@ -171,11 +177,11 @@ class DownloadBrands(object):
         self.brand_list.append(' '.join(shipped_by))
         self.brand_list = list(filter(None, self.brand_list))
 
-    def find_all_brand(self, folder_path: str):
+    def find_all_brand(self, listing_html_folder_path: str):
         print(self.time_stamp+'文件夹中找到以下html：')
-        for html_file in os.listdir(folder_path):
-            print('\t'+folder_path+'\\'+html_file)
-            html = open(folder_path+'\\'+html_file, 'r', encoding='utf-8').read()
+        for html_file in os.listdir(listing_html_folder_path):
+            print('\t'+listing_html_folder_path+'\\'+html_file)
+            html = open(listing_html_folder_path+'\\'+html_file, 'r', encoding='utf-8').read()
             self.find_brand(html)
 
     def save_brand(self, my_brand: str, brand_file_path: str):
@@ -213,32 +219,46 @@ class DownloadBrands(object):
             print("无法识别")
             self.detele_listing_html(PATH_LISTING_FOLDER)
 
+    def function_one(self):
+        self.url = input("请输入url:")
+        with open('meta_html_url.txt', 'w', encoding='utf-8') as f:
+            f.write(self.url)
+        self.check_url()
+        self.download_meta_html(self.url)
+        self.main_menu()
+
+    def function_two(self):
+        self.check_url()
+        self.listing_urls = self.find_all_listing(open(PATH_META_HTML, 'r', encoding='utf-8').read())
+        self.main_menu()
+
+    def function_three(self):
+        self.find_all_brand()
+
+    def function_four(self):
+        self.detele_listing_html(PATH_LISTING_FOLDER)
+
+    def function_five(self):
+        self.check_url()
+        self.check_if_lisitng_html_downloaded()
+        self.download_all_listing_htmls()
+
     def main_menu(self):
         self.check_meta_url()
+        add_menu_item(1, '下载元url', self.function_one)
+        add_menu_item(2, '查看元html中所有listing的url', self.function_two)
+        add_menu_item(3, '创建品牌关键词替换文本文件', self.function_three)
+        add_menu_item(4, '(慎用) 清除html文件', self.function_four)
+        add_menu_item(5, '(慎用) 下载所有的元html中所有listing的html文件', self.function_five)
         intro()
         ui = str(input("输入需要的功能："))
 
-        if ui == '1':  # 1: 下载元url
-            self.url = input("请输入url:")
-            with open('meta_html_url.txt', 'w', encoding='utf-8') as f:
-                f.write(self.url)
-            self.check_url()
-            self.download_meta_html(self.url)
-            self.main_menu()
-        elif ui == '2':  # 2: 查看元html中所有listing的url
-            self.check_url()
-            self.listing_urls = self.find_all_listing(open(PATH_META_HTML, 'r', encoding='utf-8').read())
-            self.main_menu()
-        elif ui == '3':  # 3: 创建品牌关键词替换文本文件
-            self.find_all_brand()
-        elif ui == '4':  # 4: (慎用) 清除html文件
-            self.detele_listing_html(PATH_LISTING_FOLDER)
-        elif ui == '5':  # 5: (慎用) 下载所有的元html中所有listing的html文件
-            self.check_url()
-            self.check_if_lisitng_html_downloaded()
-            self.download_all_listing_htmls()
+        if ui in str(menu_item.keys()):
+            for key, value in menu_item.items():
+                if ui == str(key):
+                    value[1]()
         else:
-            input('无法识别输入的选项,按回车继续')
+            input("无法识别的选项，回车继续")
             self.main_menu()
 
 
