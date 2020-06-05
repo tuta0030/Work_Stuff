@@ -7,7 +7,6 @@ import time
 from send2trash import send2trash as d
 import random
 
-
 """
 流程：
     1 输入url
@@ -26,14 +25,15 @@ import random
     9 解析所有的html页面并将里面的brand相关信息保存成文本文件，并且符合 "品牌|自己的品牌" 的格式 <-
 
 """
-# 保存文件时用的时间戳 [:10] 来获取时间到当日
-FILE_TIME = str(datetime.datetime.now()).replace('-', '_').replace(':', '_').replace(' ', '_').replace('.', '_')
-MAIN_FOLDER = open(os.curdir+'\\main_folder_path.txt', 'r', encoding='utf-8').read()
+
+file_time = str(datetime.datetime.now()).replace('-', '_').replace(':', '_').replace(' ', '_').replace('.', '_')
+menu_item = {}
+
+MAIN_FOLDER = open(os.curdir + '\\main_folder_path.txt', 'r', encoding='utf-8').read()
 PATH_LISTING_FOLDER = MAIN_FOLDER + '\\listing_folder'
 PATH_META_HTML = MAIN_FOLDER + '\\META.html'
-FILE_NAME_BRAND_FILE = MAIN_FOLDER+'\\品牌名替换文件_'+FILE_TIME[:10]+'.txt'
-
-menu_item = {}
+PATH_URL_FOLDER = MAIN_FOLDER + '\\url'
+FILE_NAME_BRAND_FILE = MAIN_FOLDER + '\\品牌名替换文件_' + file_time[:10] + '.txt'
 
 
 def intro():
@@ -52,6 +52,26 @@ def add_function(index: int, name: str, func):
     menu_item[index] = (name, func)
 
 
+def read_all_urls() -> list:
+    file_list = []
+    for folder, subfolder, files in os.walk(PATH_URL_FOLDER):
+        for file in files:
+            file_list.append(folder+'\\'+file)
+    print(file_list)
+    return file_list
+
+
+def save_listing_html(html):
+    with open(PATH_LISTING_FOLDER + '\\' +
+              str(datetime.datetime.now()).
+              replace('-', '_').
+              replace(':', '_').
+              replace(' ', '_').
+              replace('.', '_') +
+              '.html', 'w', encoding='utf-8') as listing_html:
+        listing_html.write(html.text)
+
+
 class DownloadBrands(object):
 
     def __init__(self, path: str):
@@ -62,7 +82,7 @@ class DownloadBrands(object):
         self.folder_path = path
         self.info_list = []
         self.amazon_head = self.url.split('/')[2]
-        self.time_stamp = '['+str(datetime.datetime.now())+']\t'
+        self.time_stamp = '[' + str(datetime.datetime.now()) + ']\t'
         self.brand_list = []
         self.user_agent = {
             'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -79,9 +99,9 @@ class DownloadBrands(object):
                                   ":adblk_yes"}
 
     def check_meta_url(self):
-        if os.path.isfile(os.curdir+'\\meta_html_url.txt') and \
-                open(os.curdir+'\\meta_html_url.txt', 'r', encoding='utf-8').read()[:5] == 'https':
-            self.url = open(os.curdir+'\\meta_html_url.txt', 'r', encoding='utf-8').read()
+        if os.path.isfile(os.curdir + '\\meta_html_url.txt') and \
+                open(os.curdir + '\\meta_html_url.txt', 'r', encoding='utf-8').read()[:5] == 'https':
+            self.url = open(os.curdir + '\\meta_html_url.txt', 'r', encoding='utf-8').read()
         else:
             self.url = input("未找到meta_url文件，请输入url:")
             with open('meta_html_url.txt', 'w', encoding='utf-8') as f:
@@ -89,15 +109,15 @@ class DownloadBrands(object):
 
     def check_url(self):
         if 's?k=' in self.url and 'me=' not in self.url:
-            print(self.time_stamp+"这个是搜索页面")
+            print(self.time_stamp + "这个是搜索页面")
             self.url_type = 'search_page'
         elif 's?k=' in self.url and 'me=' in self.url:
-            print(self.time_stamp+"这个是店铺里的搜索页面")
+            print(self.time_stamp + "这个是店铺里的搜索页面")
             self.url_type = 'store_search_page'
         elif self.url == '-1':
             self.main_menu()
         else:
-            print(self.time_stamp+"这个是未识别的页面，请重新输入")
+            print(self.time_stamp + "这个是未识别的页面，请重新输入")
             self.check_url()
 
     def download_meta_html(self, url: str):
@@ -122,7 +142,7 @@ class DownloadBrands(object):
             for i in all_listing:
                 links = i[0].xpath(xpath_database.search_page_all_link)[:-1]
                 for index, link in enumerate(links):
-                    links[index] = self.amazon_head+link
+                    links[index] = self.amazon_head + link
                     lisitng_list.append(links[index])
                     self.save_links(links, index)
             return lisitng_list
@@ -137,38 +157,41 @@ class DownloadBrands(object):
             return lisitng_list
 
     def save_links(self, links: list, index: int):
-        _links_folder = self.folder_path + '\\' + self.url.split('s?k=')[-1].split('&')[0] + '_' + FILE_TIME[:10]
-        if _links_folder.split('\\')[-1] not in os.listdir(self.folder_path):
-            os.mkdir(_links_folder)
-        with open(_links_folder + '\\' + FILE_TIME + '.txt',
-                  'a', encoding='utf-8') as link_file:
-            link_file.write(self.time_stamp)
-            link_file.write(links[index])
-            link_file.write('\n')
-        print(self.time_stamp+links[index])
+        _links_folder = PATH_URL_FOLDER + '\\' + self.url.split('s?k=')[-1].split('&')[0] + '_' + file_time[:10]
+        if os.path.isdir(PATH_URL_FOLDER):
+            with open(_links_folder + '.txt',
+                      'a', encoding='utf-8') as link_file:
+                link_file.write(self.time_stamp)
+                link_file.write(links[index])
+                link_file.write('\n')
+            print(self.time_stamp + links[index])
+        else:
+            os.mkdir(PATH_URL_FOLDER)
 
-    def check_if_lisitng_html_downloaded(self, lisitng_url: str, brand_file_path: str):
+    def check_if_lisitng_html_downloaded(self, lisitng_url: str, all_urls: list):
         # 检查listing_url 是否在 brand_file_path里
-        pass
+        if lisitng_url in all_urls:
+            self.listing_urls.remove(lisitng_url)
 
     def download_all_listing_htmls(self, meta_html: str, listing_folder_path: str):
-        listing_url_list = self.find_all_listing(meta_html)
-        for listing_url in listing_url_list:
+        self.listing_urls = self.find_all_listing(meta_html)
+        _all_ruls = read_all_urls()
+        for listing_url in self.listing_urls:
             try:
-                self.check_if_lisitng_html_downloaded(listing_url)
-                print(self.time_stamp+'开始下载以下html：')
-                print('http://'+listing_url)
-                html = requests.get('http://'+listing_url, headers=self.user_agent, cookies=self.cookie, timeout=5)
-                html.raise_for_status()
-                html.encoding = html.apparent_encoding
-                with open(listing_folder_path+'\\'+f'{FILE_TIME}.html', 'w', encoding='utf-8') as listing_html:
-                    listing_html.write(html.text)
-                time.sleep(random.randint(1, 10))
-            except requests.exceptions.HTTPError:
-                print(self.time_stamp+'下载失败，页面404')
-                print('http://'+listing_url)
+                self.check_if_lisitng_html_downloaded(listing_url, _all_ruls)
+                #
+                # print(self.time_stamp + '开始下载以下html：')
+                # print('http://' + listing_url)
+                # html = requests.get('http://' + listing_url, headers=self.user_agent, cookies=self.cookie, timeout=5)
+                # html.raise_for_status()
+                # html.encoding = html.apparent_encoding
+                # save_listing_html(html)
+                # time.sleep(random.randrange(1, 5))
+            except requests.exceptions.HTTPError as e:
+                print(self.time_stamp + str(e))
+                print('http://' + listing_url)
                 continue
-        os.startfile(listing_folder_path)
+        # os.startfile(listing_folder_path)
 
     def find_brand(self, html: str):
         html = etree.HTML(html, etree.HTMLParser())
@@ -179,10 +202,10 @@ class DownloadBrands(object):
         self.brand_list = list(filter(None, self.brand_list))
 
     def find_all_brand(self, listing_html_folder_path: str):
-        print(self.time_stamp+'文件夹中找到以下html：')
+        print(self.time_stamp + '文件夹中找到以下html：')
         for html_file in os.listdir(listing_html_folder_path):
-            print('\t'+listing_html_folder_path+'\\'+html_file)
-            html = open(listing_html_folder_path+'\\'+html_file, 'r', encoding='utf-8').read()
+            print('\t' + listing_html_folder_path + '\\' + html_file)
+            html = open(listing_html_folder_path + '\\' + html_file, 'r', encoding='utf-8').read()
             self.find_brand(html)
 
     def save_brand(self, my_brand: str, brand_file_path: str):
@@ -192,7 +215,7 @@ class DownloadBrands(object):
                     content = r.read()
                     if each_brand not in content:
                         with open(brand_file_path, 'a', encoding='utf-8') as b:
-                            b.write(each_brand+'|'+my_brand)
+                            b.write(each_brand + '|' + my_brand)
                             b.write('\n')
             elif brand_file_path.split('\\')[-1] not in os.listdir(self.folder_path):
                 with open(brand_file_path, 'a', encoding='utf-8') as b:
@@ -201,6 +224,7 @@ class DownloadBrands(object):
             else:
                 class BrandFileError(Exception):
                     pass
+
                 raise BrandFileError
         os.startfile(brand_file_path)
 
@@ -210,7 +234,7 @@ class DownloadBrands(object):
             for folder, subfolder, file in os.walk(lisitng_html_folder_path):
                 for item in file:
                     file_path = folder + '\\' + item
-                    print(self.time_stamp+'已删除 '+file_path)
+                    print(self.time_stamp + '已删除 ' + file_path)
                     d(file_path)
             input("完成，按回车回到主菜单")
             self.main_menu()
@@ -247,10 +271,9 @@ class DownloadBrands(object):
         self.detele_listing_html(PATH_LISTING_FOLDER)
 
     def function_five(self):
-        # TODO (慎用) 下载所有的元html中所有listing的html文件
+        # (慎用) 下载所有的元html中所有listing的html文件
         self.check_url()
-        self.check_if_lisitng_html_downloaded()
-        self.download_all_listing_htmls()
+        self.download_all_listing_htmls(open(PATH_META_HTML, 'r', encoding='utf-8').read(), PATH_LISTING_FOLDER)
 
     def main_menu(self):
         self.check_meta_url()
