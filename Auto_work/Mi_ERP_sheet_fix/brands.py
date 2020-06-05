@@ -78,6 +78,14 @@ def save_listing_html(html, listing_url: str):
         url_file.write('\n')
 
 
+def check_if_lisitng_html_downloaded(lisitng_url: str, all_urls: str):
+    # 检查listing_url 是否在 brand_file_path里
+    if lisitng_url in all_urls:
+        return True
+    else:
+        return False
+
+
 class DownloadBrands(object):
 
     def __init__(self, path: str):
@@ -174,26 +182,22 @@ class DownloadBrands(object):
         else:
             os.mkdir(PATH_URL_FOLDER)
 
-    def check_if_lisitng_html_downloaded(self, lisitng_url: str, all_urls: str):
-        # 检查listing_url 是否在 brand_file_path里
-        if lisitng_url in all_urls:
-            return True
-        else:
-            return False
-
-    def download_all_listing_htmls(self, meta_html: str, listing_folder_path: str):
+    def download_all_listing_htmls(self, meta_html: str):
         self.listing_urls = self.find_all_listing(meta_html)
         _all_urls = read_downloaded_urls(PATH_DOWNLOADED_URL)
         for listing_url in self.listing_urls:
             try:
-                if self.check_if_lisitng_html_downloaded(listing_url, _all_urls) is False:
+                if check_if_lisitng_html_downloaded(listing_url, _all_urls) is False:
                     print(self.time_stamp + '开始下载以下html：')
                     print('http://' + listing_url)
-                    html = requests.get('http://' + listing_url, headers=self.user_agent, cookies=self.cookie, timeout=5)
+                    html = requests.get('http://' + listing_url,
+                                        headers=self.user_agent,
+                                        cookies=self.cookie,
+                                        timeout=5)
                     html.raise_for_status()
                     html.encoding = html.apparent_encoding
                     save_listing_html(html, listing_url)
-                    time.sleep(random.randrange(1, 5))
+                    time.sleep(random.randrange(1, 2))
             except requests.exceptions.HTTPError as e:
                 print(self.time_stamp + str(e))
                 print('http://' + listing_url)
@@ -280,7 +284,7 @@ class DownloadBrands(object):
     def function_five(self):
         # (慎用) 下载所有的元html中所有listing的html文件
         self.check_url()
-        self.download_all_listing_htmls(open(PATH_META_HTML, 'r', encoding='utf-8').read(), PATH_LISTING_FOLDER)
+        self.download_all_listing_htmls(open(PATH_META_HTML, 'r', encoding='utf-8').read())
 
     def main_menu(self):
         self.check_meta_url()
