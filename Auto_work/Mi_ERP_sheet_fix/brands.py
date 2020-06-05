@@ -7,6 +7,7 @@ import time
 from send2trash import send2trash as d
 import random
 from selenium import webdriver
+import pickle
 
 file_time = str(datetime.datetime.now()).replace('-', '_').replace(':', '_').replace(' ', '_').replace('.', '_')
 menu_item = {}
@@ -46,7 +47,7 @@ def read_downloaded_urls(downloaded_url_file: str) -> str:
         read_downloaded_urls(downloaded_url_file)
 
 
-def save_listing_html(html, listing_url: str):
+def save_listing_html(html: str, listing_url: str):
     with open(PATH_LISTING_FOLDER + '\\' +
               str(datetime.datetime.now()).
               replace('-', '_').
@@ -54,7 +55,7 @@ def save_listing_html(html, listing_url: str):
               replace(' ', '_').
               replace('.', '_') +
               '.html', 'w', encoding='utf-8') as listing_html:
-        listing_html.write(html.text)
+        listing_html.write(html)
     with open(PATH_URL_FOLDER + '\\Downloaded_url.txt', 'a', encoding='utf-8') as url_file:
         url_file.write(listing_url)
         url_file.write('\n')
@@ -85,7 +86,10 @@ class DownloadBrands(object):
                           'Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37'}
         self.cookie = open('cookies.txt', 'r', encoding='utf-8').read()[1:-1].split(';')
         self.cookie = [tuple(item.split('=', 1)) for item in self.cookie]
-        self.cookie = {key: value for (key, value) in self.cookie}
+        try:
+            self.cookie = {key: value for (key, value) in self.cookie}
+        except ValueError:
+            self.cookie = '没有找到cookies'
 
     def check_meta_url(self):
         if os.path.isfile(os.curdir + '\\meta_html_url.txt') and \
@@ -119,6 +123,37 @@ class DownloadBrands(object):
                   encoding='utf-8') as h:
             h.write(html.text)
         os.startfile(self.folder_path)
+
+    def download_by_chrome(self, url: str):
+        # 开始下载html
+        option = webdriver.ChromeOptions()
+        # option.add_argument('--headless')
+        option.add_argument('user-agent=' + self.user_agent['user-agent'])
+        browser = webdriver.Chrome(executable_path="E:\\Download\\chromedriver.exe", options=option)
+        browser.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+            "source": """
+          Object.defineProperty(navigator, 'webdriver', {
+            get: () => undefined
+          })
+        """
+        })
+        browser.get('http://' + url)
+
+        # 处理cookies
+        pickle.dump(browser.get_cookies(), open("cookies.pkl", "wb"))
+        for cookie in pickle.load(open('cookies.pkl', 'rb')):
+            browser.add_cookie(cookie)
+        save_listing_html(browser.page_source, url)
+        browser.close()
+
+    def download_by_requests(self, url: str):
+        html = requests.get('http://' + url,
+                            headers=self.user_agent,
+                            cookies=self.cookie,
+                            timeout=5)
+        html.raise_for_status()
+        html.encoding = html.apparent_encoding
+        save_listing_html(html.text, url)
 
     def find_all_listing(self, html: str) -> list:
         """传入html，返回html里面包含的lisitng链接"""
@@ -156,7 +191,7 @@ class DownloadBrands(object):
             os.mkdir(PATH_URL_FOLDER)
 
     def download_all_listing_htmls(self, meta_html: str):
-        # TODO 改成浏览器爬虫爬取页面
+        # TODO 去除非产品页面
         self.listing_urls = self.find_all_listing(meta_html)
         _all_urls = read_downloaded_urls(PATH_DOWNLOADED_URL)
         for listing_url in self.listing_urls:
@@ -164,33 +199,24 @@ class DownloadBrands(object):
                 if check_if_lisitng_html_downloaded(listing_url, _all_urls) is False:
                     print(self.time_stamp + '开始下载以下html：')
                     print('http://' + listing_url)
-
-                    # 开始下载html
-                    option = webdriver.ChromeOptions()
-                    option.add_argument('--headless')
-                    browser = webdriver.Chrome(executable_path="E:\\Download\\chromedriver.exe", options=option)
-                    browser.get(listing_url)
-
-                    # html = requests.get('http://' + listing_url,
-                    #                     headers=self.user_agent,
-                    #                     cookies=self.cookie,
-                    #                     timeout=5)
-                    # html.raise_for_status()
-                    # html.encoding = html.apparent_encoding
-                    # save_listing_html(html, listing_url)
+                    self.download_by_chrome(listing_url)
                     time.sleep(random.randrange(1, 10))
             except Exception as e:
                 print(self.time_stamp + str(e))
-                continue
+                raise e
+                # continue
         # os.startfile(listing_folder_path)
 
     def find_brand(self, html: str):
-        html = etree.HTML(html, etree.HTMLParser())
-        brand = html.xpath(xpath_database.brand)
-        shipped_by = html.xpath(xpath_database.shipped_by)
-        self.brand_list.append(' '.join(brand))
-        self.brand_list.append(' '.join(shipped_by))
-        self.brand_list = list(filter(None, self.brand_list))
+        try:
+            html = etree.HTML(html, etree.HTMLParser())
+            brand = html.xpath(xpath_database.brand)
+            shipped_by = html.xpath(xpath_database.shipped_by)
+            self.brand_list.append(' '.join(brand))
+            self.brand_list.append(' '.join(shipped_by))
+            self.brand_list = list(filter(None, self.brand_list))
+        except Exception as e:
+            print(e)
 
     def find_all_brand(self, listing_html_folder_path: str):
         print(self.time_stamp + '文件夹中找到以下html：')
