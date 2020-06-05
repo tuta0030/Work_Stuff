@@ -33,6 +33,7 @@ MAIN_FOLDER = open(os.curdir + '\\main_folder_path.txt', 'r', encoding='utf-8').
 PATH_LISTING_FOLDER = MAIN_FOLDER + '\\listing_folder'
 PATH_META_HTML = MAIN_FOLDER + '\\META.html'
 PATH_URL_FOLDER = MAIN_FOLDER + '\\url'
+PATH_DOWNLOADED_URL = PATH_URL_FOLDER+'\\Downloaded_url.txt'
 FILE_NAME_BRAND_FILE = MAIN_FOLDER + '\\品牌名替换文件_' + file_time[:10] + '.txt'
 
 
@@ -52,16 +53,18 @@ def add_function(index: int, name: str, func):
     menu_item[index] = (name, func)
 
 
-def read_all_urls() -> list:
-    file_list = []
-    for folder, subfolder, files in os.walk(PATH_URL_FOLDER):
-        for file in files:
-            file_list.append(folder+'\\'+file)
-    print(file_list)
-    return file_list
+def read_downloaded_urls(downloaded_url_file: str) -> str:
+    if os.path.isfile(downloaded_url_file):
+        file_list = open(downloaded_url_file, 'r', encoding='utf-8').read()
+        return file_list
+    else:
+        print('没有任何已经下载过的url，创建空白文件')
+        with open(downloaded_url_file, 'w', encoding='utf-8') as f:
+            f.write('www.amazon.com/default')
+        read_downloaded_urls(downloaded_url_file)
 
 
-def save_listing_html(html):
+def save_listing_html(html, listing_url: str):
     with open(PATH_LISTING_FOLDER + '\\' +
               str(datetime.datetime.now()).
               replace('-', '_').
@@ -70,6 +73,9 @@ def save_listing_html(html):
               replace('.', '_') +
               '.html', 'w', encoding='utf-8') as listing_html:
         listing_html.write(html.text)
+    with open(PATH_URL_FOLDER+'\\Downloaded_url.txt', 'a', encoding='utf-8') as url_file:
+        url_file.write(listing_url)
+        url_file.write('\n')
 
 
 class DownloadBrands(object):
@@ -168,25 +174,26 @@ class DownloadBrands(object):
         else:
             os.mkdir(PATH_URL_FOLDER)
 
-    def check_if_lisitng_html_downloaded(self, lisitng_url: str, all_urls: list):
+    def check_if_lisitng_html_downloaded(self, lisitng_url: str, all_urls: str):
         # 检查listing_url 是否在 brand_file_path里
         if lisitng_url in all_urls:
-            self.listing_urls.remove(lisitng_url)
+            return True
+        else:
+            return False
 
     def download_all_listing_htmls(self, meta_html: str, listing_folder_path: str):
         self.listing_urls = self.find_all_listing(meta_html)
-        _all_ruls = read_all_urls()
+        _all_urls = read_downloaded_urls(PATH_DOWNLOADED_URL)
         for listing_url in self.listing_urls:
             try:
-                self.check_if_lisitng_html_downloaded(listing_url, _all_ruls)
-                #
-                # print(self.time_stamp + '开始下载以下html：')
-                # print('http://' + listing_url)
-                # html = requests.get('http://' + listing_url, headers=self.user_agent, cookies=self.cookie, timeout=5)
-                # html.raise_for_status()
-                # html.encoding = html.apparent_encoding
-                # save_listing_html(html)
-                # time.sleep(random.randrange(1, 5))
+                if self.check_if_lisitng_html_downloaded(listing_url, _all_urls) is False:
+                    print(self.time_stamp + '开始下载以下html：')
+                    print('http://' + listing_url)
+                    html = requests.get('http://' + listing_url, headers=self.user_agent, cookies=self.cookie, timeout=5)
+                    html.raise_for_status()
+                    html.encoding = html.apparent_encoding
+                    save_listing_html(html, listing_url)
+                    time.sleep(random.randrange(1, 5))
             except requests.exceptions.HTTPError as e:
                 print(self.time_stamp + str(e))
                 print('http://' + listing_url)
