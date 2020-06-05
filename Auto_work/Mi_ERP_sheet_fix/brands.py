@@ -6,25 +6,7 @@ import xpath_database
 import time
 from send2trash import send2trash as d
 import random
-
-"""
-流程：
-    1 输入url
-    2 分析url类别
-        2.1 获取浏览器headers
-        2.2 获取浏览器cookies
-        2.3 （可选）如果需要的话，添加代理ip
-    3 下载url页面在默认文件夹
-    4 载入默认文件夹中的html
-    5 解析html文件，
-        5.2 找到所有的listing链接信息 
-        5.3 并且把他们合并成新的可以去爬取的url 
-    6 将所有的listing url保存在文档当中并加上时间戳和输入的url的相关信息 
-    7 输入需要查找的listing url文件
-    8 下载 需要查找的listing url文件 中的所有html页面
-    9 解析所有的html页面并将里面的brand相关信息保存成文本文件，并且符合 "品牌|自己的品牌" 的格式 <-
-
-"""
+from selenium import webdriver
 
 file_time = str(datetime.datetime.now()).replace('-', '_').replace(':', '_').replace(' ', '_').replace('.', '_')
 menu_item = {}
@@ -67,10 +49,10 @@ def read_downloaded_urls(downloaded_url_file: str) -> str:
 def save_listing_html(html, listing_url: str):
     with open(PATH_LISTING_FOLDER + '\\' +
               str(datetime.datetime.now()).
-                      replace('-', '_').
-                      replace(':', '_').
-                      replace(' ', '_').
-                      replace('.', '_') +
+              replace('-', '_').
+              replace(':', '_').
+              replace(' ', '_').
+              replace('.', '_') +
               '.html', 'w', encoding='utf-8') as listing_html:
         listing_html.write(html.text)
     with open(PATH_URL_FOLDER + '\\Downloaded_url.txt', 'a', encoding='utf-8') as url_file:
@@ -174,7 +156,7 @@ class DownloadBrands(object):
             os.mkdir(PATH_URL_FOLDER)
 
     def download_all_listing_htmls(self, meta_html: str):
-        # 改成浏览器爬虫爬取页面
+        # TODO 改成浏览器爬虫爬取页面
         self.listing_urls = self.find_all_listing(meta_html)
         _all_urls = read_downloaded_urls(PATH_DOWNLOADED_URL)
         for listing_url in self.listing_urls:
@@ -182,14 +164,21 @@ class DownloadBrands(object):
                 if check_if_lisitng_html_downloaded(listing_url, _all_urls) is False:
                     print(self.time_stamp + '开始下载以下html：')
                     print('http://' + listing_url)
-                    html = requests.get('http://' + listing_url,
-                                        headers=self.user_agent,
-                                        cookies=self.cookie,
-                                        timeout=5)
-                    html.raise_for_status()
-                    html.encoding = html.apparent_encoding
-                    save_listing_html(html, listing_url)
-                    time.sleep(random.randrange(1, 2))
+
+                    # 开始下载html
+                    option = webdriver.ChromeOptions()
+                    option.add_argument('--headless')
+                    browser = webdriver.Chrome(executable_path="E:\\Download\\chromedriver.exe", options=option)
+                    browser.get(listing_url)
+
+                    # html = requests.get('http://' + listing_url,
+                    #                     headers=self.user_agent,
+                    #                     cookies=self.cookie,
+                    #                     timeout=5)
+                    # html.raise_for_status()
+                    # html.encoding = html.apparent_encoding
+                    # save_listing_html(html, listing_url)
+                    time.sleep(random.randrange(1, 10))
             except Exception as e:
                 print(self.time_stamp + str(e))
                 continue
@@ -299,5 +288,6 @@ class DownloadBrands(object):
 
 if __name__ == '__main__':
     # 创建实例
+
     download_brand = DownloadBrands(MAIN_FOLDER)
     download_brand.main_menu()
