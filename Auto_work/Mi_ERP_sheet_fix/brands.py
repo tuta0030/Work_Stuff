@@ -33,7 +33,7 @@ MAIN_FOLDER = open(os.curdir + '\\main_folder_path.txt', 'r', encoding='utf-8').
 PATH_LISTING_FOLDER = MAIN_FOLDER + '\\listing_folder'
 PATH_META_HTML = MAIN_FOLDER + '\\META.html'
 PATH_URL_FOLDER = MAIN_FOLDER + '\\url'
-PATH_DOWNLOADED_URL = PATH_URL_FOLDER+'\\Downloaded_url.txt'
+PATH_DOWNLOADED_URL = PATH_URL_FOLDER + '\\Downloaded_url.txt'
 FILE_NAME_BRAND_FILE = MAIN_FOLDER + '\\品牌名替换文件_' + file_time[:10] + '.txt'
 
 
@@ -67,13 +67,13 @@ def read_downloaded_urls(downloaded_url_file: str) -> str:
 def save_listing_html(html, listing_url: str):
     with open(PATH_LISTING_FOLDER + '\\' +
               str(datetime.datetime.now()).
-              replace('-', '_').
-              replace(':', '_').
-              replace(' ', '_').
-              replace('.', '_') +
+                      replace('-', '_').
+                      replace(':', '_').
+                      replace(' ', '_').
+                      replace('.', '_') +
               '.html', 'w', encoding='utf-8') as listing_html:
         listing_html.write(html.text)
-    with open(PATH_URL_FOLDER+'\\Downloaded_url.txt', 'a', encoding='utf-8') as url_file:
+    with open(PATH_URL_FOLDER + '\\Downloaded_url.txt', 'a', encoding='utf-8') as url_file:
         url_file.write(listing_url)
         url_file.write('\n')
 
@@ -101,16 +101,9 @@ class DownloadBrands(object):
         self.user_agent = {
             'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                           'Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37'}
-        self.cookie = {"session-id": "261-2425092-6884821",
-                       "i18n-prefs": "GBP",
-                       "ubid-acbuk": "262-2317385-1373932",
-                       "x-wl-uid": "1dhLcf8cUWGR//3KjLB96k+JeOgJNGCMrS5OekERN/fBkfcPTQNdrdr1H5tHKr8QpL4RPV4aOyoE=",
-                       "session-token": "f1gKKjPecdKwt1CnTPbPDgKT4rOj/8WtiCWrEBv9vaP4SKfBmKdRrYt+3bXb"
-                                        "+LHYmkvMfRwud9rXlxNRXlVW9Awjm5ubYAESC2B87sq6sf7bxUk6P3Z2i7lNDy"
-                                        "+SpxaN83g1Z95jzpEudokcwXTZX3vekAF+W3LudgQ0xiKQkkP+7hIQv28f60pXqdnjMjDn",
-                       "session-id-time": "2082758401l",
-                       "csm-hit": "tb:CY69MPPSJNFECB3Y8YV8+s-YWBTVJQGA3E145WPM9EH|1590564415011&t:1590564415012&adb"
-                                  ":adblk_yes"}
+        self.cookie = open('cookies.txt', 'r', encoding='utf-8').read()[1:-1].split(';')
+        self.cookie = [tuple(item.split('=', 1)) for item in self.cookie]
+        self.cookie = {key: value for (key, value) in self.cookie}
 
     def check_meta_url(self):
         if os.path.isfile(os.curdir + '\\meta_html_url.txt') and \
@@ -135,8 +128,6 @@ class DownloadBrands(object):
             self.check_url()
 
     def download_meta_html(self, url: str):
-        self.url = input("输入url:")
-
         html = requests.get(url, headers=self.user_agent, cookies=self.cookie, timeout=10)
         html.raise_for_status()
         html.encoding = html.apparent_encoding
@@ -183,6 +174,7 @@ class DownloadBrands(object):
             os.mkdir(PATH_URL_FOLDER)
 
     def download_all_listing_htmls(self, meta_html: str):
+        # 改成浏览器爬虫爬取页面
         self.listing_urls = self.find_all_listing(meta_html)
         _all_urls = read_downloaded_urls(PATH_DOWNLOADED_URL)
         for listing_url in self.listing_urls:
@@ -198,9 +190,8 @@ class DownloadBrands(object):
                     html.encoding = html.apparent_encoding
                     save_listing_html(html, listing_url)
                     time.sleep(random.randrange(1, 2))
-            except requests.exceptions.HTTPError as e:
+            except Exception as e:
                 print(self.time_stamp + str(e))
-                print('http://' + listing_url)
                 continue
         # os.startfile(listing_folder_path)
 
@@ -285,6 +276,7 @@ class DownloadBrands(object):
         # (慎用) 下载所有的元html中所有listing的html文件
         self.check_url()
         self.download_all_listing_htmls(open(PATH_META_HTML, 'r', encoding='utf-8').read())
+        self.main_menu()
 
     def main_menu(self):
         self.check_meta_url()
