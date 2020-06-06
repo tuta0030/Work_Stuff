@@ -59,7 +59,7 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         # ========= PROCESS TITLE =========
         self.process_title()
         # ========= PROCESS TITLE =========
-        # self.process_bulletpoints()
+        self.process_bulletpoints()
         # ========= PROCESS PRICE =========
         self.process_price(float(input("输入汇率：")))
         # ========= PROCESS NODE =========
