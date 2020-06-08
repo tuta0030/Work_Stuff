@@ -1,8 +1,10 @@
 import os
 import datetime
 import re
+from openpyxl.utils import coordinate_to_tuple
 
 ROW_RESTRICTION = 2000
+COL_MAX = 2000
 MAIN_PATH = open(os.curdir + '\\path.txt', 'r', encoding='utf-8').read()
 PRODUCT_TYPE = open(os.curdir + '\\product_type.txt', 'r', encoding='utf-8').read()
 INTRO = r"""
@@ -10,6 +12,7 @@ INTRO = r"""
 请注意文件命名方式：
     1. <文件夹> 命名方式: <日期_产品名称>  例如（根目录\20200601_游泳圈）
     2. <文件> 命名方式: <产品名称+国家_亚马逊表_日期>  例如（游泳圈UK_亚马逊表_20200601.xlsx）
+    3. 分类节点和关键词选项如果已经填写，可以按-1跳过
 """ + f'当前设置的主路径为：{MAIN_PATH}\n'
 NO_FILE = '\n' + r'没有找到文件，请确认表格在正确的路径下，并确定表格文件名称格式正确'
 STANDARD_MESSAGE = 'The photo was taken in natural light because there is a slight chromatic aberration between the ' \
@@ -122,7 +125,7 @@ def process_item_name(item_name: str) -> str:
     return item_name
 
 
-def process_bulletpoints(sheet, bullet_point_coordinate: tuple, *replace_msg: str):
+def process_bulletpoints(sheet, bullet_point_coordinate: tuple):
     bullet_points_dict = {'first_column': get_column_until_none_cell(sheet, bullet_point_coordinate[0],
                                                                      bullet_point_coordinate[1] + 0),
                           'second_column': get_column_until_none_cell(sheet, bullet_point_coordinate[0],
@@ -135,28 +138,31 @@ def process_bulletpoints(sheet, bullet_point_coordinate: tuple, *replace_msg: st
                                                                      bullet_point_coordinate[1] + 4)
                           }
     for index, each_line in enumerate(bullet_points_dict['first_column']):
-        if len(each_line) > 500:
+        if len(each_line.value) > 500:
             bullet_points_dict['first_column'][index] = each_line[:499].replace('<', '(').replace('>', ')')
     for index, each_line in enumerate(bullet_points_dict['second_column']):
-        if len(each_line) > 500:
+        if len(each_line.value) > 500:
             bullet_points_dict['first_column'][index] = each_line[:499].replace('<', '(').replace('>', ')')
     for index, each_line in enumerate(bullet_points_dict['third_column']):
-        if len(each_line) > 500:
+        if len(each_line.value) > 500:
             bullet_points_dict['first_column'][index] = each_line[:499].replace('<', '(').replace('>', ')')
     for index, each_line in enumerate(bullet_points_dict['fourth_column']):
-        if len(each_line) > 500:
+        if len(each_line.value) > 500:
             bullet_points_dict['first_column'][index] = each_line[:499].replace('<', '(').replace('>', ')')
     for index, each_line in enumerate(bullet_points_dict['fifth_column']):
-        if len(each_line) > 500:
+        if len(each_line.value) > 500:
             bullet_points_dict['first_column'][index] = each_line[:499].replace('<', '(').replace('>', ')')
 
 
 def process_price(sheet, coordinate: tuple, exchange_rate: float):
     price = get_column_until_none_cell(sheet, coordinate[0], coordinate[1])
+    lowest_price = int(input("输入最低价格："))
     for index, item in enumerate(price):
         price[index].value = str(int(int(str(item.value).split('.')[0]) * exchange_rate) - 1)
-        if int(price[index].value) < 15:
-            price[index].value = str(int(price[index].value) + 10)
+        if int(price[index].value) < lowest_price:
+            # 删除低于最低价格的行
+            for col in range(1, COL_MAX):
+                sheet.cell(coordinate_to_tuple(str(item).split('.')[-1][:-1])[0], col).value = None
 
 
 if __name__ == '__main__':
