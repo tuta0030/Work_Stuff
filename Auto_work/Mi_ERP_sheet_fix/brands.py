@@ -6,8 +6,14 @@ import xpath_database
 import time
 from send2trash import send2trash as d
 import random
-from selenium import webdriver
-import pickle
+
+"""
+TODO:
+    1. 添加处理下载失败的链接的功能
+    2. 添加识别需要验证码的html的功能
+    3. 优化保存失败url的功能
+    4. 添加切换user-agent,ip,cookie重试失败url的功能
+"""
 
 file_time = str(datetime.datetime.now()).replace('-', '_').replace(':', '_').replace(' ', '_').replace('.', '_')
 menu_item = {}
@@ -76,6 +82,7 @@ class DownloadBrands(object):
         self.url = 'https://www.amazon.com/default'
         self.url_type = 'None'
         self.listing_urls = []
+        self.faild_lisitng = []
         self.folder_path = path
         self.info_list = []
         self.amazon_head = self.url.split('/')[2]
@@ -124,28 +131,6 @@ class DownloadBrands(object):
             h.write(html.text)
         os.startfile(self.folder_path)
 
-    def download_by_chrome(self, url: str):
-        # 开始下载html
-        option = webdriver.ChromeOptions()
-        # option.add_argument('--headless')
-        option.add_argument('user-agent=' + self.user_agent['user-agent'])
-        browser = webdriver.Chrome(executable_path="E:\\Download\\chromedriver.exe", options=option)
-        browser.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
-            "source": """
-          Object.defineProperty(navigator, 'webdriver', {
-            get: () => undefined
-          })
-        """
-        })
-        browser.get('http://' + url)
-
-        # 处理cookies
-        pickle.dump(browser.get_cookies(), open("cookies.pkl", "wb"))
-        for cookie in pickle.load(open('cookies.pkl', 'rb')):
-            browser.add_cookie(cookie)
-        save_listing_html(browser.page_source, url)
-        browser.close()
-
     def download_by_requests(self, url: str):
         html = requests.get('http://' + url,
                             headers=self.user_agent,
@@ -191,7 +176,6 @@ class DownloadBrands(object):
             os.mkdir(PATH_URL_FOLDER)
 
     def download_all_listing_htmls(self, meta_html: str):
-        # TODO 去除非产品页面
         self.listing_urls = self.find_all_listing(meta_html)
         _all_urls = read_downloaded_urls(PATH_DOWNLOADED_URL)
         for listing_url in self.listing_urls:
@@ -199,12 +183,15 @@ class DownloadBrands(object):
                 if check_if_lisitng_html_downloaded(listing_url, _all_urls) is False:
                     print(self.time_stamp + '开始下载以下html：')
                     print('http://' + listing_url)
-                    self.download_by_chrome(listing_url)
+                    self.download_by_requests(listing_url)
                     time.sleep(random.randrange(1, 10))
             except Exception as e:
                 print(self.time_stamp + str(e))
-                raise e
-                # continue
+                self.faild_lisitng.append(listing_url)
+        with open('failed_lisitng_url.txt', 'w', encoding='utf-8') as f:
+            f.write('\n'.join(self.faild_lisitng))
+            # raise e
+            # continue
         # os.startfile(listing_folder_path)
 
     def find_brand(self, html: str):
