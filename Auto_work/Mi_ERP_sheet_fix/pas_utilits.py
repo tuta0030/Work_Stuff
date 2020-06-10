@@ -137,21 +137,10 @@ def process_bulletpoints(sheet, bullet_point_coordinate: tuple):
                           'fifth_column': get_column_until_none_cell(sheet, bullet_point_coordinate[0],
                                                                      bullet_point_coordinate[1] + 4)
                           }
-    for index, each_line in enumerate(bullet_points_dict['first_column']):
-        if len(each_line.value) > 500:
-            bullet_points_dict['first_column'][index] = each_line[:499].replace('<', '(').replace('>', ')')
-    for index, each_line in enumerate(bullet_points_dict['second_column']):
-        if len(each_line.value) > 500:
-            bullet_points_dict['first_column'][index] = each_line[:499].replace('<', '(').replace('>', ')')
-    for index, each_line in enumerate(bullet_points_dict['third_column']):
-        if len(each_line.value) > 500:
-            bullet_points_dict['first_column'][index] = each_line[:499].replace('<', '(').replace('>', ')')
-    for index, each_line in enumerate(bullet_points_dict['fourth_column']):
-        if len(each_line.value) > 500:
-            bullet_points_dict['first_column'][index] = each_line[:499].replace('<', '(').replace('>', ')')
-    for index, each_line in enumerate(bullet_points_dict['fifth_column']):
-        if len(each_line.value) > 500:
-            bullet_points_dict['first_column'][index] = each_line[:499].replace('<', '(').replace('>', ')')
+    for each_column in bullet_points_dict.keys():
+        for index, each_line in enumerate(bullet_points_dict[each_column]):
+            if len(each_line.value) > 500:
+                bullet_points_dict[each_column][index].value = each_line.value[:499].replace('<', '(').replace('>', ')')
 
 
 def process_price(sheet, coordinate: tuple, exchange_rate: float):

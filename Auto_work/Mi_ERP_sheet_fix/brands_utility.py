@@ -74,10 +74,6 @@ def get_failed_url() -> list:
         return failed_listing
 
 
-def get_downloaded_url(downloaded_url_path: str) -> list:
-    pass
-
-
 class DownloadBrands(object):
 
     def __init__(self, path: str):

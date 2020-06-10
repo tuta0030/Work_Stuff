@@ -91,7 +91,7 @@ if __name__ == '__main__':
             if os.path.isfile(f"{_main_path}\\{_time}_{_product}\\{_product}{_country}_亚马逊表_{_time}.xlsx"):
                 original_file = f"{_main_path}\\{_time}_{_product}\\{_product}{_country}_亚马逊表_{_time}.xlsx"
             else:
-                original_file = str(input("未找到文件，请手动输入文件名："))
+                original_file = f"{_main_path}\\{_time}_{_product}\\{str(input('未找到文件，请手动输入文件名：'))}"
             working_path = f"{_main_path}\\{_time}_{_product}"
 
             pas = ProcessAmazonSheet(original_file)
