@@ -62,6 +62,21 @@ def check_if_lisitng_html_downloaded(lisitng_url: str, all_urls: str):
         return False
 
 
+def get_failed_url() -> list:
+    failed_listing = MAIN_FOLDER + '\\failed_lisitng_url.txt'
+    if os.path.isfile(failed_listing):
+        failed_listing = open(failed_listing, 'r', encoding='utf-8').read()
+        failed_listing = failed_listing.split('\n')
+        return failed_listing
+    else:
+        failed_listing = []
+        return failed_listing
+
+
+def get_downloaded_url(downloaded_url_path: str) -> list:
+    pass
+
+
 class DownloadBrands(object):
 
     def __init__(self, path: str):
@@ -69,7 +84,7 @@ class DownloadBrands(object):
         self.url = 'https://www.amazon.com/default'
         self.url_type = 'None'
         self.listing_urls = []
-        self.faild_lisitng = []
+        self.failed_listing = []
         self.folder_path = path
         self.info_list = []
         self.amazon_head = self.url.split('/')[2]

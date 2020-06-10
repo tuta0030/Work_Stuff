@@ -10,7 +10,6 @@ import brands_utility as bu
 """
 TODO:
     1. 添加处理下载失败的链接的功能
-    2. 添加识别需要验证码的html的功能
     3. 优化保存失败url的功能
     4. 添加切换user-agent,ip,cookie重试失败url的功能
 """
@@ -30,7 +29,7 @@ class DownloadBrands(bu.DownloadBrands):
             with open('meta_html_url.txt', 'w', encoding='utf-8') as f:
                 f.write(self.url)
 
-    def check_url(self):
+    def check_url_type(self):
         if 's?k=' in self.url and 'me=' not in self.url:
             print(self.time_stamp + "这个是搜索页面")
             self.url_type = 'search_page'
@@ -41,7 +40,7 @@ class DownloadBrands(bu.DownloadBrands):
             self.main_menu()
         else:
             print(self.time_stamp + "这个是未识别的页面，请重新输入")
-            self.check_url()
+            self.check_url_type()
 
     def download_meta_html(self, url: str):
         html = requests.get(url, headers=self.user_agent, cookies=self.cookie, timeout=10)
@@ -60,6 +59,11 @@ class DownloadBrands(bu.DownloadBrands):
                             cookies=self.cookie,
                             timeout=5)
         html.raise_for_status()
+        if 'class="a-no-js"' in html.text:
+            class JSPageError(Exception):
+                def __init__(self, message):
+                    super().__init__(message)
+            raise JSPageError('JS Page')
         html.encoding = html.apparent_encoding
         bu.save_listing_html(html.text, url)
 
@@ -99,23 +103,26 @@ class DownloadBrands(bu.DownloadBrands):
             os.mkdir(bu.PATH_URL_FOLDER)
 
     def download_all_listing_htmls(self, meta_html: str):
-        self.listing_urls = self.find_all_listing(meta_html)
+        failed_listing = bu.get_failed_url()
+        self.listing_urls = self.find_all_listing(meta_html) + failed_listing
         _all_urls = bu.read_downloaded_urls(bu.PATH_DOWNLOADED_URL)
-        for listing_url in self.listing_urls:
-            try:
-                if bu.check_if_lisitng_html_downloaded(listing_url, _all_urls) is False:
-                    print(self.time_stamp + '开始下载以下html：')
-                    print('http://' + listing_url)
-                    self.download_by_requests(listing_url)
-                    time.sleep(random.randrange(1, 10))
-            except Exception as e:
-                print(self.time_stamp + str(e))
-                self.faild_lisitng.append(listing_url)
-        with open('failed_lisitng_url.txt', 'w', encoding='utf-8') as f:
-            f.write('\n'.join(self.faild_lisitng))
-            # raise e
-            # continue
-        # os.startfile(listing_folder_path)
+        try:
+            for listing_url in self.listing_urls:
+                try:
+                    if bu.check_if_lisitng_html_downloaded(listing_url, _all_urls) is False:
+                        print(self.time_stamp + '开始下载以下html：')
+                        print('http://' + listing_url)
+                        self.download_by_requests(listing_url)
+                        time.sleep(random.randrange(1, 10))
+                    else:
+                        print(self.time_stamp + listing_url + '已经下载，跳过')
+                except Exception as e:
+                    print(self.time_stamp + str(e))
+                    self.failed_listing.append(listing_url)
+        except KeyboardInterrupt:
+            with open(bu.MAIN_FOLDER+'\\failed_lisitng_url.txt', 'w', encoding='utf-8') as f:
+                f.write('\n'.join(self.failed_listing))
+            self.main_menu()
 
     def find_brand(self, html: str):
         try:
@@ -176,13 +183,13 @@ class DownloadBrands(bu.DownloadBrands):
         self.url = input("请输入url:")
         with open('meta_html_url.txt', 'w', encoding='utf-8') as f:
             f.write(self.url)
-        self.check_url()
+        self.check_url_type()
         self.download_meta_html(self.url)
         self.main_menu()
 
     def function_two(self):
         # 查看元html中所有listing的url
-        self.check_url()
+        self.check_url_type()
         self.listing_urls = self.find_all_listing(open(bu.PATH_META_HTML, 'r', encoding='utf-8').read())
         self.main_menu()
 
@@ -199,7 +206,7 @@ class DownloadBrands(bu.DownloadBrands):
 
     def function_five(self):
         # (慎用) 下载所有的元html中所有listing的html文件
-        self.check_url()
+        self.check_url_type()
         self.download_all_listing_htmls(open(bu.PATH_META_HTML, 'r', encoding='utf-8').read())
         self.main_menu()
 
