@@ -35,7 +35,7 @@ class DownloadBrands(bu.DownloadBrands):
         elif 's?k=' in self.url and 'me=' in self.url:
             print(self.time_stamp + "这个是店铺里的搜索页面")
             self.url_type = 'store_search_page'
-        elif 'Best-Sellers' in self.url:
+        elif 'Best-Sellers' in self.url or 'bestsellers' in self.url:
             print(self.time_stamp + "这个是排名页面")
             self.url_type = 'rank_page'
         elif self.url == '-1':
@@ -54,7 +54,9 @@ class DownloadBrands(bu.DownloadBrands):
                   'w',
                   encoding='utf-8') as h:
             h.write(html.text)
-        os.startfile(self.folder_path)
+        if bu.JS_PAGE_SIGN in html.text:
+            os.startfile('cookies.txt')
+            raise bu.JSPageError('下载主html时遇到JSPageError，尝试更换新的cookie')
 
     def download_by_requests(self, url: str):
         html = requests.get('http://' + url,
@@ -70,36 +72,33 @@ class DownloadBrands(bu.DownloadBrands):
     def find_all_listing(self, html: str) -> list:
         """传入html，返回html里面包含的lisitng链接"""
         html = etree.HTML(html, etree.HTMLParser())
-        lisitng_list = []
+        listing_list = []
         if self.url_type == 'search_page':
             all_listing = html.xpath(xpath_database.all_listing)[0][0]
             for i in all_listing:
                 links = i[0].xpath(xpath_database.search_page_all_link)[:-1]
-                for index, link in enumerate(links):
-                    links[index] = self.amazon_head + link
-                    lisitng_list.append(links[index])
-                    self.save_links(links, index)
-            return lisitng_list
+                listing_list.append(self.amazon_head + links[all_listing.index(i)])
+            self.save_links(listing_list)
+            print(len(listing_list))
+            return listing_list
         elif self.url_type == 'store_search_page':
             all_listing = html.xpath(xpath_database.all_listing)[0][0]
             for i in all_listing:
                 links = i.xpath(xpath_database.search_page_all_link)[:16]
-                for index, link in enumerate(links):
-                    links[index] = self.amazon_head + link
-                    lisitng_list.append(links[index])
-                    self.save_links(links, index)
-            return lisitng_list
+                listing_list.append(self.amazon_head + links[all_listing.index(i)])
+            self.save_links(listing_list)
+            print(len(listing_list))
+            return listing_list
         elif self.url_type == 'rank_page':
-            all_listing = html.xpath(xpath_database.rank_page_all_listing)[0]
-            for i in all_listing:
+            all_listing_html = html.xpath(xpath_database.rank_page_all_listing)[0]
+            for i in all_listing_html:
                 links = i.xpath(xpath_database.rank_page_all_link)
-                for index, link in enumerate(links):
-                    links[index] = self.amazon_head + link
-                    lisitng_list.append(links[index])
-                    self.save_links(links, index)
-            return lisitng_list
+                listing_list.append(self.amazon_head + links[all_listing_html.index(i)])
+            self.save_links(listing_list)
+            print(len(listing_list))
+            return listing_list
 
-    def save_links(self, links: list, index: int):
+    def save_links(self, listing_list: list):
         _links_folder = ''
         if self.url_type == 'search_page':
             _links_folder = bu.PATH_URL_FOLDER + \
@@ -107,13 +106,15 @@ class DownloadBrands(bu.DownloadBrands):
         elif self.url_type == 'rank_page':
             _links_folder = bu.PATH_URL_FOLDER + \
                             '\\' + self.url.split('/')[3] + '_' + bu.file_time[:10]
+        with open(_links_folder + '.txt', 'w', encoding='utf-8') as link_file:
+            link_file.write('')
         if os.path.isdir(bu.PATH_URL_FOLDER):
-            with open(_links_folder + '.txt',
-                      'a', encoding='utf-8') as link_file:
-                link_file.write(self.time_stamp)
-                link_file.write(links[index])
-                link_file.write('\n')
-            print(self.time_stamp + links[index])
+            for each_url in listing_list:
+                with open(_links_folder + '.txt',
+                          'a', encoding='utf-8') as link_file:
+                    link_file.write(each_url)
+                    link_file.write('\n')
+                print(self.time_stamp + each_url)
         else:
             os.mkdir(bu.PATH_URL_FOLDER)
 
@@ -207,11 +208,14 @@ class DownloadBrands(bu.DownloadBrands):
 
     def function_one(self):
         # 下载元url
-        self.url = input("请输入url:")
+        self.url = input("请输入主url:")
         with open('meta_html_url.txt', 'w', encoding='utf-8') as f:
             f.write(self.url)
         self.check_url_type()
-        self.download_meta_html(self.url)
+        try:
+            self.download_meta_html(self.url)
+        except Exception as e:
+            print('出现错误：' + str(e) + '请重试')
         self.main_menu()
 
     def function_two(self):
@@ -239,6 +243,9 @@ class DownloadBrands(bu.DownloadBrands):
         self.main_menu()
 
     def main_menu(self):
+        if os.path.isfile(bu.PATH_META_HTML) is False:
+            print("未找到主html", end=',')
+            self.function_one()
         self.check_meta_url_html_file()
         bu.add_function(1, '下载元url', self.function_one)
         bu.add_function(2, '查看元html中所有listing的url', self.function_two)

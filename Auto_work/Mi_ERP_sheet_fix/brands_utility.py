@@ -14,6 +14,14 @@ FILE_NAME_BRAND_FILE = MAIN_FOLDER + '\\品牌名替换文件_' + file_time[:10]
 JS_PAGE_SIGN = 'Enter the characters you see below'
 
 
+def validate_main_folder_path():
+    if os.path.isdir(MAIN_FOLDER):
+        return True
+    else:
+        with open('main_folder_path.txt', 'w', encoding='utf-8') as mf:
+            mf.write(str(input("无效的主路径，请重新设置：")))
+
+
 def intro():
     print('')
     print('图沓的处理亚马逊品牌工具')
@@ -99,6 +107,7 @@ class DownloadBrands(object):
             self.cookie = {key: value for (key, value) in self.cookie}
         except ValueError:
             self.cookie = '没有找到cookies'
+        validate_main_folder_path()
 
 
 class JSPageError(Exception):
