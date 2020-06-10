@@ -27,6 +27,7 @@ class DownloadBrands(bu.DownloadBrands):
             self.url = input("未找到meta_url文件，请输入url:")
             with open('meta_html_url.txt', 'w', encoding='utf-8') as f:
                 f.write(self.url)
+        self.amazon_head = self.url.split('/')[2]
 
     def check_url_type(self):
         if 's?k=' in self.url and 'me=' not in self.url:
@@ -62,7 +63,7 @@ class DownloadBrands(bu.DownloadBrands):
         html = requests.get('http://' + url,
                             headers=self.user_agent,
                             cookies=self.cookie,
-                            timeout=5)
+                            timeout=10)
         html.raise_for_status()
         html.encoding = html.apparent_encoding
         bu.save_listing_html(html.text, url)
@@ -132,7 +133,7 @@ class DownloadBrands(bu.DownloadBrands):
                         print(self.time_stamp + '开始下载以下html：')
                         print('http://' + listing_url)
                         self.download_by_requests(listing_url)
-                        time.sleep(random.randrange(1, 10))
+                        time.sleep(random.randrange(1, bu.DOWNLOAD_RETRY_TIME))
                     else:
                         print(self.time_stamp + listing_url + '已经下载，跳过')
                 except Exception as e:
@@ -182,6 +183,8 @@ class DownloadBrands(bu.DownloadBrands):
                     else:
                         raise BrandFileError('保存brand文件失败，save_brand error')
         elif self.url_type == 'rank_page':
+            with open(brand_file_path, 'w') as b:
+                b.write('')
             for each_brand in self.brand_list:
                 with open(brand_file_path, 'a', encoding='utf-8') as b:
                     b.write(each_brand + '|')
@@ -190,10 +193,10 @@ class DownloadBrands(bu.DownloadBrands):
             raise BrandFileError('保存brand文件失败，save_brand error')
         os.startfile(brand_file_path)
 
-    def detele_listing_html(self, lisitng_html_folder_path: str):
+    def delete_listing_html(self, listing_html_folder_path: str):
         _make_sure = input("确定？（Y/N）:")
         if _make_sure == 'y' or _make_sure == 'Y':
-            for folder, subfolder, file in os.walk(lisitng_html_folder_path):
+            for folder, sub_folder, file in os.walk(listing_html_folder_path):
                 for item in file:
                     file_path = folder + '\\' + item
                     print(self.time_stamp + '已删除 ' + file_path)
@@ -204,7 +207,7 @@ class DownloadBrands(bu.DownloadBrands):
             self.main_menu()
         else:
             print("无法识别")
-            self.detele_listing_html(bu.PATH_LISTING_FOLDER)
+            self.delete_listing_html(bu.PATH_LISTING_FOLDER)
 
     def function_one(self):
         # 下载元url
@@ -227,14 +230,17 @@ class DownloadBrands(bu.DownloadBrands):
     def function_three(self):
         # 创建品牌关键词替换文本文件
         self.check_url_type()
-        _my_brand = input('输入自己的品牌名：')
+        if self.url_type != 'rank_page':
+            _my_brand = input('输入自己的品牌名：')
+        else:
+            _my_brand = ''
         self.find_all_brand(bu.PATH_LISTING_FOLDER)
         self.save_brand(_my_brand, bu.FILE_NAME_BRAND_FILE)
         self.main_menu()
 
     def function_four(self):
         # (慎用) 清除html文件
-        self.detele_listing_html(bu.PATH_LISTING_FOLDER)
+        self.delete_listing_html(bu.PATH_LISTING_FOLDER)
 
     def function_five(self):
         # (慎用) 下载所有的元html中所有listing的html文件

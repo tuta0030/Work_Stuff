@@ -1,7 +1,6 @@
 import datetime
 import os
 
-
 file_time = str(datetime.datetime.now()).replace('-', '_').replace(':', '_').replace(' ', '_').replace('.', '_')
 menu_item = {}
 
@@ -12,14 +11,18 @@ PATH_URL_FOLDER = MAIN_FOLDER + '\\url'
 PATH_DOWNLOADED_URL = PATH_URL_FOLDER + '\\Downloaded_url.txt'
 FILE_NAME_BRAND_FILE = MAIN_FOLDER + '\\品牌名替换文件_' + file_time[:10] + '.txt'
 JS_PAGE_SIGN = 'Enter the characters you see below'
+DOWNLOAD_RETRY_TIME = 3
 
 
-def validate_main_folder_path():
-    if os.path.isdir(MAIN_FOLDER):
-        return True
-    else:
+def validate_main_folder_path() -> None:
+    if os.path.isdir(MAIN_FOLDER) is False:
         with open('main_folder_path.txt', 'w', encoding='utf-8') as mf:
             mf.write(str(input("无效的主路径，请重新设置：")))
+
+
+def validate_listing_folder() -> None:
+    if os.path.isdir(PATH_LISTING_FOLDER) is False:
+        os.mkdir(PATH_LISTING_FOLDER)
 
 
 def intro():
@@ -45,17 +48,17 @@ def read_downloaded_urls(downloaded_url_file: str) -> str:
     else:
         print('没有任何已经下载过的url，创建空白文件')
         with open(downloaded_url_file, 'w', encoding='utf-8') as f:
-            f.write('www.amazon.com/default')
+            f.write('www.amazon.com/')
         read_downloaded_urls(downloaded_url_file)
 
 
 def save_listing_html(html: str, listing_url: str):
     with open(PATH_LISTING_FOLDER + '\\' +
               str(datetime.datetime.now()).
-              replace('-', '_').
-              replace(':', '_').
-              replace(' ', '_').
-              replace('.', '_') +
+                      replace('-', '_').
+                      replace(':', '_').
+                      replace(' ', '_').
+                      replace('.', '_') +
               '.html', 'w', encoding='utf-8') as listing_html:
         listing_html.write(html)
     with open(PATH_URL_FOLDER + '\\Downloaded_url.txt', 'a', encoding='utf-8') as url_file:
@@ -86,13 +89,13 @@ class DownloadBrands(object):
 
     def __init__(self, path: str):
         """传入列表页面的url，和需要保存文件的文件夹路径"""
-        self.url = 'https://www.amazon.com/default'
+        self.url = 'https://www.amazon.com/'
         self.url_type = 'None'
         self.listing_urls = []
         self.failed_listing = []
         self.folder_path = path
         self.info_list = []
-        self.amazon_head = self.url.split('/')[2]
+        self.amazon_head = 'https://www.amazon.com/'
         self.time_stamp = '[' + str(datetime.datetime.now()) + ']\t'
         self.brand_list = []
         self.user_agent = {
@@ -108,6 +111,7 @@ class DownloadBrands(object):
         except ValueError:
             self.cookie = '没有找到cookies'
         validate_main_folder_path()
+        validate_listing_folder()
 
 
 class JSPageError(Exception):
