@@ -11,6 +11,7 @@ PATH_META_HTML = MAIN_FOLDER + '\\META.html'
 PATH_URL_FOLDER = MAIN_FOLDER + '\\url'
 PATH_DOWNLOADED_URL = PATH_URL_FOLDER + '\\Downloaded_url.txt'
 FILE_NAME_BRAND_FILE = MAIN_FOLDER + '\\品牌名替换文件_' + file_time[:10] + '.txt'
+JS_PAGE_SIGN = 'Enter the characters you see below'
 
 
 def intro():
@@ -99,3 +100,8 @@ class DownloadBrands(object):
             self.cookie = {key: value for (key, value) in self.cookie}
         except ValueError:
             self.cookie = '没有找到cookies'
+
+
+class JSPageError(Exception):
+    def __init__(self, message):
+        super().__init__(message)

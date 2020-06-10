@@ -9,8 +9,7 @@ import brands_utility as bu
 
 """
 TODO:
-    1. 添加处理下载失败的链接的功能
-    3. 优化保存失败url的功能
+    1. 检查JS Page，假如是JS Page，从已下载的url文件当中去除JS Page的url
     4. 添加切换user-agent,ip,cookie重试失败url的功能
 """
 
@@ -59,13 +58,10 @@ class DownloadBrands(bu.DownloadBrands):
                             cookies=self.cookie,
                             timeout=5)
         html.raise_for_status()
-        if 'class="a-no-js"' in html.text:
-            class JSPageError(Exception):
-                def __init__(self, message):
-                    super().__init__(message)
-            raise JSPageError('JS Page')
         html.encoding = html.apparent_encoding
         bu.save_listing_html(html.text, url)
+        if bu.JS_PAGE_SIGN in html.text:
+            raise bu.JSPageError('JS Page, 请更换cookie')
 
     def find_all_listing(self, html: str) -> list:
         """传入html，返回html里面包含的lisitng链接"""
@@ -119,10 +115,11 @@ class DownloadBrands(bu.DownloadBrands):
                 except Exception as e:
                     print(self.time_stamp + str(e))
                     self.failed_listing.append(listing_url)
-        except KeyboardInterrupt:
+        except bu.JSPageError:
             with open(bu.MAIN_FOLDER+'\\failed_lisitng_url.txt', 'w', encoding='utf-8') as f:
                 f.write('\n'.join(self.failed_listing))
             self.main_menu()
+            os.startfile('cookies.txt')
 
     def find_brand(self, html: str):
         try:
@@ -143,23 +140,24 @@ class DownloadBrands(bu.DownloadBrands):
             self.find_brand(html)
 
     def save_brand(self, my_brand: str, brand_file_path: str):
+        class BrandFileError(Exception):
+            def __init__(self, message):
+                super.__init__(message)
         for each_brand in self.brand_list:
-            if brand_file_path.split('\\')[-1] in os.listdir(self.folder_path):
-                with open(brand_file_path, 'r', encoding='utf-8') as r:
-                    content = r.read()
-                    if each_brand not in content:
-                        with open(brand_file_path, 'a', encoding='utf-8') as b:
-                            b.write(each_brand + '|' + my_brand)
-                            b.write('\n')
-            elif brand_file_path.split('\\')[-1] not in os.listdir(self.folder_path):
-                with open(brand_file_path, 'a', encoding='utf-8') as b:
-                    b.write(each_brand + '|' + my_brand)
-                    b.write('\n')
-            else:
-                class BrandFileError(Exception):
-                    pass
-
-                raise BrandFileError
+            if '{' not in each_brand:
+                if brand_file_path.split('\\')[-1] in os.listdir(self.folder_path):
+                    with open(brand_file_path, 'r', encoding='utf-8') as r:
+                        content = r.read()
+                        if each_brand not in content:
+                            with open(brand_file_path, 'a', encoding='utf-8') as b:
+                                b.write(each_brand + '|' + my_brand)
+                                b.write('\n')
+                elif brand_file_path.split('\\')[-1] not in os.listdir(self.folder_path):
+                    with open(brand_file_path, 'a', encoding='utf-8') as b:
+                        b.write(each_brand + '|' + my_brand)
+                        b.write('\n')
+                else:
+                    raise BrandFileError('保存brand文件失败，save_brand error')
         os.startfile(brand_file_path)
 
     def detele_listing_html(self, lisitng_html_folder_path: str):
@@ -231,6 +229,5 @@ class DownloadBrands(bu.DownloadBrands):
 
 if __name__ == '__main__':
     # 创建实例
-
     download_brand = DownloadBrands(bu.MAIN_FOLDER)
     download_brand.main_menu()
