@@ -3,6 +3,9 @@ import get_keywords_from_amazon_ranking_html as gkw
 import tkinter as tk
 import random
 
+
+is_update = 0  # 用来让生成关键字的按钮生效的全局变量
+
 KEYWORDSLIMITS = 1000
 
 
@@ -23,9 +26,6 @@ def gen_new_kw(counter_data: list, kw_to_keep: int) -> str:
         _final_data.append(word.split(':')[0]+': '+trim_data(keywords_without_lang, KEYWORDSLIMITS, kw_to_keep))
     formatted_kw = '\n\n\n'.join(_final_data)
     return formatted_kw
-
-
-is_update = 0  # 用来让生成关键字的按钮生效的全局变量
 
 
 def update_data(amz_page: str, kw_to_keep: int, text_widget: tk.Text, button_widget: tk.Button) -> None:

@@ -35,11 +35,15 @@ class DownloadBrands(bu.DownloadBrands):
         elif 's?k=' in self.url and 'me=' in self.url:
             print(self.time_stamp + "这个是店铺里的搜索页面")
             self.url_type = 'store_search_page'
+        elif 'Best-Sellers' in self.url:
+            print(self.time_stamp + "这个是排名页面")
+            self.url_type = 'rank_page'
         elif self.url == '-1':
             self.main_menu()
         else:
             print(self.time_stamp + "这个是未识别的页面，请重新输入")
-            self.check_url_type()
+            # raise bu.URLError('错误：未识别的url')
+            self.main_menu()
 
     def download_meta_html(self, url: str):
         html = requests.get(url, headers=self.user_agent, cookies=self.cookie, timeout=10)
@@ -85,9 +89,24 @@ class DownloadBrands(bu.DownloadBrands):
                     lisitng_list.append(links[index])
                     self.save_links(links, index)
             return lisitng_list
+        elif self.url_type == 'rank_page':
+            all_listing = html.xpath(xpath_database.rank_page_all_listing)[0]
+            for i in all_listing:
+                links = i.xpath(xpath_database.rank_page_all_link)
+                for index, link in enumerate(links):
+                    links[index] = self.amazon_head + link
+                    lisitng_list.append(links[index])
+                    self.save_links(links, index)
+            return lisitng_list
 
     def save_links(self, links: list, index: int):
-        _links_folder = bu.PATH_URL_FOLDER + '\\' + self.url.split('s?k=')[-1].split('&')[0] + '_' + bu.file_time[:10]
+        _links_folder = ''
+        if self.url_type == 'search_page':
+            _links_folder = bu.PATH_URL_FOLDER + \
+                            '\\' + self.url.split('s?k=')[-1].split('&')[0] + '_' + bu.file_time[:10]
+        elif self.url_type == 'rank_page':
+            _links_folder = bu.PATH_URL_FOLDER + \
+                            '\\' + self.url.split('/')[3] + '_' + bu.file_time[:10]
         if os.path.isdir(bu.PATH_URL_FOLDER):
             with open(_links_folder + '.txt',
                       'a', encoding='utf-8') as link_file:
@@ -100,7 +119,10 @@ class DownloadBrands(bu.DownloadBrands):
 
     def download_all_listing_htmls(self, meta_html: str):
         failed_listing = bu.get_failed_url()
-        self.listing_urls = self.find_all_listing(meta_html) + failed_listing
+        if failed_listing != [] or failed_listing is not None:
+            self.listing_urls = self.find_all_listing(meta_html) + failed_listing
+        else:
+            self.listing_urls = self.find_all_listing(meta_html)
         _all_urls = bu.read_downloaded_urls(bu.PATH_DOWNLOADED_URL)
         try:
             for listing_url in self.listing_urls:
@@ -116,7 +138,7 @@ class DownloadBrands(bu.DownloadBrands):
                     print(self.time_stamp + str(e))
                     self.failed_listing.append(listing_url)
         except bu.JSPageError:
-            with open(bu.MAIN_FOLDER+'\\failed_lisitng_url.txt', 'w', encoding='utf-8') as f:
+            with open(bu.MAIN_FOLDER + '\\failed_lisitng_url.txt', 'w', encoding='utf-8') as f:
                 f.write('\n'.join(self.failed_listing))
             self.main_menu()
             os.startfile('cookies.txt')
@@ -141,23 +163,30 @@ class DownloadBrands(bu.DownloadBrands):
 
     def save_brand(self, my_brand: str, brand_file_path: str):
         class BrandFileError(Exception):
-            def __init__(self, message):
-                super.__init__(message)
-        for each_brand in self.brand_list:
-            if '{' not in each_brand:
-                if brand_file_path.split('\\')[-1] in os.listdir(self.folder_path):
-                    with open(brand_file_path, 'r', encoding='utf-8') as r:
-                        content = r.read()
-                        if each_brand not in content:
-                            with open(brand_file_path, 'a', encoding='utf-8') as b:
-                                b.write(each_brand + '|' + my_brand)
-                                b.write('\n')
-                elif brand_file_path.split('\\')[-1] not in os.listdir(self.folder_path):
-                    with open(brand_file_path, 'a', encoding='utf-8') as b:
-                        b.write(each_brand + '|' + my_brand)
-                        b.write('\n')
-                else:
-                    raise BrandFileError('保存brand文件失败，save_brand error')
+            pass
+        if self.url_type == 'search_page':
+            for each_brand in self.brand_list:
+                if '{' not in each_brand:
+                    if brand_file_path.split('\\')[-1] in os.listdir(self.folder_path):
+                        with open(brand_file_path, 'r', encoding='utf-8') as r:
+                            content = r.read()
+                            if each_brand not in content:
+                                with open(brand_file_path, 'a', encoding='utf-8') as b:
+                                    b.write(each_brand + '|' + my_brand)
+                                    b.write('\n')
+                    elif brand_file_path.split('\\')[-1] not in os.listdir(self.folder_path):
+                        with open(brand_file_path, 'a', encoding='utf-8') as b:
+                            b.write(each_brand + '|' + my_brand)
+                            b.write('\n')
+                    else:
+                        raise BrandFileError('保存brand文件失败，save_brand error')
+        elif self.url_type == 'rank_page':
+            for each_brand in self.brand_list:
+                with open(brand_file_path, 'a', encoding='utf-8') as b:
+                    b.write(each_brand + '|')
+        else:
+            print(self.url_type)
+            raise BrandFileError('保存brand文件失败，save_brand error')
         os.startfile(brand_file_path)
 
     def detele_listing_html(self, lisitng_html_folder_path: str):
@@ -193,6 +222,7 @@ class DownloadBrands(bu.DownloadBrands):
 
     def function_three(self):
         # 创建品牌关键词替换文本文件
+        self.check_url_type()
         _my_brand = input('输入自己的品牌名：')
         self.find_all_brand(bu.PATH_LISTING_FOLDER)
         self.save_brand(_my_brand, bu.FILE_NAME_BRAND_FILE)

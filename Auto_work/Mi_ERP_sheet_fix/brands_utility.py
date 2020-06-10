@@ -104,3 +104,8 @@ class DownloadBrands(object):
 class JSPageError(Exception):
     def __init__(self, message):
         super().__init__(message)
+
+
+class URLError(Exception):
+    def __init__(self, message):
+        super().__init__(message)

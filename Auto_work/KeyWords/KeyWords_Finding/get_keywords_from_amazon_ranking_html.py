@@ -3,7 +3,6 @@ import pprint as pp
 from load_words_list import load_words_list
 import config_files
 
-
 class GetKeywords(object):
 
     def __init__(self, amazon_dir_path: str) -> None:
