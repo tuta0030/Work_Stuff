@@ -1,11 +1,11 @@
 import os
 import requests
 from lxml import etree
-import datetime
 import xpath_database
 import time
 from send2trash import send2trash as d
 import random
+import brands_utility as bu
 
 """
 TODO:
@@ -15,90 +15,13 @@ TODO:
     4. 添加切换user-agent,ip,cookie重试失败url的功能
 """
 
-file_time = str(datetime.datetime.now()).replace('-', '_').replace(':', '_').replace(' ', '_').replace('.', '_')
-menu_item = {}
 
-MAIN_FOLDER = open(os.curdir + '\\main_folder_path.txt', 'r', encoding='utf-8').read()
-PATH_LISTING_FOLDER = MAIN_FOLDER + '\\listing_folder'
-PATH_META_HTML = MAIN_FOLDER + '\\META.html'
-PATH_URL_FOLDER = MAIN_FOLDER + '\\url'
-PATH_DOWNLOADED_URL = PATH_URL_FOLDER + '\\Downloaded_url.txt'
-FILE_NAME_BRAND_FILE = MAIN_FOLDER + '\\品牌名替换文件_' + file_time[:10] + '.txt'
-
-
-def intro():
-    print('')
-    print('图沓的处理亚马逊品牌工具')
-    print("请选择需要的操作：")
-    print('')
-    for key, value in menu_item.items():
-        print(key, end='')
-        print(': ', end='')
-        print(value[0])
-    print('')
-
-
-def add_function(index: int, name: str, func):
-    menu_item[index] = (name, func)
-
-
-def read_downloaded_urls(downloaded_url_file: str) -> str:
-    if os.path.isfile(downloaded_url_file):
-        file_list = open(downloaded_url_file, 'r', encoding='utf-8').read()
-        return file_list
-    else:
-        print('没有任何已经下载过的url，创建空白文件')
-        with open(downloaded_url_file, 'w', encoding='utf-8') as f:
-            f.write('www.amazon.com/default')
-        read_downloaded_urls(downloaded_url_file)
-
-
-def save_listing_html(html: str, listing_url: str):
-    with open(PATH_LISTING_FOLDER + '\\' +
-              str(datetime.datetime.now()).
-              replace('-', '_').
-              replace(':', '_').
-              replace(' ', '_').
-              replace('.', '_') +
-              '.html', 'w', encoding='utf-8') as listing_html:
-        listing_html.write(html)
-    with open(PATH_URL_FOLDER + '\\Downloaded_url.txt', 'a', encoding='utf-8') as url_file:
-        url_file.write(listing_url)
-        url_file.write('\n')
-
-
-def check_if_lisitng_html_downloaded(lisitng_url: str, all_urls: str):
-    # 检查listing_url 是否在 brand_file_path里
-    if lisitng_url in all_urls:
-        return True
-    else:
-        return False
-
-
-class DownloadBrands(object):
+class DownloadBrands(bu.DownloadBrands):
 
     def __init__(self, path: str):
-        """传入列表页面的url，和需要保存文件的文件夹路径"""
-        self.url = 'https://www.amazon.com/default'
-        self.url_type = 'None'
-        self.listing_urls = []
-        self.faild_lisitng = []
-        self.folder_path = path
-        self.info_list = []
-        self.amazon_head = self.url.split('/')[2]
-        self.time_stamp = '[' + str(datetime.datetime.now()) + ']\t'
-        self.brand_list = []
-        self.user_agent = {
-            'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
-                          'Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37'}
-        self.cookie = open('cookies.txt', 'r', encoding='utf-8').read()[1:-1].split(';')
-        self.cookie = [tuple(item.split('=', 1)) for item in self.cookie]
-        try:
-            self.cookie = {key: value for (key, value) in self.cookie}
-        except ValueError:
-            self.cookie = '没有找到cookies'
+        bu.DownloadBrands.__init__(self, path)
 
-    def check_meta_url(self):
+    def check_meta_url_html_file(self):
         if os.path.isfile(os.curdir + '\\meta_html_url.txt') and \
                 open(os.curdir + '\\meta_html_url.txt', 'r', encoding='utf-8').read()[:5] == 'https':
             self.url = open(os.curdir + '\\meta_html_url.txt', 'r', encoding='utf-8').read()
@@ -125,7 +48,7 @@ class DownloadBrands(object):
         html.raise_for_status()
         html.encoding = html.apparent_encoding
         # 保存html文件
-        with open(PATH_META_HTML,
+        with open(bu.PATH_META_HTML,
                   'w',
                   encoding='utf-8') as h:
             h.write(html.text)
@@ -138,7 +61,7 @@ class DownloadBrands(object):
                             timeout=5)
         html.raise_for_status()
         html.encoding = html.apparent_encoding
-        save_listing_html(html.text, url)
+        bu.save_listing_html(html.text, url)
 
     def find_all_listing(self, html: str) -> list:
         """传入html，返回html里面包含的lisitng链接"""
@@ -164,8 +87,8 @@ class DownloadBrands(object):
             return lisitng_list
 
     def save_links(self, links: list, index: int):
-        _links_folder = PATH_URL_FOLDER + '\\' + self.url.split('s?k=')[-1].split('&')[0] + '_' + file_time[:10]
-        if os.path.isdir(PATH_URL_FOLDER):
+        _links_folder = bu.PATH_URL_FOLDER + '\\' + self.url.split('s?k=')[-1].split('&')[0] + '_' + bu.file_time[:10]
+        if os.path.isdir(bu.PATH_URL_FOLDER):
             with open(_links_folder + '.txt',
                       'a', encoding='utf-8') as link_file:
                 link_file.write(self.time_stamp)
@@ -173,14 +96,14 @@ class DownloadBrands(object):
                 link_file.write('\n')
             print(self.time_stamp + links[index])
         else:
-            os.mkdir(PATH_URL_FOLDER)
+            os.mkdir(bu.PATH_URL_FOLDER)
 
     def download_all_listing_htmls(self, meta_html: str):
         self.listing_urls = self.find_all_listing(meta_html)
-        _all_urls = read_downloaded_urls(PATH_DOWNLOADED_URL)
+        _all_urls = bu.read_downloaded_urls(bu.PATH_DOWNLOADED_URL)
         for listing_url in self.listing_urls:
             try:
-                if check_if_lisitng_html_downloaded(listing_url, _all_urls) is False:
+                if bu.check_if_lisitng_html_downloaded(listing_url, _all_urls) is False:
                     print(self.time_stamp + '开始下载以下html：')
                     print('http://' + listing_url)
                     self.download_by_requests(listing_url)
@@ -246,7 +169,7 @@ class DownloadBrands(object):
             self.main_menu()
         else:
             print("无法识别")
-            self.detele_listing_html(PATH_LISTING_FOLDER)
+            self.detele_listing_html(bu.PATH_LISTING_FOLDER)
 
     def function_one(self):
         # 下载元url
@@ -260,38 +183,38 @@ class DownloadBrands(object):
     def function_two(self):
         # 查看元html中所有listing的url
         self.check_url()
-        self.listing_urls = self.find_all_listing(open(PATH_META_HTML, 'r', encoding='utf-8').read())
+        self.listing_urls = self.find_all_listing(open(bu.PATH_META_HTML, 'r', encoding='utf-8').read())
         self.main_menu()
 
     def function_three(self):
         # 创建品牌关键词替换文本文件
         _my_brand = input('输入自己的品牌名：')
-        self.find_all_brand(PATH_LISTING_FOLDER)
-        self.save_brand(_my_brand, FILE_NAME_BRAND_FILE)
+        self.find_all_brand(bu.PATH_LISTING_FOLDER)
+        self.save_brand(_my_brand, bu.FILE_NAME_BRAND_FILE)
         self.main_menu()
 
     def function_four(self):
         # (慎用) 清除html文件
-        self.detele_listing_html(PATH_LISTING_FOLDER)
+        self.detele_listing_html(bu.PATH_LISTING_FOLDER)
 
     def function_five(self):
         # (慎用) 下载所有的元html中所有listing的html文件
         self.check_url()
-        self.download_all_listing_htmls(open(PATH_META_HTML, 'r', encoding='utf-8').read())
+        self.download_all_listing_htmls(open(bu.PATH_META_HTML, 'r', encoding='utf-8').read())
         self.main_menu()
 
     def main_menu(self):
-        self.check_meta_url()
-        add_function(1, '下载元url', self.function_one)
-        add_function(2, '查看元html中所有listing的url', self.function_two)
-        add_function(3, '创建品牌关键词替换文本文件', self.function_three)
-        add_function(4, '(慎用) 清除html文件', self.function_four)
-        add_function(5, '(慎用) 下载所有的元html中所有listing的html文件', self.function_five)
-        intro()
+        self.check_meta_url_html_file()
+        bu.add_function(1, '下载元url', self.function_one)
+        bu.add_function(2, '查看元html中所有listing的url', self.function_two)
+        bu.add_function(3, '创建品牌关键词替换文本文件', self.function_three)
+        bu.add_function(4, '(慎用) 清除html文件', self.function_four)
+        bu.add_function(5, '(慎用) 下载所有的元html中所有listing的html文件', self.function_five)
+        bu.intro()
         ui = str(input("输入需要的功能："))
 
-        if ui in str(menu_item.keys()):
-            for key, value in menu_item.items():
+        if ui in str(bu.menu_item.keys()):
+            for key, value in bu.menu_item.items():
                 if ui == str(key):
                     value[1]()
         else:
@@ -302,5 +225,5 @@ class DownloadBrands(object):
 if __name__ == '__main__':
     # 创建实例
 
-    download_brand = DownloadBrands(MAIN_FOLDER)
+    download_brand = DownloadBrands(bu.MAIN_FOLDER)
     download_brand.main_menu()
