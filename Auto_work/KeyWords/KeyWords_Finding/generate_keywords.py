@@ -1,8 +1,12 @@
 import os
 import get_keywords_from_amazon_ranking_html as gkw
 import tkinter as tk
-import random
 
+"""
+TODO:
+    1.添加获取品牌名的功能
+    2.添加替换品牌名的功能
+"""
 
 is_update = 0  # 用来让生成关键字的按钮生效的全局变量
 
@@ -34,10 +38,10 @@ def update_data(amz_page: str, kw_to_keep: int, text_widget: tk.Text, button_wid
         global is_update
         is_update += 1
         if is_update != 0:
-            data_200 = gen_new_kw(gkw.GetKeywords(amz_page).get_key_words_all(), kw_to_keep)
-            rand_int = random.randint(1, 9999)
-            text_widget.replace('0.0', 'end', data_200)
-            print(data_200)
+            _data_with_limit = gen_new_kw(gkw.GetKeywords(amz_page).get_key_words_all(), kw_to_keep)
+            # rand_int = random.randint(1, 9999)
+            text_widget.replace('0.0', 'end', _data_with_limit)
+            print(_data_with_limit)
             is_update = 0
 
     button_widget.configure(command=lambda: update())
