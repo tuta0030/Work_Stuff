@@ -90,7 +90,10 @@ class DownloadBrands(object):
         self.user_agent = {
             'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                           'Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37'}
-        self.cookie = open('cookies.txt', 'r', encoding='utf-8').read()[1:-1].split(';')
+        if '"' in open('cookies.txt', 'r', encoding='utf-8').read():
+            self.cookie = open('cookies.txt', 'r', encoding='utf-8').read()[1:-1].split(';')
+        else:
+            self.cookie = open('cookies.txt', 'r', encoding='utf-8').read().split(';')
         self.cookie = [tuple(item.split('=', 1)) for item in self.cookie]
         try:
             self.cookie = {key: value for (key, value) in self.cookie}

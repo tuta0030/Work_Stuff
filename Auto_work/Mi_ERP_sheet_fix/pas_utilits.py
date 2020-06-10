@@ -16,7 +16,7 @@ INTRO = r"""
 """ + f'当前设置的主路径为：{MAIN_PATH}\n'
 NO_FILE = '\n' + r'没有找到文件，请确认表格在正确的路径下，并确定表格文件名称格式正确'
 STANDARD_MESSAGE = 'The photo was taken in natural light because there is a slight chromatic aberration between the ' \
-                   'device and the monitor, please understand '
+                   'device and the monitor, please understand'
 
 
 def get_date() -> str:
@@ -141,6 +141,8 @@ def process_bulletpoints(sheet, bullet_point_coordinate: tuple):
         for index, each_line in enumerate(bullet_points_dict[each_column]):
             if len(each_line.value) > 500:
                 bullet_points_dict[each_column][index].value = each_line.value[:499].replace('<', '(').replace('>', ')')
+            if len(each_line.value) < 20:
+                bullet_points_dict[each_column][index].value = STANDARD_MESSAGE
 
 
 def process_price(sheet, coordinate: tuple, exchange_rate: float):
