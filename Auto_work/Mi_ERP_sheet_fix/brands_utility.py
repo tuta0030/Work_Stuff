@@ -21,8 +21,10 @@ def validate_main_folder_path() -> None:
 
 
 def validate_listing_folder() -> None:
-    if os.path.isdir(PATH_LISTING_FOLDER) is False:
-        os.mkdir(PATH_LISTING_FOLDER)
+    if os.path.isdir(open(os.curdir + '\\main_folder_path.txt',
+                          'r',
+                          encoding='utf-8').read()+'\\listing_folder') is False:
+        os.mkdir(open(os.curdir + '\\main_folder_path.txt', 'r', encoding='utf-8').read()+'\\listing_folder')
 
 
 def intro():
@@ -74,6 +76,13 @@ def check_if_lisitng_html_downloaded(lisitng_url: str, all_urls: str):
         return False
 
 
+def remove_url(url: str):
+    all_downloaded_url = read_downloaded_urls(PATH_DOWNLOADED_URL)
+    all_downloaded_url = all_downloaded_url.replace(url, '')
+    with open(PATH_DOWNLOADED_URL, 'w', encoding='utf-8') as f:
+        f.write(all_downloaded_url)
+
+
 def get_failed_url() -> list:
     failed_listing = MAIN_FOLDER + '\\failed_lisitng_url.txt'
     if os.path.isfile(failed_listing):
@@ -83,6 +92,11 @@ def get_failed_url() -> list:
     else:
         failed_listing = []
         return failed_listing
+
+
+def change_cookies():
+    with open('cookies.txt', 'w', encoding='utf-8') as c:
+        c.write(str(input("输入cookie:")))
 
 
 class DownloadBrands(object):
@@ -100,7 +114,7 @@ class DownloadBrands(object):
         self.brand_list = []
         self.user_agent = {
             'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
-                          'Chrome/83.0.4103.61 Safari/537.36 Edg/83.0.478.37'}
+                          'Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45'}
         if '"' in open('cookies.txt', 'r', encoding='utf-8').read():
             self.cookie = open('cookies.txt', 'r', encoding='utf-8').read()[1:-1].split(';')
         else:

@@ -107,8 +107,11 @@ class DownloadBrands(bu.DownloadBrands):
         elif self.url_type == 'rank_page':
             _links_folder = bu.PATH_URL_FOLDER + \
                             '\\' + self.url.split('/')[3] + '_' + bu.file_time[:10]
-        with open(_links_folder + '.txt', 'w', encoding='utf-8') as link_file:
-            link_file.write('')
+        try:
+            with open(_links_folder + '.txt', 'w', encoding='utf-8') as link_file:
+                link_file.write('')
+        except Exception as e:
+            print(e)
         if os.path.isdir(bu.PATH_URL_FOLDER):
             for each_url in listing_list:
                 with open(_links_folder + '.txt',
@@ -126,24 +129,21 @@ class DownloadBrands(bu.DownloadBrands):
         else:
             self.listing_urls = self.find_all_listing(meta_html)
         _all_urls = bu.read_downloaded_urls(bu.PATH_DOWNLOADED_URL)
-        try:
-            for listing_url in self.listing_urls:
-                try:
-                    if bu.check_if_lisitng_html_downloaded(listing_url, _all_urls) is False:
-                        print(self.time_stamp + '开始下载以下html：')
-                        print('http://' + listing_url)
-                        self.download_by_requests(listing_url)
-                        time.sleep(random.randrange(1, bu.DOWNLOAD_RETRY_TIME))
-                    else:
-                        print(self.time_stamp + listing_url + '已经下载，跳过')
-                except Exception as e:
-                    print(self.time_stamp + str(e))
-                    self.failed_listing.append(listing_url)
-        except bu.JSPageError:
-            with open(bu.MAIN_FOLDER + '\\failed_lisitng_url.txt', 'w', encoding='utf-8') as f:
-                f.write('\n'.join(self.failed_listing))
-            self.main_menu()
-            os.startfile('cookies.txt')
+        for listing_url in self.listing_urls:
+            try:
+                if bu.check_if_lisitng_html_downloaded(listing_url, _all_urls) is False:
+                    print(self.time_stamp + '开始下载以下html：')
+                    print('http://' + listing_url)
+                    self.download_by_requests(listing_url)
+                    time.sleep(random.randrange(1, bu.DOWNLOAD_RETRY_TIME))
+                else:
+                    print(self.time_stamp + listing_url + '已经下载，跳过')
+            except Exception as e:
+                bu.remove_url(listing_url)
+                print(self.time_stamp + str(e))
+                # if str(e) == 'JS Page, 请更换cookie':
+                #     self.main_menu()
+                self.failed_listing.append(listing_url)
 
     def find_brand(self, html: str):
         try:
@@ -196,12 +196,14 @@ class DownloadBrands(bu.DownloadBrands):
     def delete_listing_html(self, listing_html_folder_path: str):
         _make_sure = input("确定？（Y/N）:")
         if _make_sure == 'y' or _make_sure == 'Y':
+            _how_many_deleted = 0
             for folder, sub_folder, file in os.walk(listing_html_folder_path):
                 for item in file:
                     file_path = folder + '\\' + item
                     print(self.time_stamp + '已删除 ' + file_path)
                     d(file_path)
-            input("完成，按回车回到主菜单")
+                    _how_many_deleted += 1
+            input(f"完成，共删除{_how_many_deleted}，按回车回到主菜单")
             self.main_menu()
         elif _make_sure == 'n' or _make_sure == 'N':
             self.main_menu()
@@ -260,7 +262,6 @@ class DownloadBrands(bu.DownloadBrands):
         bu.add_function(5, '(慎用) 下载所有的元html中所有listing的html文件', self.function_five)
         bu.intro()
         ui = str(input("输入需要的功能："))
-
         if ui in str(bu.menu_item.keys()):
             for key, value in bu.menu_item.items():
                 if ui == str(key):
