@@ -26,8 +26,7 @@ def check_dir() -> list:  # TODO 更好地替换
             content = list(filter(None, content))
             return content
     else:
-        e = custom_error.MyExcepetion("创建品牌名文件出错", Exception)
-        raise e
+        raise custom_error.MyExcepetion("创建品牌名文件出错", Exception)
 
 
 def load_kw_database() -> str:

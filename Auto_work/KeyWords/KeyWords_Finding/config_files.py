@@ -31,8 +31,8 @@ def get_all_html(amazon_pages_path: dict) -> dict:
 def remove_words(word_list: list, all_title: str) -> str:  # TODO 更好地替换
     for i in word_list:
         pattern = re.compile(i)
-        all_title = re.sub(pattern, ' ', all_title)
-    single_digits = re.compile(r'\s[0-9]+?\s|\s-\s|\s&\s|with|for|and|is|other|\)|\(')
+        all_title = re.sub(pattern, '', all_title)
+    single_digits = re.compile(open('品牌名称.txt', 'r', encoding='utf-8').read())
     all_title = re.sub(single_digits, ' ', all_title)
     return all_title
 

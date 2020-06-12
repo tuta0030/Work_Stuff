@@ -260,6 +260,7 @@ class DownloadBrands(bu.DownloadBrands):
         bu.add_function(3, '创建品牌关键词替换文本文件', self.function_three)
         bu.add_function(4, '(慎用) 清除html文件', self.function_four)
         bu.add_function(5, '(慎用) 下载所有的元html中所有listing的html文件', self.function_five)
+        bu.add_function(0, '退出程序', quit)
         bu.intro()
         ui = str(input("输入需要的功能："))
         if ui in str(bu.menu_item.keys()):
