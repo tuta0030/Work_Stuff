@@ -41,7 +41,6 @@ def update_data(amz_page: str, kw_to_keep: int, text_widget: tk.Text, button_wid
             _data_with_limit = gen_new_kw(gkw.GetKeywords(amz_page).get_key_words_all(), kw_to_keep)
             # rand_int = random.randint(1, 9999)
             text_widget.replace('0.0', 'end', _data_with_limit)
-            print(_data_with_limit)
             is_update = 0
 
     button_widget.configure(command=lambda: update())
