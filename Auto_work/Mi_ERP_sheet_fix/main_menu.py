@@ -9,11 +9,11 @@ import os
 import pas_utilits
 from process_amazon_sheet import ProcessAmazonSheet
 import brands
+import KW_generator
 
 """ 
 TODO:
-    2.优化交互，操作流程
-        2.2 兼容erp直接输出的文件日期名称
+    2.2 兼容erp直接输出的文件日期名称
 """
 
 menu = {}
@@ -53,7 +53,9 @@ def main_menu():
             os.system('cls')
             pas_utilits.add_function(menu, 1, '表格处理主程序', main_function)
             pas_utilits.add_function(menu, 2, '品牌处理程序', brands.whole_function)
-            pas_utilits.add_function(menu, 3, '退出', quit)
+            pas_utilits.add_function(menu, 3, '通过已保存的关键词随机生成新的关键字', KW_generator.main)
+            pas_utilits.add_function(menu, 4, '打开根目录', pas_utilits.open_folder)
+            pas_utilits.add_function(menu, 0, '退出', quit)
             pas_utilits.intro(menu)
             ui = str(input('输入需要的选项：'))
             pas_utilits.show_menu(ui, menu)

@@ -3,6 +3,7 @@ import datetime
 import re
 from openpyxl.utils import coordinate_to_tuple
 import main_menu
+import brands_utility
 
 ROW_RESTRICTION = 2000
 COL_MAX = 2000
@@ -185,6 +186,22 @@ def show_menu(ui: str, menu: dict):
     else:
         print("无法识别的选项")
         show_menu(ui, menu)
+
+
+def open_main_folder():
+    os.startfile(MAIN_PATH)
+    main_menu.main_menu()
+
+
+def open_folder():
+    ui = input("选择需要打开的根目录（0：表格根目录，1：品牌名和关键词根目录）：")
+    if ui == str(0):
+        open_main_folder()
+    elif ui == str(1):
+        brands_utility.open_main_folder()
+    else:
+        print("未知选项，返回主菜单")
+        main_menu.main_menu()
 
 
 if __name__ == '__main__':

@@ -1,5 +1,6 @@
 import datetime
 import os
+import main_menu
 
 file_time = str(datetime.datetime.now()).replace('-', '_').replace(':', '_').replace(' ', '_').replace('.', '_')
 menu_item = {}
@@ -97,6 +98,11 @@ def get_failed_url() -> list:
 def change_cookies():
     with open('cookies.txt', 'w', encoding='utf-8') as c:
         c.write(str(input("输入cookie:")))
+
+
+def open_main_folder():
+    os.startfile(MAIN_FOLDER)
+    main_menu.main_menu()
 
 
 class DownloadBrands(object):

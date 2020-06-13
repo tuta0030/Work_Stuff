@@ -5,14 +5,15 @@ import config_files
 import get_keywords_from_amazon_ranking_html as gkw
 import os
 import generate_keywords
+import main_menu
 
-
+PATH_SELF = os.pardir+'\\KeyWords\\KeyWords_Finding'
 LARGE_FONT = ("Verdana", 12)
-BRAND_TEXT = os.curdir + "\\品牌名称.txt"
-AMAZON_PAGES = open(os.curdir + "\\亚马逊页面.txt", 'r', encoding='utf-8').read()
+BRAND_TEXT = PATH_SELF + "\\品牌名称.txt"
+AMAZON_PAGES = open(PATH_SELF + "\\亚马逊页面.txt", 'r', encoding='utf-8').read()
 KEYWORDS_LENGTH = 200
 DATA_BASE_PATH = os.pardir+r'\KeyWords_Generating\KW_data_base.txt'
-KW_TO_KEEP = int(open(os.curdir+'\\需要保留的关键词数量.txt').read())
+KW_TO_KEEP = int(open(PATH_SELF+'\\需要保留的关键词数量.txt').read())
 
 
 class GUILayout(tk.Tk):
@@ -142,7 +143,11 @@ class ExistKeyWords(tk.Frame):
         text.pack(padx=10, pady=10, expand=True, fill='both')
 
 
-if __name__ == '__main__':
+def main():
     app = GUILayout()
     app.mainloop()
+
+
+if __name__ == '__main__':
+    main()
 
