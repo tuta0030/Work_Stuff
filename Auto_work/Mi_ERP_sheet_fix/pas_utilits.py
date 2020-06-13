@@ -2,6 +2,7 @@ import os
 import datetime
 import re
 from openpyxl.utils import coordinate_to_tuple
+import main_menu
 
 ROW_RESTRICTION = 2000
 COL_MAX = 2000
@@ -48,7 +49,7 @@ def validate_product() -> str:
 
 
 def select_time() -> str:
-    which_time = int(input("选择<需要处理的文件>名中的时间：0:默认时间（当前日期）， 1:自定义时间："))
+    which_time = int(input("选择<需要处理的文件>名中的时间：0:默认时间（当前日期）， 1:自定义时间， -1：退回主菜单："))
     if which_time == 0:
         time = get_date()
         return time
@@ -57,6 +58,9 @@ def select_time() -> str:
         if len(time) == 4:
             time = str(datetime.datetime.now())[:4] + time
         return time
+    elif which_time == -1:
+        os.system('cls')
+        main_menu.main_menu()
     else:
         print("只能输入0和1")
         select_time()
@@ -155,6 +159,32 @@ def process_price(sheet, coordinate: tuple, exchange_rate: float):
             # 删除低于最低价格的行
             for col in range(1, COL_MAX):
                 sheet.cell(coordinate_to_tuple(str(item).split('.')[-1][:-1])[0], col).value = None
+
+
+def add_function(menu: dict, index: int, des: str, function):
+    menu[index] = (des, function)
+
+
+def intro(menu: dict):
+    print("\n图沓的亚马逊相关工具主菜单")
+    print("请选择需要的操作：")
+    print('')
+    for key, value in menu.items():
+        print(key, end='')
+        print(': ', end='')
+        print(value[0])
+    print('')
+
+
+def show_menu(ui: str, menu: dict):
+    if ui in str(menu.keys()):
+        for key, value in menu.items():
+            if ui == str(key):
+                print('\n当前选项：'+value[0])
+                value[1]()
+    else:
+        print("无法识别的选项")
+        show_menu(ui, menu)
 
 
 if __name__ == '__main__':

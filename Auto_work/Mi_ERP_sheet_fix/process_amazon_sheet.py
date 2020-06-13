@@ -3,12 +3,6 @@ import load_amazon_sheet
 from openpyxl.utils import coordinate_to_tuple
 import pas_utilits
 
-""" 
-TODO:
-    2.优化交互，操作流程
-        2.2 兼容erp直接输出的文件日期名称
-"""
-
 
 class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 
@@ -74,32 +68,3 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 
     def save_sheet(self, path: str, country: str, time: str) -> None:
         self.wb.save(path+'\\'+country+'_输出文件_'+time+'.xlsx')
-
-
-if __name__ == '__main__':
-    while True:
-        try:
-            print(pas_utilits.INTRO)
-
-            _main_path = pas_utilits.validate_main_path()
-            _time = pas_utilits.select_time()
-            _product = pas_utilits.validate_product()
-            _country = str(input("输入文件中的国家："))
-            _lang = str(input("输出文件中的国家："))
-
-            if os.path.isfile(f"{_main_path}\\{_time}_{_product}\\{_product}{_country}_亚马逊表_{_time}.xlsx"):
-                original_file = f"{_main_path}\\{_time}_{_product}\\{_product}{_country}_亚马逊表_{_time}.xlsx"
-            else:
-                original_file = f"{_main_path}\\{_time}_{_product}\\{str(input('未找到文件，请手动输入文件名：'))}"
-            working_path = f"{_main_path}\\{_time}_{_product}"
-
-            pas = ProcessAmazonSheet(original_file)
-            pas.process_sheet()
-            pas.save_sheet(working_path, _lang, _time)
-            os.startfile(working_path)
-        except Exception as e:
-            print(e)
-            # raise e
-            print('\n')
-        else:
-            break
