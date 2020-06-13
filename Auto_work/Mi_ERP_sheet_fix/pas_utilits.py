@@ -50,7 +50,7 @@ def validate_product() -> str:
 
 
 def select_time() -> str:
-    which_time = int(input("选择<需要处理的文件>名中的时间：0:默认时间（当前日期）， 1:自定义时间， -1：退回主菜单："))
+    which_time = int(input("选择<需要处理的文件>名中的时间：0:默认时间（当前日期）， 1:自定义时间："))
     if which_time == 0:
         time = get_date()
         return time

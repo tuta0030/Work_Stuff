@@ -94,15 +94,12 @@ def main_function():
                 pas_instance.cap_title(str(input("请输入不需要首字母大写的品牌名：")))
 
             ui = input("0：主程序，1：标题首字母大写，-1：退回主菜单：")
-
+            _main_path = pas_utilits.validate_main_path()
             if ui == '-1':
-                main_menu.main_menu()
-            else:
-                print("未知选项，退回主菜单")
+                os.startfile(_main_path)
                 main_menu.main_menu()
 
             print(pas_utilits.INTRO)
-            _main_path = pas_utilits.validate_main_path()
             _time = pas_utilits.select_time()
             _product = pas_utilits.validate_product()
             _country = str(input("输入文件中的国家："))
@@ -119,9 +116,12 @@ def main_function():
                 pas.process_sheet()
             elif ui == '1':
                 only_cap_title(pas)
+            else:
+                print("未知选项，退回主菜单")
+                main_menu.main_menu()
+
             pas.save_sheet(working_path, _lang, _time)
-            os.startfile(working_path)
-            main_menu.main_menu()
+            main_function()
         except Exception as e:
             print(e)
             # raise e
