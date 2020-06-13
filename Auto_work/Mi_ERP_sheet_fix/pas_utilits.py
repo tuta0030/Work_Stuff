@@ -124,6 +124,14 @@ def process_description(sheet, desc_coordinate: tuple):
             info_list[index].value = ' '.join(str(item.value)[:-(len(item.value) - 1499)].split(' ')[:-1])
 
 
+def cap_title(title: str, brand: str) -> str:
+    title = title.split(' ')
+    title = [word.capitalize() for word in title]
+    title = ' '.join(title)
+    title = title.replace(brand.capitalize(), brand)
+    return title
+
+
 def process_item_name(item_name: str, brand: str) -> str:
     # random words
     item_name = __random_title(item_name, brand)
@@ -167,7 +175,7 @@ def add_function(menu: dict, index: int, des: str, function):
 
 
 def intro(menu: dict):
-    print("\n图沓的亚马逊相关工具主菜单")
+    print("\n图沓的工具\n主菜单")
     print("请选择需要的操作：")
     print('')
     for key, value in menu.items():

@@ -2,6 +2,7 @@ import os
 import load_amazon_sheet
 from openpyxl.utils import coordinate_to_tuple
 import pas_utilits
+import main_menu
 
 
 class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
@@ -12,6 +13,14 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         except FileNotFoundError as _e:
             print(pas_utilits.NO_FILE)
             raise _e
+
+    def cap_title(self, brand: str):
+        item_name_coordinate = coordinate_to_tuple(str(self.item_name_cell).split('.')[-1][:-1])
+        title_list = pas_utilits.get_column_until_none_cell(self.sheet,
+                                                            item_name_coordinate[0],
+                                                            item_name_coordinate[1])
+        for index, title in enumerate(title_list):
+            title_list[index].value = pas_utilits.cap_title(title.value, brand)
 
     def process_title(self, brand: str):
         item_name_coordinate = coordinate_to_tuple(str(self.item_name_cell).split('.')[-1][:-1])
@@ -68,3 +77,41 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 
     def save_sheet(self, path: str, country: str, time: str) -> None:
         self.wb.save(path+'\\'+country+'_输出文件_'+time+'.xlsx')
+
+
+def main_function():
+    while True:
+        try:
+
+            def only_cap_title(pas_instance):
+                pas_instance.cap_title(str(input("请输入不需要首字母大写的品牌名：")))
+
+            ui = input("0：主程序，1：标题首字母大写：")
+
+            print(pas_utilits.INTRO)
+            _main_path = pas_utilits.validate_main_path()
+            _time = pas_utilits.select_time()
+            _product = pas_utilits.validate_product()
+            _country = str(input("输入文件中的国家："))
+            _lang = str(input("输出文件中的国家："))
+
+            if os.path.isfile(f"{_main_path}\\{_time}_{_product}\\{_product}{_country}_亚马逊表_{_time}.xlsx"):
+                original_file = f"{_main_path}\\{_time}_{_product}\\{_product}{_country}_亚马逊表_{_time}.xlsx"
+            else:
+                original_file = f"{_main_path}\\{_time}_{_product}\\{str(input('未找到文件，请手动输入文件名：'))}"
+            working_path = f"{_main_path}\\{_time}_{_product}"
+
+            pas = ProcessAmazonSheet(original_file)
+            if ui == '0':
+                pas.process_sheet()
+            elif ui == '1':
+                only_cap_title(pas)
+            pas.save_sheet(working_path, _lang, _time)
+            os.startfile(working_path)
+            main_menu.main_menu()
+        except Exception as e:
+            print(e)
+            # raise e
+            print('\n')
+        else:
+            break
