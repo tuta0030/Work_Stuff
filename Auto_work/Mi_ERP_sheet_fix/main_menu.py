@@ -11,9 +11,16 @@ import process_amazon_sheet
 import brands
 import KW_generator
 
-""" 
-TODO:
-    2.2 兼容erp直接输出的文件日期名称
+"""
+想要添加的特性：
+    表格程序：
+        1. 优化菜单选项，尽可能分离处理各类数据的选项
+    品牌程序：
+        1. 添加下载JS Page报错之后自动更换user agent和cookie继续下载的功能
+        2. 仅输出一个品牌名替换文本，方便修改和调用
+    关键词程序：
+        1. 添加列出当先可以直接生成的关键词的菜单
+        2. 添加可以直接调用现有的品牌名输出文件的功能
 """
 
 menu = {}

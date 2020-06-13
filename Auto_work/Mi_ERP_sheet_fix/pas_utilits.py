@@ -171,6 +171,7 @@ def process_price(sheet, coordinate: tuple, exchange_rate: float):
 
 
 def add_function(menu: dict, index: int, des: str, function):
+    """添加程序到主菜单选项"""
     menu[index] = (des, function)
 
 

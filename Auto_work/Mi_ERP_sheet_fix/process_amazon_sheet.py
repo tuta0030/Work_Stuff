@@ -5,6 +5,13 @@ import pas_utilits
 import main_menu
 
 
+""" 
+处理亚马逊表格的程序s
+TODO:
+    2.2 兼容erp直接输出的文件日期名称
+"""
+
+
 class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 
     def __init__(self, sheet_path):
