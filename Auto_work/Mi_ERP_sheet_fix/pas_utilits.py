@@ -73,7 +73,7 @@ def get_column_until_none_cell(sheet, row_start: int, column_const: int) -> list
     return cell_list
 
 
-def __random_title(item_name: str) -> str:
+def __random_title(item_name: str, brand: str) -> str:
     _pattern = re.compile(r'\s°')
     length = len(item_name)
     item_name = re.sub(_pattern, '°', item_name)  # 移除°前的空格
@@ -97,7 +97,8 @@ def __random_title(item_name: str) -> str:
     rand_item_name_t = list(set(item_name_t))
     rand_item_name_t = rand_item_name_t + color_size
     new_item_name = item_name_h + rand_item_name_t
-    new_item_name = ' '.join(new_item_name).replace('  ', ' ')
+    new_item_name = [word.capitalize() for word in new_item_name]
+    new_item_name = ' '.join(new_item_name).replace('  ', ' ').replace(brand.capitalize(), brand)
     return new_item_name
 
 
@@ -118,9 +119,9 @@ def process_description(sheet, desc_coordinate: tuple):
             info_list[index].value = ' '.join(str(item.value)[:-(len(item.value) - 1499)].split(' ')[:-1])
 
 
-def process_item_name(item_name: str) -> str:
+def process_item_name(item_name: str, brand: str) -> str:
     # random words
-    item_name = __random_title(item_name)
+    item_name = __random_title(item_name, brand)
 
     return item_name
 

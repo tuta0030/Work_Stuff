@@ -19,13 +19,13 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
             print(pas_utilits.NO_FILE)
             raise _e
 
-    def process_title(self):
+    def process_title(self, brand: str):
         item_name_coordinate = coordinate_to_tuple(str(self.item_name_cell).split('.')[-1][:-1])
         title_list = pas_utilits.get_column_until_none_cell(self.sheet,
                                                             item_name_coordinate[0],
                                                             item_name_coordinate[1])
         for index, title in enumerate(title_list):
-            title_list[index].value = pas_utilits.process_item_name(title.value)
+            title_list[index].value = pas_utilits.process_item_name(title.value, brand)
 
     def process_description(self):
         description_coordinate = coordinate_to_tuple(str(self.description).split('.')[-1][:-1])
@@ -56,7 +56,7 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
     def process_sheet(self):
 
         # ========= PROCESS TITLE =========
-        self.process_title()
+        self.process_title(str(input("请输入不需要首字母大写的品牌名：")))
         # ========= PROCESS TITLE =========
         self.process_bulletpoints()
         # ========= PROCESS PRICE =========
