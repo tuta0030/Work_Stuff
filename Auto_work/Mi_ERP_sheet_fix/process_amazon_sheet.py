@@ -86,7 +86,13 @@ def main_function():
             def only_cap_title(pas_instance):
                 pas_instance.cap_title(str(input("请输入不需要首字母大写的品牌名：")))
 
-            ui = input("0：主程序，1：标题首字母大写：")
+            ui = input("0：主程序，1：标题首字母大写，-1：退回主菜单：")
+
+            if ui == '-1':
+                main_menu.main_menu()
+            else:
+                print("未知选项，退回主菜单")
+                main_menu.main_menu()
 
             print(pas_utilits.INTRO)
             _main_path = pas_utilits.validate_main_path()

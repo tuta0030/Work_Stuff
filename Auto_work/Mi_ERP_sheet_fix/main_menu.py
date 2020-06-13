@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2020/6/13 15:06
-# @Author  : Eric_Shenarrzine
+# @Author  : Eric Shen
 # @Email   : Eric_Shenarrzine@outlook.com
 # @File    : main_menu.py
 # @Software: PyCharm

@@ -256,7 +256,7 @@ class DownloadBrands(bu.DownloadBrands):
             print("未找到主html", end=',')
             self.function_one()
         self.check_meta_url_html_file()
-        bu.add_function(1, '下载元url', self.function_one)
+        bu.add_function(1, '下载元url（包含子listing的页面，搜索页面，店铺页面或排名页面）', self.function_one)
         bu.add_function(2, '查看元html中所有listing的url', self.function_two)
         bu.add_function(3, '创建品牌关键词替换文本文件', self.function_three)
         bu.add_function(4, '(慎用) 清除html文件', self.function_four)
