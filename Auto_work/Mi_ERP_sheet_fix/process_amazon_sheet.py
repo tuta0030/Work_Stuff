@@ -6,7 +6,7 @@ import main_menu
 
 
 """ 
-处理亚马逊表格的程序s
+处理亚马逊表格的程序
 TODO:
     2.2 兼容erp直接输出的文件日期名称
 """
@@ -63,6 +63,9 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         keywords_coordinate = coordinate_to_tuple(str(self.item_type_cell).split('.')[-1][:-1])
         pas_utilits.process_info(self.sheet, keywords_coordinate, keywords)
 
+    def only_price(self):
+        self.process_price(float(input("输入汇率：")))
+
     def process_sheet(self):
 
         # ========= PROCESS TITLE =========
@@ -89,17 +92,24 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 def main_function():
     while True:
         try:
+            print(pas_utilits.INTRO)
+            only_functions = {}
+
+            def add_only_func(menu: tuple, func):
+                only_functions[menu] = func
 
             def only_cap_title(pas_instance):
-                pas_instance.cap_title(str(input("请输入不需要首字母大写的品牌名：")))
+                pas_instance.cap_title(str(input("请输入不需要首字母大写的品牌名(没有的话按回车继续)：")))
 
-            ui = input("0：主程序，1：标题首字母大写，-1：退回主菜单：")
+            def only_change_price(pas_instance):
+                pas_instance.only_price()
+
+            ui = input("0：主程序，1：单独功能，-1：退回主菜单：")
             _main_path = pas_utilits.validate_main_path()
             if ui == '-1':
-                os.startfile(_main_path)
                 main_menu.main_menu()
 
-            print(pas_utilits.INTRO)
+            print("按照提示输入文件相关必要参数")
             _time = pas_utilits.select_time()
             _product = pas_utilits.validate_product()
             _country = str(input("输入文件中的国家："))
@@ -115,7 +125,15 @@ def main_function():
             if ui == '0':
                 pas.process_sheet()
             elif ui == '1':
-                only_cap_title(pas)
+                add_only_func((1, '标题首字母大写'), only_cap_title)
+                add_only_func((2, '处理价格'), only_change_price)
+                menu_list = only_functions.keys()
+                menu_list = [str(item)[1:-1].replace('\'', '') for item in menu_list]
+                only_ui = input(f"选择需要的功能:{', '.join(menu_list)}:")
+                for key, value in only_functions.items():
+                    if only_ui == str(key[0]):
+                        value(pas)
+                        os.startfile(working_path)
             else:
                 print("未知选项，退回主菜单")
                 main_menu.main_menu()

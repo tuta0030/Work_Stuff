@@ -10,7 +10,7 @@ COL_MAX = 2000
 MAIN_PATH = open(os.curdir + '\\path.txt', 'r', encoding='utf-8').read()
 PRODUCT_TYPE = open(os.curdir + '\\product_type.txt', 'r', encoding='utf-8').read()
 INTRO = r"""
-图沓的亚马逊表格处理工具
+亚马逊表格处理工具
 请注意文件命名方式：
     1. <文件夹> 命名方式: <日期_产品名称>  例如（根目录\20200601_游泳圈）
     2. <文件> 命名方式: <产品名称+国家_亚马逊表_日期>  例如（游泳圈UK_亚马逊表_20200601.xlsx）

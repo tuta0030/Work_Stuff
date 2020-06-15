@@ -214,7 +214,11 @@ class DownloadBrands(bu.DownloadBrands):
 
     def function_one(self):
         # 下载元url
-        self.url = input("请输入主url:")
+        ui = input("请输入主url(-1退回菜单):")
+        if ui != '-1':
+            self.url = ui
+        else:
+            whole_function()
         with open('meta_html_url.txt', 'w', encoding='utf-8') as f:
             f.write(self.url)
         self.check_url_type()
