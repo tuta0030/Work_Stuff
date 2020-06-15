@@ -4,6 +4,7 @@ import os
 import re
 import main_menu
 from brands_utility import MAIN_FOLDER
+from brands_utility import FILE_NAME_BRAND_FILE
 
 PATH_MAIN_MENU_TO_HERE = os.pardir + "\\KeyWords\\KeyWords_Generating"
 

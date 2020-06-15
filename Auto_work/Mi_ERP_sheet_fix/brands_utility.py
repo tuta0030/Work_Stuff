@@ -10,7 +10,7 @@ PATH_LISTING_FOLDER = MAIN_FOLDER + '\\listing_folder'
 PATH_META_HTML = MAIN_FOLDER + '\\META.html'
 PATH_URL_FOLDER = MAIN_FOLDER + '\\url'
 PATH_DOWNLOADED_URL = PATH_URL_FOLDER + '\\Downloaded_url.txt'
-FILE_NAME_BRAND_FILE = MAIN_FOLDER + '\\品牌名替换文件_' + file_time[:10] + '.txt'
+FILE_NAME_BRAND_FILE = MAIN_FOLDER + '\\品牌名替换文件.txt'
 JS_PAGE_SIGN = 'Enter the characters you see below'
 DOWNLOAD_RETRY_TIME = 3
 
