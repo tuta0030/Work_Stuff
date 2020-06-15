@@ -1055,8 +1055,6 @@ DE: Smartwatch Android kompatibel Telefone Kinder Männer Frau Jungs Mädchen Al
 
 IT: Orologio intelligente androide Compatibile Cellulari bambini Uomini Donne Ragazzi Ragazze anziano Pressione sanguigna Monitor di ossigeno Frequenza cardiaca Tracker di fitness Lettore musicale GPS Wi Fi Barometro Rivolgersi Gli sport Merryxmas
 
-ES: Smartwatch Mujer Hombre Ni?os Para Niños Español Reloj inteligente Androide Compatible Los telefonos Niños Hombres Mujer Muchachos Chicas Mayor Presión sanguínea Monitor de oxigeno Ritmo cardiaco Rastreador de ejercicios Reproductor de música GPS Wifi Barómetro Recurrir Deportes Merryxmas
-
 }智能手表
 
 投影仪：{

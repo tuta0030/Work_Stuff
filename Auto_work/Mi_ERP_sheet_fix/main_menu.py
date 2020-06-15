@@ -18,6 +18,7 @@ import KW_generator
     品牌程序：
         1. 添加下载JS Page报错之后自动更换user agent和cookie继续下载的功能
         2. 仅输出一个品牌名替换文本，方便修改和调用
+        3. 添加通过排名页面生成关键词的功能
     关键词程序：
         1. 添加列出当先可以直接生成的关键词的菜单
         2. 添加可以直接调用现有的品牌名输出文件的功能
@@ -42,6 +43,7 @@ def main_menu():
             pas_utilits.show_menu(ui, menu)
         except Exception as e:
             print(e)
+            raise e
         else:
             break
 

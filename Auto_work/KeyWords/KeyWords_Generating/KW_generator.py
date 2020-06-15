@@ -24,7 +24,7 @@ class RandKeyWord(object):
         self.ui_kw = ''
         self.kw_cat = ''
         self.db_content = ''
-        self.lang = {'EN': '', 'FR': '', 'DE': '', 'IT': '', 'ES': ''}
+        self.lang = {}
         self.uni_char = r'[\u4E00-\u9FA5\u00A0-\u00FF\u0100-\u017F\u0180-\u024F\u2E80-\u9FFFa-zA-Z0-9\'?]+\s'
         self._no_DB_msg = r'没有找到关键词数据，请确认关键词已经添加到以下文件：E:\TUTA\文档\Python\创建工作日志和工作文件夹\KW_data_base.txt， 已自动创建文件模板'
         self._no_match_msg = f'没有在数据库中找到您所需的关键词，请确保数据库({os.path.abspath(self.data_base_path)})中已经保存了您所需的内容并确认是否输入正确'
@@ -33,6 +33,9 @@ class RandKeyWord(object):
 
     def check_data_base(self):
         if os.path.isfile(self.data_base_path):
+            kw_db_option_pattern = re.compile(r'.+(?=:{)')
+            result = re.findall(kw_db_option_pattern, open(self.data_base_path, 'r', encoding='utf-8').read())
+            print(f"\n\n已有关键词：{result}".replace('\'temp\',', ''))
             return True
         else:
             with open(self.data_base_path, 'a', encoding='utf-8') as kw:
@@ -49,18 +52,19 @@ class RandKeyWord(object):
             self.KW_generator_main()
 
     def get_ui(self):
-        self.ui_kw = str(input("请输入需要生成的关键词类型(输入-1退出)："))
+        self.ui_kw = str(input("请输入需要生成的关键词类型(0:打开关键词文件，-1退出)："))
         if self.ui_kw == str(1):
             self.ui_kw = "智能手表"
-        elif self.ui_kw == str(2):
-            self.ui_kw = "U盘"
+        elif self.ui_kw == str(0):
+            os.startfile(self.data_base_path)
+            main_menu.main_menu()
         elif self.ui_kw == str(-1):
             main_menu.main_menu()
         self.how_many_to_keep = int(input("需要保留前几位的关键词？："))
         if type(self.how_many_to_keep) != int:
             print("输入错误，需要输入正整数数字")
             self.how_many_to_keep = int(input("需要保留前几位的关键词？："))
-        self._out_keywords_path = MAIN_FOLDER+f'\\{self.ui_kw}_{"_".join(str(datetime.datetime.now()).split(" ")[0].split("-"))}_{"_".join(str(datetime.datetime.now()).split(" ")[-1][:6].split(":"))}.txt '
+        self._out_keywords_path = MAIN_FOLDER+f'\\关键词文件_{self.ui_kw}_{"_".join(str(datetime.datetime.now()).split(" ")[0].split("-"))}_{"_".join(str(datetime.datetime.now()).split(" ")[-1][:6].split(":"))}.txt'
 
     def get_keywords_cat(self):
         _pattern = re.compile(r'.+[:：]{')
@@ -75,35 +79,35 @@ class RandKeyWord(object):
             _match = re.findall(pattern, content)
             if _match:
                 self.db_content = content
+                self.find_out_how_many_language(content)
             else:
                 # print(self._no_match_msg)
                 return None
+
+    def find_out_how_many_language(self, specific_kw_content: str):
+        _specific_pattern = re.compile(f'{self.ui_kw}[：:]'+'{.*}'+f'{self.ui_kw}')
+        _specific_words = re.findall(_specific_pattern, specific_kw_content)
+        _pattern = re.compile('[A-Z]{2}(?=:)')
+        _result = re.findall(_pattern, str(_specific_words))
+        for each_lang in _result:
+            self.lang[each_lang] = []
+        print('\n当前关键词所包含的国家：', end='')
+        print(', '.join(self.lang.keys()))
 
     def set_lang_content(self, kw, db_content):  # working
         _pattern = re.compile(str(kw) + r'.*}' + str(kw), re.DOTALL)
         _result = re.findall(_pattern, db_content)
 
-        # EN results
-        _pattern_EN = re.compile(r'EN.*FR:', re.DOTALL)
-        self.lang['EN'] = re.findall(_pattern_EN, str(_result))
-
-        # FR results
-        _pattern_FR = re.compile(r'FR.*DE:', re.DOTALL)
-        self.lang['FR'] = re.findall(_pattern_FR, str(_result))
-
-        # DE results
-        _pattern_DE = re.compile(r'DE.*IT:', re.DOTALL)
-        self.lang['DE'] = re.findall(_pattern_DE, str(_result))
-
-        # IT results
-        _pattern_IT = re.compile(r'IT.*ES:', re.DOTALL)
-        self.lang['IT'] = re.findall(_pattern_IT, str(_result))
-
-        # IT results
-        _pattern_ES = re.compile(r'ES:.*}', re.DOTALL)
-        self.lang['ES'] = re.findall(_pattern_ES, str(_result))
-
-        # print(_result)
+        countrys = list(self.lang.keys())
+        for each_key in self.lang.keys():
+            current_index = countrys.index(each_key)
+            next_index = current_index + 1
+            if each_key is not countrys[-1]:
+                _pattern = re.compile(f'{countrys[current_index]}.*{countrys[next_index]}:', re.DOTALL)
+                self.lang[each_key] = re.findall(_pattern, str(_result))
+            else:
+                _pattern = re.compile(f'{countrys[current_index]}.*'+'}', re.DOTALL)
+                self.lang[each_key] = re.findall(_pattern, str(_result))
         return _result
 
     def get_db_conten_as_words_list(self, _data_base):
@@ -114,6 +118,7 @@ class RandKeyWord(object):
     def write_keywords(self, lang, keywords):
         _t = datetime.datetime.now()
         with open(self._out_keywords_path, 'a', encoding='utf-8') as f:
+            f.write('\n')
             f.write(f'{lang}: {keywords}')
             f.write('\n')
             f.write('\n')
@@ -134,8 +139,6 @@ class RandKeyWord(object):
                 _rand_list.append(random.choice(_this_db_list))
                 _rand_list = list(dict.fromkeys(_rand_list))
                 _characters = ''.join(str(i).capitalize() for i in _rand_list)
-            else:
-                print("程序出错...（mk_randKW方法出现问题）")
 
         _rand_list.pop()
         print(f'{lang}：{_characters}')
@@ -170,6 +173,7 @@ class RandKeyWord(object):
 
 
 def main():
+    os.system('cls')
     kw = RandKeyWord()
     kw.KW_generator_main()
 
