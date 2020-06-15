@@ -203,13 +203,18 @@ def open_main_folder():
 
 
 def open_folder():
-    ui = input("选择需要打开的根目录（0：表格根目录，1：品牌名和关键词根目录）：")
-    if ui == str(0):
-        open_main_folder()
-    elif ui == str(1):
-        brands_utility.open_main_folder()
-    else:
-        print("未知选项，返回主菜单")
+    try:
+        ui = input("选择需要打开的根目录（0：表格根目录，1：品牌名和关键词根目录）：")
+        if ui == str(0):
+            open_main_folder()
+        elif ui == str(1):
+            brands_utility.open_main_folder()
+        else:
+            print("未知选项，返回主菜单")
+            main_menu.main_menu()
+    except Exception as e:
+        print("暂无根目录可以打开")
+        print(e)
         main_menu.main_menu()
 
 

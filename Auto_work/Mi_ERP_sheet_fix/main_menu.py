@@ -19,7 +19,6 @@ import KW_generator
         1. 添加下载JS Page报错之后自动更换user agent和cookie继续下载的功能
         3. 添加通过排名页面生成关键词的功能
     关键词程序：
-        2. 添加可以直接调用现有的品牌名输出关键词文件的功能
 """
 
 menu = {}

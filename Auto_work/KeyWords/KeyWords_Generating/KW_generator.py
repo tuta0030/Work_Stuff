@@ -17,6 +17,11 @@ def write_keywords_to_working_txt(working_txt_path, g_keywords) -> None:
     return None
 
 
+def read_brand_file() -> str:
+    brands = open(FILE_NAME_BRAND_FILE, 'r', encoding='utf-8').read()
+    return brands
+
+
 class RandKeyWord(object):
 
     def __init__(self):
@@ -76,6 +81,10 @@ class RandKeyWord(object):
         with open(data_base_path, 'r', encoding='utf-8') as db:
             content = db.read().split('\n')
             content = ' '.join(content)
+            brands = read_brand_file()
+            brands = brands.split('|')
+            for each_brand in brands:
+                content = content.replace(each_brand, '')
             pattern = re.compile(str(key_word))
             _match = re.findall(pattern, content)
             if _match:
