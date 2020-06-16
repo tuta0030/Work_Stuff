@@ -89,69 +89,37 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         self.wb.save(path+'\\'+country+'_输出文件_'+time+'.xlsx')
 
 
+def pas_main():
+    # 输入文件夹路径
+    # 索引并列出文件夹中的表格
+    # 通过下标选择需要处理的表格文件
+    # 传入表格文件的路径
+    pas = ProcessAmazonSheet()
+    pas.save_sheet()
+
+
+def pas_part():
+    pas = ProcessAmazonSheet()
+    _menu = {'仅处理价格': pas.only_price,
+             '仅标题首字母大写': pas.cap_title
+             }
+    pas_utilits.make_menu(_menu)
+    pas.save_sheet()
+
+
 def main_function():
     while True:
         try:
             os.system('cls')
-            print(pas_utilits.INTRO)
-            only_functions = {}
+            print("当前选项：处理亚马逊表格")
+            print('')
+            _menu = {'退回主菜单': main_menu.main_menu,
+                     '处理亚马逊表格（全部）': pas_main,
+                     '处理亚马逊表格（部分）': pas_part}
+            pas_utilits.make_menu(_menu)
 
-            # 用来添加单独功能的函数
-            def add_only_func(menu: tuple, func):
-                only_functions[menu] = func
-
-            # 仅首字母大写
-            def only_cap_title(pas_instance):
-                pas_instance.cap_title(str(input("请输入不需要首字母大写的品牌名(没有的话按回车继续)：")))
-
-            # 仅处理价格
-            def only_change_price(pas_instance):
-                pas_instance.only_price()
-
-            ui = input("0：主程序，1：单独功能，-1：退回主菜单：")
-            _main_path = pas_utilits.validate_main_path()
-            if ui == '-1':
-                os.system('cls')
-                main_menu.main_menu()
-
-                class QuitSheetProcess(Exception):
-                    pass
-                raise QuitSheetProcess('退出表格处理程序')
-
-            #  处理表格的必要参数
-            print("按照提示输入文件相关必要参数")
-            _time = pas_utilits.select_time()
-            _product = pas_utilits.validate_product()
-            _country = str(input("输入文件中的国家："))
-            _lang = str(input("输出文件中的国家："))
-            if os.path.isfile(f"{_main_path}\\{_time}_{_product}\\{_product}{_country}_亚马逊表_{_time}.xlsx"):
-                original_file = f"{_main_path}\\{_time}_{_product}\\{_product}{_country}_亚马逊表_{_time}.xlsx"
-            else:
-                original_file = f"{_main_path}\\{_time}_{_product}\\{str(input('未找到文件，请手动输入文件名：'))}"
-            working_path = f"{_main_path}\\{_time}_{_product}"
-            pas = ProcessAmazonSheet(original_file)
-
-            # 根据用户输入运行不同功能
-            if ui == '0':  # 运行主程序
-                pas.process_sheet()
-            elif ui == '1':  # 进入单独功能菜单
-                add_only_func((1, '标题首字母大写'), only_cap_title)
-                add_only_func((2, '处理价格'), only_change_price)
-                menu_list = only_functions.keys()
-                menu_list = [str(item)[1:-1].replace('\'', '') for item in menu_list]
-                only_ui = input(f"选择需要的功能:{', '.join(menu_list)}:")
-                for key, value in only_functions.items():
-                    if only_ui == str(key[0]):
-                        value(pas)
-                        os.startfile(working_path)
-            else:
-                print("未知选项，退回主菜单")
-                main_menu.main_menu()
-
-            pas.save_sheet(working_path, _lang, _time)
             main_function()
         except Exception as e:
-            print(e)
             raise e
         else:
             break

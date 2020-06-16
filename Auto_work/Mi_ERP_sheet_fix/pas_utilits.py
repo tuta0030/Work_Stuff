@@ -228,7 +228,11 @@ def make_menu(functions: dict):
 
 
 def main_menu_quit():
-    raise IndexError
+
+    class QuitMainMenu(Exception):
+        pass
+
+    raise QuitMainMenu('退出程序')
 
 
 if __name__ == '__main__':
