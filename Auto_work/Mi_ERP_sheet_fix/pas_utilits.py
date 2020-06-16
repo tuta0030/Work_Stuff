@@ -175,14 +175,9 @@ def add_function(menu: dict, index: int, des: str, function):
     menu[index] = (des, function)
 
 
-def intro(menu: dict):
+def intro():
     print("\n图沓的工具\n主菜单")
     print("请选择需要的操作：")
-    print('')
-    for key, value in menu.items():
-        print(key, end='')
-        print(': ', end='')
-        print(value[0])
     print('')
 
 
@@ -227,8 +222,6 @@ def make_menu(functions: dict):
     for item, func in _menu.items():
         if ui == str(item[0]):
             func()
-        else:
-            print("未识别的输入，请尝试重新输入")
 
 
 if __name__ == '__main__':

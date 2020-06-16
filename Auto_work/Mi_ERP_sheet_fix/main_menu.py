@@ -24,21 +24,19 @@ import KW_generator
             1.2 从html文件夹中导入html文件并解析标题
 """
 
-menu = {}
-
 
 def main_menu():
     while True:
         try:
             os.system('cls')
-            pas_utilits.add_function(menu, 1, 'ERP表格相关', process_amazon_sheet.main_function)
-            pas_utilits.add_function(menu, 2, '品牌相关', brands.whole_function)
-            pas_utilits.add_function(menu, 3, '关键词相关', KW_generator.menu)
-            pas_utilits.add_function(menu, 4, '打开根目录', pas_utilits.open_folder)
-            pas_utilits.add_function(menu, 0, '退出', quit)
-            pas_utilits.intro(menu)
-            ui = str(input('输入需要的选项：'))
-            pas_utilits.show_menu(ui, menu)
+            pas_utilits.intro()
+            _menu = {'退出': quit,
+                     'ERP表格相关': process_amazon_sheet.main_function,
+                     '品牌相关': brands.whole_function,
+                     '关键词相关': KW_generator.menu,
+                     '打开根目录': pas_utilits.open_folder,
+                     }
+            pas_utilits.make_menu(_menu)
         except Exception as e:
             print(e)
             raise e
