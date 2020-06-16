@@ -191,7 +191,9 @@ def main():
 
 
 def menu():
-    function_menu = {'退回主菜单': main_menu.main_menu, '从关键词库生成关键词': main, '从html文件生成关键词': gk.validate_html_path}
+    function_menu = {'退回主菜单': main_menu.main_menu,
+                     '从关键词库生成关键词': main,
+                     '从html文件生成关键词': gk.validate_html_path}
     pas_utilits.make_menu(function_menu)
 
 

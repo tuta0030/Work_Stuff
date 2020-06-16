@@ -95,12 +95,15 @@ def main_function():
             print(pas_utilits.INTRO)
             only_functions = {}
 
+            # 用来添加单独功能的函数
             def add_only_func(menu: tuple, func):
                 only_functions[menu] = func
 
+            # 仅首字母大写
             def only_cap_title(pas_instance):
                 pas_instance.cap_title(str(input("请输入不需要首字母大写的品牌名(没有的话按回车继续)：")))
 
+            # 仅处理价格
             def only_change_price(pas_instance):
                 pas_instance.only_price()
 
@@ -109,22 +112,23 @@ def main_function():
             if ui == '-1':
                 main_menu.main_menu()
 
+            #  处理表格的必要参数
             print("按照提示输入文件相关必要参数")
             _time = pas_utilits.select_time()
             _product = pas_utilits.validate_product()
             _country = str(input("输入文件中的国家："))
             _lang = str(input("输出文件中的国家："))
-
             if os.path.isfile(f"{_main_path}\\{_time}_{_product}\\{_product}{_country}_亚马逊表_{_time}.xlsx"):
                 original_file = f"{_main_path}\\{_time}_{_product}\\{_product}{_country}_亚马逊表_{_time}.xlsx"
             else:
                 original_file = f"{_main_path}\\{_time}_{_product}\\{str(input('未找到文件，请手动输入文件名：'))}"
             working_path = f"{_main_path}\\{_time}_{_product}"
-
             pas = ProcessAmazonSheet(original_file)
-            if ui == '0':
+
+            # 根据用户输入运行不同功能
+            if ui == '0':  # 运行主程序
                 pas.process_sheet()
-            elif ui == '1':
+            elif ui == '1':  # 进入单独功能菜单
                 add_only_func((1, '标题首字母大写'), only_cap_title)
                 add_only_func((2, '处理价格'), only_change_price)
                 menu_list = only_functions.keys()

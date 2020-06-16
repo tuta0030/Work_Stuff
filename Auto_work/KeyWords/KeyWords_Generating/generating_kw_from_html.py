@@ -12,8 +12,11 @@ def validate_html_path():
     try:
         if os.path.isfile(os.curdir+'\\html_path.txt'):
             html_path = open('html_path.txt', 'r', encoding='utf-8').read()
+            return html_path
         else:
             with open('html_path.txt', 'w', encoding='utf-8') as f:
                 f.write(str(input("未找到亚马逊html页面路径，请输入亚马逊html文件夹路径:")))
+            html_path = open('html_path.txt', 'r', encoding='utf-8').read()
+            return html_path
     except Exception as e:
         raise e

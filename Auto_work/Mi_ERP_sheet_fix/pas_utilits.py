@@ -9,7 +9,6 @@ MENU_RESTRICTION = 200
 ROW_RESTRICTION = 2000
 COL_MAX = 2000
 MAIN_PATH = open(os.curdir + '\\path.txt', 'r', encoding='utf-8').read()
-PRODUCT_TYPE = open(os.curdir + '\\product_type.txt', 'r', encoding='utf-8').read()
 INTRO = r"""
 亚马逊表格处理工具
 请注意文件命名方式：
@@ -40,14 +39,14 @@ def validate_main_path() -> str:
 
 def validate_product() -> str:
     print('')
-    print(f'当前产品类别：{PRODUCT_TYPE}')
+    print(f'当前产品类别：' + open(os.curdir + '\\product_type.txt', 'r', encoding='utf-8').read())
     wanna_change = str(input("(0：继续，1：修改)："))
     if wanna_change == str(1):
         with open(os.curdir + '\\product_type.txt', 'w', encoding='utf-8') as pt:
             pt.write(input("请输入产品类别："))
         return open(os.curdir + '\\product_type.txt', 'r', encoding='utf-8').read()
     elif wanna_change == str(0):
-        return PRODUCT_TYPE
+        return open(os.curdir + '\\product_type.txt', 'r', encoding='utf-8').read()
 
 
 def select_time() -> str:
