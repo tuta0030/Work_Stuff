@@ -6,6 +6,7 @@ import time
 from send2trash import send2trash as d
 import random
 import brands_utility as bu
+import pas_utilits
 import main_menu
 
 """
@@ -104,10 +105,10 @@ class DownloadBrands(bu.DownloadBrands):
         _links_folder = ''
         if self.url_type == 'search_page':
             _links_folder = bu.PATH_URL_FOLDER + \
-                            '\\' + self.url.split('s?k=')[-1].split('&')[0] + '_' + bu.file_time[:10]
+                            '\\' + bu.file_time[:10] + '_' + self.url.split('s?k=')[-1].split('&')[0]
         elif self.url_type == 'rank_page':
             _links_folder = bu.PATH_URL_FOLDER + \
-                            '\\' + self.url.split('/')[3] + '_' + bu.file_time[:10]
+                            '\\' + bu.file_time[:10] + '_' + self.url.split('/')[3]
         try:
             with open(_links_folder + '.txt', 'w', encoding='utf-8') as link_file:
                 link_file.write('')
@@ -260,21 +261,28 @@ class DownloadBrands(bu.DownloadBrands):
             print("未找到主html", end=',')
             self.function_meta_url()
         self.check_meta_url_html_file()
-        bu.add_function(1, '下载元url（包含子listing的页面，搜索页面，店铺页面或排名页面）', self.function_meta_url)
-        bu.add_function(2, '查看元html中所有listing的url', self.function_check_listing_url)
-        bu.add_function(3, '创建品牌关键词替换文本文件', self.function_make_text_file)
-        bu.add_function(4, '(慎用) 清除html文件', self.function_rm_html)
-        bu.add_function(5, '(慎用) 下载所有的元html中所有listing的html文件', self.function_download_all_html)
-        bu.add_function(0, '退出程序', main_menu.main_menu)
-        bu.intro()
-        ui = str(input("输入需要的功能："))
-        if ui in str(bu.menu_item.keys()):
-            for key, value in bu.menu_item.items():
-                if ui == str(key):
-                    value[1]()
-        else:
-            input("无法识别的选项，回车继续")
-            self.main_menu()
+        # bu.add_function(1, '下载元url（包含子listing的页面，搜索页面，店铺页面或排名页面）', self.function_meta_url)
+        # bu.add_function(2, '查看元html中所有listing的url', self.function_check_listing_url)
+        # bu.add_function(3, '创建品牌关键词替换文本文件', self.function_make_text_file)
+        # bu.add_function(4, '(慎用) 清除html文件', self.function_rm_html)
+        # bu.add_function(5, '(慎用) 下载所有的元html中所有listing的html文件', self.function_download_all_html)
+        # bu.add_function(0, '退出程序', main_menu.main_menu)
+        # bu.intro()
+        # ui = str(input("输入需要的功能："))
+        # if ui in str(bu.menu_item.keys()):
+        #     for key, value in bu.menu_item.items():
+        #         if ui == str(key):
+        #             value[1]()
+        menu_ = {'退出程序': main_menu.main_menu,
+                 '下载元url（包含子listing的页面，搜索页面，店铺页面或排名页面）': self.function_meta_url,
+                 '查看元html中所有listing的url': self.function_check_listing_url,
+                 '创建品牌关键词替换文本文件': self.function_make_text_file,
+                 '(慎用) 清除html文件': self.function_rm_html,
+                 '(慎用) 下载所有的元html中所有listing的html文件': self.function_download_all_html}
+        pas_utilits.make_menu(menu_)
+        # else:
+        #     input("无法识别的选项，回车继续")
+        #     self.main_menu()
 
 
 def whole_function():

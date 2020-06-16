@@ -3,6 +3,8 @@ import datetime
 import os
 import re
 import main_menu
+import generating_kw_from_html as gk
+import pas_utilits
 from brands_utility import MAIN_FOLDER
 from brands_utility import FILE_NAME_BRAND_FILE
 
@@ -73,7 +75,7 @@ class RandKeyWord(object):
         self._out_keywords_path = MAIN_FOLDER+f'\\关键词文件_{self.ui_kw}_{"_".join(str(datetime.datetime.now()).split(" ")[0].split("-"))}_{"_".join(str(datetime.datetime.now()).split(" ")[-1][:6].split(":"))}.txt'
 
     def get_keywords_cat(self):
-        _pattern = re.compile(r'.+[:：]{')
+        _pattern = re.compile(r'.+([:：]){')
         _result = re.findall(_pattern, self.db_content)
         self.kw_cat = _result
 
@@ -95,7 +97,7 @@ class RandKeyWord(object):
                 return None
 
     def find_out_how_many_language(self, specific_kw_content: str):
-        _specific_pattern = re.compile(f'{self.ui_kw}[：:]'+'{.*}'+f'{self.ui_kw}')
+        _specific_pattern = re.compile(f'{self.ui_kw}([:：])'+'{.*}'+f'{self.ui_kw}')
         _specific_words = re.findall(_specific_pattern, specific_kw_content)
         _pattern = re.compile('[A-Z]{2}(?=:)')
         _result = re.findall(_pattern, str(_specific_words))
@@ -186,6 +188,11 @@ def main():
     os.system('cls')
     kw = RandKeyWord()
     kw.KW_generator_main()
+
+
+def menu():
+    function_menu = {'从关键词库生成关键词': main, '从html文件生成关键词': gk.validate_html_path}
+    pas_utilits.make_menu(function_menu)
 
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ from openpyxl.utils import coordinate_to_tuple
 import main_menu
 import brands_utility
 
+MENU_RESTRICTION = 200
 ROW_RESTRICTION = 2000
 COL_MAX = 2000
 MAIN_PATH = open(os.curdir + '\\path.txt', 'r', encoding='utf-8').read()
@@ -216,6 +217,23 @@ def open_folder():
         print("暂无根目录可以打开")
         print(e)
         main_menu.main_menu()
+
+
+def make_menu(functions: dict):
+    _menu = {}
+    index = 0
+    for descreption, func in functions.items():
+        _menu[(index, descreption)] = func
+        index = index + 1
+
+    for item in _menu.keys():
+        print(str(item[0]) + '\t' + item[1])
+    ui = input('输入选项：')
+    for item, func in _menu.items():
+        if ui == str(item[0]):
+            func()
+        else:
+            print("未识别的输入，请尝试重新输入")
 
 
 if __name__ == '__main__':
