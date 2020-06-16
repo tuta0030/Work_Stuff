@@ -21,7 +21,8 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
             print(pas_utilits.NO_FILE)
             raise _e
 
-    def cap_title(self, brand: str):
+    def cap_title(self):
+        brand = input("输入不需要大写的品牌名（没有的话按回车继续）：")
         item_name_coordinate = coordinate_to_tuple(str(self.item_name_cell).split('.')[-1][:-1])
         title_list = pas_utilits.get_column_until_none_cell(self.sheet,
                                                             item_name_coordinate[0],
@@ -85,26 +86,50 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
             for col in range(1, 1000):
                 self.sheet.cell(row, col).value = None
 
-    def save_sheet(self, path: str, country: str, time: str) -> None:
-        self.wb.save(path+'\\'+country+'_输出文件_'+time+'.xlsx')
+    def save_sheet(self, path: str, original_filename: str) -> None:
+        self.wb.save(path+'\\输出文件_'+original_filename+'.xlsx')
+
+
+def index_files() -> tuple:
+    # 输入文件夹路径
+    folder = input('输入包含表格的文件夹：')
+    # 索引并列出文件夹中的表格
+    files = {}
+    index = 0
+    for folder, subfolder, file in os.walk(folder):
+        for each_file in file:
+            files[index] = folder + '\\' + each_file
+            index += 1
+    print("当前文件夹中包含的文件有：")
+    for index, file in files.items():
+        print(index, end='')
+        print('\t' + file.split('\\')[-1])
+    # 通过下标选择需要处理的表格文件
+    ui = input('请选择需要处理的文件：')
+    # 传入表格文件的路径
+    which_file = ''
+    for selection in files.keys():
+        if ui == str(selection):
+            which_file = files[selection]
+    return folder, which_file
 
 
 def pas_main():
-    # 输入文件夹路径
-    # 索引并列出文件夹中的表格
-    # 通过下标选择需要处理的表格文件
-    # 传入表格文件的路径
-    pas = ProcessAmazonSheet()
-    pas.save_sheet()
+    folder, which_file = index_files()
+    pas = ProcessAmazonSheet(which_file)
+    pas.process_sheet()
+    pas.save_sheet(folder, which_file.split('\\')[-1])
 
 
 def pas_part():
-    pas = ProcessAmazonSheet()
+    folder, which_file = index_files()
+    pas = ProcessAmazonSheet(which_file)
+    print("选择需要单独处理的功能")
     _menu = {'仅处理价格': pas.only_price,
              '仅标题首字母大写': pas.cap_title
              }
     pas_utilits.make_menu(_menu)
-    pas.save_sheet()
+    pas.save_sheet(folder, which_file.split('\\')[-1])
 
 
 def main_function():
@@ -117,9 +142,10 @@ def main_function():
                      '处理亚马逊表格（全部）': pas_main,
                      '处理亚马逊表格（部分）': pas_part}
             pas_utilits.make_menu(_menu)
-
             main_function()
         except Exception as e:
-            raise e
+            print(e)
+            print('由于以上错误，无法处理本文件，请尝试重新输入正确的文件夹和文件序列号')
+            main_function()
         else:
             break

@@ -222,9 +222,15 @@ def make_menu(functions: dict):
     for item in _menu.keys():
         print(str(item[0]) + '\t' + item[1])
     ui = input('输入选项：')
-    for item, func in _menu.items():
-        if ui == str(item[0]):
-            func()
+    if len(ui.split(' ')) > 1:
+        for each_ui in ui.split(' '):
+            for item, func in _menu.items():
+                if each_ui == str(item[0]):
+                    func()
+    else:
+        for item, func in _menu.items():
+            if ui == str(item[0]):
+                func()
 
 
 def main_menu_quit():
