@@ -92,6 +92,7 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 def main_function():
     while True:
         try:
+            os.system('cls')
             print(pas_utilits.INTRO)
             only_functions = {}
 
@@ -110,7 +111,12 @@ def main_function():
             ui = input("0：主程序，1：单独功能，-1：退回主菜单：")
             _main_path = pas_utilits.validate_main_path()
             if ui == '-1':
+                os.system('cls')
                 main_menu.main_menu()
+
+                class QuitSheetProcess(Exception):
+                    pass
+                raise QuitSheetProcess('退出表格处理程序')
 
             #  处理表格的必要参数
             print("按照提示输入文件相关必要参数")
@@ -146,7 +152,6 @@ def main_function():
             main_function()
         except Exception as e:
             print(e)
-            # raise e
-            print('\n')
+            raise e
         else:
             break

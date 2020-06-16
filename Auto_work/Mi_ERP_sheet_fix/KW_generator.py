@@ -8,7 +8,7 @@ import pas_utilits
 from brands_utility import MAIN_FOLDER
 from brands_utility import FILE_NAME_BRAND_FILE
 
-PATH_MAIN_MENU_TO_HERE = os.pardir + "\\KeyWords\\KeyWords_Generating"
+PATH_MAIN_MENU_TO_HERE = os.curdir
 
 
 def write_keywords_to_working_txt(working_txt_path, g_keywords) -> None:
@@ -75,7 +75,7 @@ class RandKeyWord(object):
         self._out_keywords_path = MAIN_FOLDER+f'\\关键词文件_{self.ui_kw}_{"_".join(str(datetime.datetime.now()).split(" ")[0].split("-"))}_{"_".join(str(datetime.datetime.now()).split(" ")[-1][:6].split(":"))}.txt'
 
     def get_keywords_cat(self):
-        _pattern = re.compile(r'.+([:：]){')
+        _pattern = re.compile(r'.+[:：]{')
         _result = re.findall(_pattern, self.db_content)
         self.kw_cat = _result
 
@@ -93,11 +93,10 @@ class RandKeyWord(object):
                 self.db_content = content
                 self.find_out_how_many_language(content)
             else:
-                # print(self._no_match_msg)
                 return None
 
     def find_out_how_many_language(self, specific_kw_content: str):
-        _specific_pattern = re.compile(f'{self.ui_kw}([:：])'+'{.*}'+f'{self.ui_kw}')
+        _specific_pattern = re.compile(f'{self.ui_kw}[:：]'+'{'+'.*'+'}'+f'{self.ui_kw}')
         _specific_words = re.findall(_specific_pattern, specific_kw_content)
         _pattern = re.compile('[A-Z]{2}(?=:)')
         _result = re.findall(_pattern, str(_specific_words))
@@ -191,6 +190,9 @@ def main():
 
 
 def menu():
+    os.system('cls')
+    print("当前选项：关键词相关")
+    print('')
     function_menu = {'退回主菜单': main_menu.main_menu,
                      '从关键词库生成关键词': main,
                      '从html文件生成关键词': gk.validate_html_path}

@@ -19,6 +19,7 @@ import KW_generator
         1. 添加下载JS Page报错之后自动更换user agent和cookie继续下载的功能
         3. 添加通过排名页面生成关键词的功能
     关键词程序：
+        0. 修复模组
         1. 添加从下载好的亚马逊html页面中获取高频率关键词的功能
             1.1 验证各国html文件路径
             1.2 从html文件夹中导入html文件并解析标题
@@ -30,7 +31,7 @@ def main_menu():
         try:
             os.system('cls')
             pas_utilits.intro()
-            _menu = {'退出': quit,
+            _menu = {'退出': pas_utilits.main_menu_quit,
                      'ERP表格相关': process_amazon_sheet.main_function,
                      '品牌相关': brands.whole_function,
                      '关键词相关': KW_generator.menu,

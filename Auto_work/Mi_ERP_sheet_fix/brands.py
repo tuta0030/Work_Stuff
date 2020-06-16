@@ -272,6 +272,9 @@ class DownloadBrands(bu.DownloadBrands):
 
 def whole_function():
     download_brand = DownloadBrands(bu.MAIN_FOLDER)
+    os.system('cls')
+    print("当前选项：品牌相关")
+    print('')
     download_brand.main_menu()
 
 

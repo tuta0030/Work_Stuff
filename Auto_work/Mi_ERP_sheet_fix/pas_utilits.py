@@ -199,6 +199,9 @@ def open_main_folder():
 
 def open_folder():
     try:
+        os.system('cls')
+        print('当前选项：打开根目录')
+        print('')
         _menu = {'退回主菜单': main_menu.main_menu,
                  '表格根目录': open_main_folder,
                  '品牌名和关键词根目录': brands_utility.open_main_folder}
@@ -222,6 +225,10 @@ def make_menu(functions: dict):
     for item, func in _menu.items():
         if ui == str(item[0]):
             func()
+
+
+def main_menu_quit():
+    raise IndexError
 
 
 if __name__ == '__main__':
