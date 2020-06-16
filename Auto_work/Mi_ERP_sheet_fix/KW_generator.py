@@ -5,7 +5,6 @@ import re
 import main_menu
 import generating_kw_from_html as gk
 import pas_utilits
-from brands_utility import MAIN_FOLDER
 from brands_utility import FILE_NAME_BRAND_FILE
 
 PATH_MAIN_MENU_TO_HERE = os.curdir
@@ -22,6 +21,14 @@ def write_keywords_to_working_txt(working_txt_path, g_keywords) -> None:
 def read_brand_file() -> str:
     brands = open(FILE_NAME_BRAND_FILE, 'r', encoding='utf-8').read()
     return brands
+
+
+def find_storage_path() -> str:
+    if os.path.isdir(open(os.curdir+'\\main_folder_path.txt', 'r', encoding='utf-8').read()):
+        return open(os.curdir+'\\main_folder_path.txt', 'r', encoding='utf-8').read()
+    else:
+        with open(os.curdir+'\\main_folder_path.txt', 'w', encoding='utf-8') as f:
+            f.write(input('未找到品牌和关键词的根目录，输入需要设定的文件夹路径：'))
 
 
 class RandKeyWord(object):
@@ -72,7 +79,7 @@ class RandKeyWord(object):
         if type(self.how_many_to_keep) != int:
             print("输入错误，需要输入正整数数字")
             self.how_many_to_keep = int(input("需要保留前几位的关键词？："))
-        self._out_keywords_path = MAIN_FOLDER+f'\\关键词文件_{self.ui_kw}_{"_".join(str(datetime.datetime.now()).split(" ")[0].split("-"))}_{"_".join(str(datetime.datetime.now()).split(" ")[-1][:6].split(":"))}.txt'
+        self._out_keywords_path = find_storage_path()+f'\\关键词文件_{self.ui_kw}_{pas_utilits.get_date()}.txt '
 
     def get_keywords_cat(self):
         _pattern = re.compile(r'.+[:：]{')
