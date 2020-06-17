@@ -7,35 +7,19 @@ import generating_kw_from_html as gk
 import pas_utility
 import KW_generator_utility as KWu
 
-PATH_MAIN_MENU_TO_HERE = os.curdir
-
 
 class RandKeyWord(object):
 
     def __init__(self):
-        self.data_base_path = PATH_MAIN_MENU_TO_HERE + r'\KW_data_base.txt'
         self.how_many_to_keep = 0
         self.ui_kw = ''
         self.kw_cat = ''
         self.how_many_type = []
         self.db_content = ''
         self.lang = {}
-        self.uni_char = r'[\u4E00-\u9FA5\u00A0-\u00FF\u0100-\u017F\u0180-\u024F\u2E80-\u9FFFa-zA-Z0-9\'?]+\s'
-        self._no_DB_msg = r'没有找到关键词数据，请确认关键词已经添加到以下文件：E:\TUTA\文档\Python\创建工作日志和工作文件夹\KW_data_base.txt， 已自动创建文件模板'
-        self._no_match_msg = f'没有在数据库中找到您所需的关键词，请确保数据库({os.path.abspath(self.data_base_path)})中已经保存了您所需的内容并确认是否输入正确'
+        self._no_match_msg = f'没有在数据库中找到您所需的关键词，请确保数据库({os.path.abspath(KWu.PATH_DATA_BASE)})中已经保存了您所需的内容并确认是否输入正确'
         self._out_keywords_path = ''
-        self.working_txt_path = PATH_MAIN_MENU_TO_HERE + r'\需要输入的产品内容_产品编码(提交之后替换掉).txt'
-
-    # 检查关键词库文本文件
-    def check_data_base(self):
-        if os.path.isfile(self.data_base_path):
-            self.how_many_type = KWu.how_many_type(self.data_base_path)
-            return True
-        else:
-            with open(self.data_base_path, 'a', encoding='utf-8') as kw:
-                kw.write("这句话替换成产品类目并添加对应国家的关键字到括号内：{\n\nEN: \nFR: \nDE: \nIT: \nES:\n\n}这句话替换成产品类目并添加对应国家的关键字到括号内")
-            print(self._no_DB_msg)
-            os.startfile(self.data_base_path)
+        self.working_txt_path = KWu.PATH_MAIN + r'\需要输入的产品内容_产品编码(提交之后替换掉).txt'
 
     # 检查是否找到了输入的关键词
     def check_ui_kw(self):
@@ -47,20 +31,22 @@ class RandKeyWord(object):
             self.KW_generator_main()
 
     # 选择需要生成的关键词
-    def get_ui(self):
-        self.ui_kw = str(input("请选择需要生成的关键词(0:打开关键词文件，-1退出)："))
+    def get_ui(self, indexed_kw_types: dict):
+        self.ui_kw = str(input("请选择需要操作的关键词(0:打开关键词文件，-1退出)："))
         if self.ui_kw == str(0):
-            os.startfile(self.data_base_path)
+            os.startfile(KWu.PATH_DATA_BASE)
             main_menu.main_menu()
         elif self.ui_kw == str(-1):
             main_menu.main_menu()
         else:
-            self.ui_kw = KWu.indexing_kw_type(self.ui_kw, self.how_many_type)
+            self.ui_kw = indexed_kw_types[int(self.ui_kw)]
         self.how_many_to_keep = int(input("需要保留前几位的关键词？："))
         if type(self.how_many_to_keep) != int:
             print("输入错误，需要输入正整数数字")
             self.how_many_to_keep = int(input("需要保留前几位的关键词？："))
-        self._out_keywords_path = KWu.find_storage_path()+f'\\关键词文件_{self.ui_kw}_{pas_utility.get_date()}.txt '
+        self._out_keywords_path = \
+            KWu.find_storage_path() +\
+            f'\\关键词文件_{self.ui_kw}{str(datetime.datetime.now()).replace(":", "_").replace(".", "_")}.txt '
 
     # 获取输出关键词时连接关键词类型和内容的开头
     def get_keywords_cat(self):
@@ -113,12 +99,6 @@ class RandKeyWord(object):
                 self.lang[each_key] = re.findall(_pattern, str(_result))
         return _result
 
-    # 将所有包含各国字符的关键词以列表形式返回
-    def get_db_conten_as_words_list(self, _data_base):
-        _pattern = re.compile(self.uni_char)
-        _result = re.findall(_pattern, str(_data_base))
-        return _result
-
     # 写入关键词文件
     def write_keywords(self, lang, keywords):
         _t = datetime.datetime.now()
@@ -134,7 +114,7 @@ class RandKeyWord(object):
     # 随机关键词
     def mk_randKW(self, lang):
         self.set_lang_content(self.ui_kw, self.db_content)
-        _this_db_list = self.get_db_conten_as_words_list(self.lang[str(lang)])
+        _this_db_list = KWu.get_db_conten_as_words_list(self.lang[str(lang)])
         _this_db_list = [item.lower() for item in _this_db_list]
         _rand_list = []
         _characters = ''
@@ -162,11 +142,22 @@ class RandKeyWord(object):
         else:
             _is_again = str(input("输入错误，请输入Y或N："))
 
+    # 重命名关键词
+    def rename(self):
+        already_have = KWu.how_many_type()
+        print(already_have)
+        _ui = str(input("选择需要重命名的关键词："))
+        _which_word = KWu.indexing_kw_type(already_have)
+        print(_which_word)
+
     # 主程序
     def KW_generator_main(self):
-        self.check_data_base()
-        self.get_ui()
-        self.get_database_content(self.data_base_path, self.ui_kw)
+        KWu.check_data_base()
+        kw_types = KWu.how_many_type()
+        indexed_kw_types = KWu.indexing_kw_type(kw_types)
+        KWu.show_current_kw_types(indexed_kw_types)
+        self.get_ui(indexed_kw_types)
+        self.get_database_content(KWu.PATH_DATA_BASE, self.ui_kw)
         self.get_keywords_cat()
         self.check_ui_kw()
         print('\n')
@@ -185,7 +176,8 @@ def main():
     kw = RandKeyWord()
     pas_utility.print_current_menu('从关键词库生成关键词')
     _menu = {'退回主菜单': main_menu.main_menu,
-             '主程序': kw.KW_generator_main}
+             '生成关键词': kw.KW_generator_main,
+             '重命名关键词': kw.rename}
     pas_utility.make_menu(_menu)
 
 
