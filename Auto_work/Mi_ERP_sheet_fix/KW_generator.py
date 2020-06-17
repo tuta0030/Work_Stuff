@@ -142,14 +142,6 @@ class RandKeyWord(object):
         else:
             _is_again = str(input("输入错误，请输入Y或N："))
 
-    # 重命名关键词
-    def rename(self):
-        already_have = KWu.how_many_type()
-        print(already_have)
-        _ui = str(input("选择需要重命名的关键词："))
-        _which_word = KWu.indexing_kw_type(already_have)
-        print(_which_word)
-
     # 主程序
     def KW_generator_main(self):
         KWu.check_data_base()
@@ -171,13 +163,27 @@ class RandKeyWord(object):
         self.again()
 
 
+# 重命名关键词
+def rename():
+    KWu.check_data_base()
+    kw_types = KWu.how_many_type()
+    indexed_kw_types = KWu.indexing_kw_type(kw_types)
+    KWu.show_current_kw_types(indexed_kw_types)
+    _ui = str(input("选择需要重命名的关键词："))
+    _uo = str(input("输入新的词汇："))
+    content = open(KWu.PATH_DATA_BASE, 'r', encoding='utf-8').read()
+    content = content.replace(indexed_kw_types[int(_ui)], _uo)
+    with open(KWu.PATH_DATA_BASE, 'w', encoding='utf-8') as f:
+        f.write(content)
+
+
 def main():
     os.system('cls')
     kw = RandKeyWord()
     pas_utility.print_current_menu('从关键词库生成关键词')
     _menu = {'退回主菜单': main_menu.main_menu,
              '生成关键词': kw.KW_generator_main,
-             '重命名关键词': kw.rename}
+             '重命名关键词': rename}
     pas_utility.make_menu(_menu)
 
 
