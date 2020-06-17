@@ -39,11 +39,11 @@ def how_many_type(data_base_path: str) -> list:
     for item in result:
         indexed_result.append((index, item))
         index += 1
-    print(f"\n\n已有关键词：{indexed_result[1:]}")
+    print(f"\n\n已有关键词：{str(indexed_result[1:])[1:-1]}")
     return result
 
 
-def indexing_kw_db(ui, how_many_type_returned_value: list) -> str:
+def indexing_kw_type(ui, how_many_type_returned_value: list) -> str:
     index = 1
     types = {}
     which_type = ''

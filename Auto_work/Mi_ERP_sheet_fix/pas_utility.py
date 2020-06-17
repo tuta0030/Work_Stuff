@@ -200,8 +200,7 @@ def open_main_folder():
 def open_folder():
     try:
         os.system('cls')
-        print('当前选项：打开根目录')
-        print('')
+        print_current_menu('打开根目录')
         _menu = {'退回主菜单': main_menu.main_menu,
                  '表格根目录': open_main_folder,
                  '品牌名和关键词根目录': brands_utility.open_main_folder}
@@ -233,11 +232,17 @@ def make_menu(functions: dict):
                 func()
 
 
+def print_current_menu(current_menu: str):
+    print('当前选项：'+current_menu)
+    print('')
+
+
 def main_menu_quit():
     try:
         quit()
     except Exception as e:
         print(e)
+
         class QuitMainMenu(Exception):
             pass
 

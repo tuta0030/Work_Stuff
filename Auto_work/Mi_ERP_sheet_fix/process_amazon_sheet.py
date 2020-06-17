@@ -156,8 +156,7 @@ def main_function():
     while True:
         try:
             os.system('cls')
-            print("当前选项：处理亚马逊表格")
-            print('')
+            pas_utility.print_current_menu('ERP表格相关')
             _menu = {'退回主菜单': main_menu.main_menu,
                      '处理亚马逊表格（全部）': pas_main,
                      '处理亚马逊表格（部分）': pas_part}

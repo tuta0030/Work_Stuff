@@ -26,6 +26,7 @@ class RandKeyWord(object):
         self._out_keywords_path = ''
         self.working_txt_path = PATH_MAIN_MENU_TO_HERE + r'\需要输入的产品内容_产品编码(提交之后替换掉).txt'
 
+    # 检查关键词库文本文件
     def check_data_base(self):
         if os.path.isfile(self.data_base_path):
             self.how_many_type = KWu.how_many_type(self.data_base_path)
@@ -36,6 +37,7 @@ class RandKeyWord(object):
             print(self._no_DB_msg)
             os.startfile(self.data_base_path)
 
+    # 检查是否找到了输入的关键词
     def check_ui_kw(self):
         if re.findall(re.compile(self.ui_kw), str(self.kw_cat)):
             print('\n')
@@ -44,26 +46,29 @@ class RandKeyWord(object):
             print(self._no_match_msg)
             self.KW_generator_main()
 
+    # 选择需要生成的关键词
     def get_ui(self):
-        self.ui_kw = str(input("请输入需要生成的关键词类型(0:打开关键词文件，-1退出)："))
+        self.ui_kw = str(input("请选择需要生成的关键词(0:打开关键词文件，-1退出)："))
         if self.ui_kw == str(0):
             os.startfile(self.data_base_path)
             main_menu.main_menu()
         elif self.ui_kw == str(-1):
             main_menu.main_menu()
         else:
-            self.ui_kw = KWu.indexing_kw_db(self.ui_kw, self.how_many_type)
+            self.ui_kw = KWu.indexing_kw_type(self.ui_kw, self.how_many_type)
         self.how_many_to_keep = int(input("需要保留前几位的关键词？："))
         if type(self.how_many_to_keep) != int:
             print("输入错误，需要输入正整数数字")
             self.how_many_to_keep = int(input("需要保留前几位的关键词？："))
         self._out_keywords_path = KWu.find_storage_path()+f'\\关键词文件_{self.ui_kw}_{pas_utility.get_date()}.txt '
 
+    # 获取输出关键词时连接关键词类型和内容的开头
     def get_keywords_cat(self):
         _pattern = re.compile(r'.+[:：]{')
         _result = re.findall(_pattern, self.db_content)
         self.kw_cat = _result
 
+    # 获取关键词库文本中的内容
     def get_database_content(self, data_base_path, key_word):
         with open(data_base_path, 'r', encoding='utf-8') as db:
             content = db.read().split('\n')
@@ -80,6 +85,7 @@ class RandKeyWord(object):
             else:
                 return None
 
+    # 找出当前选择的关键词包含几个国家
     def find_out_how_many_language(self, specific_kw_content: str):
         _specific_pattern = re.compile(f'{self.ui_kw}[:：]'+'{'+'.*'+'}'+f'{self.ui_kw}')
         _specific_words = re.findall(_specific_pattern, specific_kw_content)
@@ -90,7 +96,8 @@ class RandKeyWord(object):
         print('\n当前关键词所包含的国家：', end='')
         print(', '.join(self.lang.keys()))
 
-    def set_lang_content(self, kw, db_content):  # working
+    # 设置每个国家的语言和关键词
+    def set_lang_content(self, kw, db_content):
         _pattern = re.compile(str(kw) + r'.*}' + str(kw), re.DOTALL)
         _result = re.findall(_pattern, db_content)
 
@@ -106,11 +113,13 @@ class RandKeyWord(object):
                 self.lang[each_key] = re.findall(_pattern, str(_result))
         return _result
 
+    # 将所有包含各国字符的关键词以列表形式返回
     def get_db_conten_as_words_list(self, _data_base):
         _pattern = re.compile(self.uni_char)
         _result = re.findall(_pattern, str(_data_base))
         return _result
 
+    # 写入关键词文件
     def write_keywords(self, lang, keywords):
         _t = datetime.datetime.now()
         with open(self._out_keywords_path, 'a', encoding='utf-8') as f:
@@ -122,6 +131,7 @@ class RandKeyWord(object):
             f.write('\n')
             f.write('\n')
 
+    # 随机关键词
     def mk_randKW(self, lang):
         self.set_lang_content(self.ui_kw, self.db_content)
         _this_db_list = self.get_db_conten_as_words_list(self.lang[str(lang)])
@@ -141,6 +151,7 @@ class RandKeyWord(object):
         print('关键词长度：' + str(len(_characters)))
         self.write_keywords(lang, _characters)
 
+    # 是否继续
     def again(self):
         _is_again = str(input("是否再次生成关键字？（Y/N）："))
         if _is_again == 'y' or _is_again == 'Y':
@@ -151,6 +162,7 @@ class RandKeyWord(object):
         else:
             _is_again = str(input("输入错误，请输入Y或N："))
 
+    # 主程序
     def KW_generator_main(self):
         self.check_data_base()
         self.get_ui()
@@ -171,13 +183,15 @@ class RandKeyWord(object):
 def main():
     os.system('cls')
     kw = RandKeyWord()
-    kw.KW_generator_main()
+    pas_utility.print_current_menu('从关键词库生成关键词')
+    _menu = {'退回主菜单': main_menu.main_menu,
+             '主程序': kw.KW_generator_main}
+    pas_utility.make_menu(_menu)
 
 
 def menu():
     os.system('cls')
-    print("当前选项：关键词相关")
-    print('')
+    pas_utility.print_current_menu('关键词相关')
     function_menu = {'退回主菜单': main_menu.main_menu,
                      '从关键词库生成关键词': main,
                      '从html文件生成关键词': gk.validate_html_path}
