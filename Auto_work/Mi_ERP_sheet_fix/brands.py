@@ -7,13 +7,6 @@ from send2trash import send2trash as d
 import random
 import brands_utility as bu
 import pas_utility
-import main_menu
-
-"""
-TODO:
-    1. 检查JS Page，假如是JS Page，从已下载的url文件当中去除JS Page的url
-    4. 添加切换user-agent,ip,cookie重试失败url的功能
-"""
 
 
 class DownloadBrands(bu.DownloadBrands):

@@ -41,5 +41,4 @@ class LoadAmazonSheet(object):
 
 
 if __name__ == '__main__':
-    _sheet_path = os.curdir + "\\水龙头UK_亚马逊表_20200511134434.xlsx"
-    load_as = LoadAmazonSheet(_sheet_path)
+    pass
