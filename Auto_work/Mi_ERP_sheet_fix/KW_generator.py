@@ -184,9 +184,20 @@ def rename():
     pas_utility.back_to_main_menu()
 
 
-# 创建新的关键词
+# 添加新的关键字
 def creat_new_kw():
-    pass
+    temp = '''格式示例，如果没有这些国家可以删掉\n\n\nEN:这里写上英文的关键词\n\nFR:这里写上法语的关键词\n\nDE:这里写上德语的关键词'''
+    with open('new_kw_temp.txt', 'w', encoding='utf-8') as t:
+        t.write(temp)
+    print("在打开的文件中按照对应格式添加关键词")
+    os.startfile('new_kw_temp.txt')
+    ui = input("是否添加完成(y/n):")
+    if ui == 'y':
+        KWu.process_new_kw()
+        pas_utility.back_to_main_menu()
+    else:
+        print('取消操作，退回主菜单')
+        pas_utility.back_to_main_menu()
 
 
 # 菜单选项：用来调用主程序和子程序

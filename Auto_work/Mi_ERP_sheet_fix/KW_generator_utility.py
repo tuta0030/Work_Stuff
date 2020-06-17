@@ -81,3 +81,17 @@ def check_data_base():
             kw.write("这句话替换成产品类目并添加对应国家的关键字到括号内：{\n\nEN: \nFR: \nDE: \nIT: \nES:\n\n}这句话替换成产品类目并添加对应国家的关键字到括号内")
         print(NO_DB_MSG)
         os.startfile(PATH_DATA_BASE)
+
+
+def process_new_kw():
+    ui = input("输入添加的关键词名称：")
+    new_kw_content = open('new_kw_temp.txt', 'r', encoding='utf-8').read().replace('格式示例，如果没有这些国家可以删掉', '')
+    with open('KW_data_base.txt', 'a', encoding='utf-8') as f:
+        f.write('\n')
+        f.write('\n')
+        f.write(ui+':{')
+        f.write('\n')
+        f.write(new_kw_content)
+        f.write('\n')
+        f.write('\n')
+        f.write('}'+ui)
