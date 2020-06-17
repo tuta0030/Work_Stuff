@@ -157,7 +157,7 @@ def main_function():
         try:
             os.system('cls')
             pas_utility.print_current_menu('ERP表格相关')
-            _menu = {'退回主菜单': main_menu.main_menu,
+            _menu = {'退回主菜单': pas_utility.back_to_main_menu,
                      '处理亚马逊表格（全部）': pas_main,
                      '处理亚马逊表格（部分）': pas_part}
             pas_utility.make_menu(_menu)

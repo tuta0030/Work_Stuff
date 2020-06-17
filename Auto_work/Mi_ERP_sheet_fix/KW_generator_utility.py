@@ -64,9 +64,13 @@ def indexing_kw_type(kw_types: list) -> dict:
     return _indexed_types
 
 
-def show_current_kw_types(indexed_kw_type: dict):
+def show_current_kw_types() -> dict:
+    check_data_base()
+    kw_types = how_many_type()
+    indexed_kw_types = indexing_kw_type(kw_types)
     print("当前已有关键词：")
-    print(str(indexed_kw_type)[1:-1])
+    print(str(indexed_kw_types)[1:-1])
+    return indexed_kw_types
 
 
 def check_data_base():

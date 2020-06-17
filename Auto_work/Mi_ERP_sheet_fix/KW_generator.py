@@ -8,6 +8,7 @@ import pas_utility
 import KW_generator_utility as KWu
 
 
+# 主程序的类
 class RandKeyWord(object):
 
     def __init__(self):
@@ -144,10 +145,7 @@ class RandKeyWord(object):
 
     # 主程序
     def KW_generator_main(self):
-        KWu.check_data_base()
-        kw_types = KWu.how_many_type()
-        indexed_kw_types = KWu.indexing_kw_type(kw_types)
-        KWu.show_current_kw_types(indexed_kw_types)
+        indexed_kw_types = KWu.show_current_kw_types()
         self.get_ui(indexed_kw_types)
         self.get_database_content(KWu.PATH_DATA_BASE, self.ui_kw)
         self.get_keywords_cat()
@@ -163,36 +161,42 @@ class RandKeyWord(object):
         self.again()
 
 
+# 主程序:从关键词库生成关键词
+def main():
+    os.system('cls')
+    kw = RandKeyWord()
+    pas_utility.print_current_menu('从关键词库生成关键词')
+    _menu = {'退回主菜单': pas_utility.back_to_main_menu,
+             '生成关键词': kw.KW_generator_main,
+             '重命名关键词': rename}
+    pas_utility.make_menu(_menu)
+
+
 # 重命名关键词
 def rename():
-    KWu.check_data_base()
-    kw_types = KWu.how_many_type()
-    indexed_kw_types = KWu.indexing_kw_type(kw_types)
-    KWu.show_current_kw_types(indexed_kw_types)
+    indexed_kw_types = KWu.show_current_kw_types()
     _ui = str(input("选择需要重命名的关键词："))
     _uo = str(input("输入新的词汇："))
     content = open(KWu.PATH_DATA_BASE, 'r', encoding='utf-8').read()
     content = content.replace(indexed_kw_types[int(_ui)], _uo)
     with open(KWu.PATH_DATA_BASE, 'w', encoding='utf-8') as f:
         f.write(content)
+    pas_utility.back_to_main_menu()
 
 
-def main():
-    os.system('cls')
-    kw = RandKeyWord()
-    pas_utility.print_current_menu('从关键词库生成关键词')
-    _menu = {'退回主菜单': main_menu.main_menu,
-             '生成关键词': kw.KW_generator_main,
-             '重命名关键词': rename}
-    pas_utility.make_menu(_menu)
+# 创建新的关键词
+def creat_new_kw():
+    pass
 
 
+# 菜单选项：用来调用主程序和子程序
 def menu():
     os.system('cls')
     pas_utility.print_current_menu('关键词相关')
-    function_menu = {'退回主菜单': main_menu.main_menu,
+    function_menu = {'退回主菜单': pas_utility.back_to_main_menu,
                      '从关键词库生成关键词': main,
-                     '从html文件生成关键词': gk.validate_html_path}
+                     '从html文件生成关键词': gk.validate_html_path,
+                     '添加新的关键字': creat_new_kw}
     pas_utility.make_menu(function_menu)
 
 

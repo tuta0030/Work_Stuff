@@ -261,7 +261,7 @@ class DownloadBrands(bu.DownloadBrands):
             print("未找到主html", end=',')
             self.function_meta_url()
         self.check_meta_url_html_file()
-        menu_ = {'退回主菜单': main_menu.main_menu,
+        menu_ = {'退回主菜单': pas_utility.back_to_main_menu,
                  '下载元url（包含子listing的页面，搜索页面，店铺页面或排名页面）': self.function_meta_url,
                  '查看元html中所有listing的url': self.function_check_listing_url,
                  '创建品牌关键词替换文本文件': self.function_make_text_file,
