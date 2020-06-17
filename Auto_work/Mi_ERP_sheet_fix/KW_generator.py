@@ -4,31 +4,10 @@ import os
 import re
 import main_menu
 import generating_kw_from_html as gk
-import pas_utilits
-from brands_utility import FILE_NAME_BRAND_FILE
+import pas_utility
+import KW_generator_utility as KWu
 
 PATH_MAIN_MENU_TO_HERE = os.curdir
-
-
-def write_keywords_to_working_txt(working_txt_path, g_keywords) -> None:
-    with open(working_txt_path, 'a', encoding='utf-8') as w:
-        oc_content = w.read()
-        _pattern = re.compile(r'关键字keywords.+内容简介features')
-        re.sub(_pattern, oc_content, g_keywords)
-    return None
-
-
-def read_brand_file() -> str:
-    brands = open(FILE_NAME_BRAND_FILE, 'r', encoding='utf-8').read()
-    return brands
-
-
-def find_storage_path() -> str:
-    if os.path.isdir(open(os.curdir+'\\main_folder_path.txt', 'r', encoding='utf-8').read()):
-        return open(os.curdir+'\\main_folder_path.txt', 'r', encoding='utf-8').read()
-    else:
-        with open(os.curdir+'\\main_folder_path.txt', 'w', encoding='utf-8') as f:
-            f.write(input('未找到品牌和关键词的根目录，输入需要设定的文件夹路径：'))
 
 
 class RandKeyWord(object):
@@ -38,6 +17,7 @@ class RandKeyWord(object):
         self.how_many_to_keep = 0
         self.ui_kw = ''
         self.kw_cat = ''
+        self.how_many_type = []
         self.db_content = ''
         self.lang = {}
         self.uni_char = r'[\u4E00-\u9FA5\u00A0-\u00FF\u0100-\u017F\u0180-\u024F\u2E80-\u9FFFa-zA-Z0-9\'?]+\s'
@@ -48,9 +28,7 @@ class RandKeyWord(object):
 
     def check_data_base(self):
         if os.path.isfile(self.data_base_path):
-            kw_db_option_pattern = re.compile(r'.+(?=:{)')
-            result = re.findall(kw_db_option_pattern, open(self.data_base_path, 'r', encoding='utf-8').read())
-            print(f"\n\n已有关键词：{result}".replace('\'temp\',', ''))
+            self.how_many_type = KWu.how_many_type(self.data_base_path)
             return True
         else:
             with open(self.data_base_path, 'a', encoding='utf-8') as kw:
@@ -68,18 +46,18 @@ class RandKeyWord(object):
 
     def get_ui(self):
         self.ui_kw = str(input("请输入需要生成的关键词类型(0:打开关键词文件，-1退出)："))
-        if self.ui_kw == str(1):
-            self.ui_kw = "智能手表"
-        elif self.ui_kw == str(0):
+        if self.ui_kw == str(0):
             os.startfile(self.data_base_path)
             main_menu.main_menu()
         elif self.ui_kw == str(-1):
             main_menu.main_menu()
+        else:
+            self.ui_kw = KWu.indexing_kw_db(self.ui_kw, self.how_many_type)
         self.how_many_to_keep = int(input("需要保留前几位的关键词？："))
         if type(self.how_many_to_keep) != int:
             print("输入错误，需要输入正整数数字")
             self.how_many_to_keep = int(input("需要保留前几位的关键词？："))
-        self._out_keywords_path = find_storage_path()+f'\\关键词文件_{self.ui_kw}_{pas_utilits.get_date()}.txt '
+        self._out_keywords_path = KWu.find_storage_path()+f'\\关键词文件_{self.ui_kw}_{pas_utility.get_date()}.txt '
 
     def get_keywords_cat(self):
         _pattern = re.compile(r'.+[:：]{')
@@ -90,7 +68,7 @@ class RandKeyWord(object):
         with open(data_base_path, 'r', encoding='utf-8') as db:
             content = db.read().split('\n')
             content = ' '.join(content)
-            brands = read_brand_file()
+            brands = KWu.read_brand_file()
             brands = brands.split('|')
             for each_brand in brands:
                 content = content.replace(each_brand, '')
@@ -203,7 +181,7 @@ def menu():
     function_menu = {'退回主菜单': main_menu.main_menu,
                      '从关键词库生成关键词': main,
                      '从html文件生成关键词': gk.validate_html_path}
-    pas_utilits.make_menu(function_menu)
+    pas_utility.make_menu(function_menu)
 
 
 if __name__ == "__main__":

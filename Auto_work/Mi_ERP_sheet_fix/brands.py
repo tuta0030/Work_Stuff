@@ -6,7 +6,7 @@ import time
 from send2trash import send2trash as d
 import random
 import brands_utility as bu
-import pas_utilits
+import pas_utility
 import main_menu
 
 """
@@ -267,7 +267,7 @@ class DownloadBrands(bu.DownloadBrands):
                  '创建品牌关键词替换文本文件': self.function_make_text_file,
                  '(慎用) 清除html文件': self.function_rm_html,
                  '(慎用) 下载所有的元html中所有listing的html文件': self.function_download_all_html}
-        pas_utilits.make_menu(menu_)
+        pas_utility.make_menu(menu_)
 
 
 def whole_function():
