@@ -1,6 +1,6 @@
 import datetime
 import os
-import main_menu
+import pas_utility
 
 file_time = str(datetime.datetime.now()).replace('-', '_').replace(':', '_').replace(' ', '_').replace('.', '_')
 menu_item = {}
@@ -18,7 +18,7 @@ DOWNLOAD_RETRY_TIME = 3
 def validate_main_folder_path() -> None:
     if os.path.isdir(MAIN_FOLDER) is False:
         with open('main_folder_path.txt', 'w', encoding='utf-8') as mf:
-            mf.write(str(input("无效的主路径，请重新设置：")))
+            mf.write(str(input("未设置或设置了无效的主路径，请重新设置：")))
 
 
 def validate_listing_folder() -> None:
@@ -101,8 +101,9 @@ def change_cookies():
 
 
 def open_main_folder():
+    validate_main_folder_path()
     os.startfile(MAIN_FOLDER)
-    main_menu.main_menu()
+    pas_utility.back_to_main_menu()
 
 
 class DownloadBrands(object):

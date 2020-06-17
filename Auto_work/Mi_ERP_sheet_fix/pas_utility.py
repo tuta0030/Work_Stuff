@@ -8,14 +8,6 @@ import brands_utility
 MENU_RESTRICTION = 200
 ROW_RESTRICTION = 2000
 COL_MAX = 2000
-MAIN_PATH = open(os.curdir + '\\path.txt', 'r', encoding='utf-8').read()
-INTRO = r"""
-亚马逊表格处理工具
-请注意文件命名方式：
-    1. <文件夹> 命名方式: <日期_产品名称>  例如（根目录\20200601_游泳圈）
-    2. <文件> 命名方式: <产品名称+国家_亚马逊表_日期>  例如（游泳圈UK_亚马逊表_20200601.xlsx）
-    3. 分类节点和关键词选项如果已经填写，可以按-1跳过
-""" + f'当前设置的主路径为：{MAIN_PATH}\n'
 NO_FILE = '\n' + r'没有找到文件，请确认表格在正确的路径下，并确定表格文件名称格式正确'
 STANDARD_MESSAGE = 'The photo was taken in natural light because there is a slight chromatic aberration between the ' \
                    'device and the monitor, please understand'
@@ -24,17 +16,6 @@ STANDARD_MESSAGE = 'The photo was taken in natural light because there is a slig
 def get_date() -> str:
     time = ''.join(str(datetime.datetime.now()).split(' ')[0].split('-'))
     return str(time)
-
-
-def validate_main_path() -> str:
-    if os.path.isdir(MAIN_PATH) is not True:
-        main_path = input("查找主路径失败，请输入包含产品文件夹的路径：")
-        with open(os.curdir + '\\path.txt', 'w', encoding='utf-8') as p:
-            p.write(main_path)
-        _main_path = open(os.curdir + '\\path.txt', 'r', encoding='utf-8').read()
-        return _main_path
-    else:
-        return MAIN_PATH
 
 
 def validate_product() -> str:
@@ -192,18 +173,12 @@ def show_menu(ui: str, menu: dict):
         show_menu(ui, menu)
 
 
-def open_main_folder():
-    os.startfile(MAIN_PATH)
-    main_menu.main_menu()
-
-
 def open_folder():
     try:
-        os.system('cls')
-        print_current_menu('打开根目录')
+        # os.system('cls')
+        # print_current_menu('打开根目录')
         _menu = {'退回主菜单': back_to_main_menu,
-                 '表格根目录': open_main_folder,
-                 '品牌名和关键词根目录': brands_utility.open_main_folder}
+                 '品牌名和关键词根目录': brands_utility.open_main_folder()}
         make_menu(_menu)
     except Exception as e:
         print("暂无根目录可以打开")
