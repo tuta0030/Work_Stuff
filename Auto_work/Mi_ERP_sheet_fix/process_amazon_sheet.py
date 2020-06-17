@@ -3,12 +3,15 @@ import load_amazon_sheet
 from openpyxl.utils import coordinate_to_tuple
 import pas_utility
 
+SECRET_CODE = '0030'
+
 
 class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 
     def __init__(self, sheet_path):
         try:
             load_amazon_sheet.LoadAmazonSheet.__init__(self, sheet_path)
+            self.all_titles = []
         except FileNotFoundError as _e:
             print(pas_utility.NO_FILE)
             raise _e
@@ -27,6 +30,7 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         title_list = pas_utility.get_column_until_none_cell(self.sheet,
                                                             item_name_coordinate[0],
                                                             item_name_coordinate[1])
+        self.all_titles = [each_title.value for each_title in title_list]
         for index, title in enumerate(title_list):
             title_list[index].value = pas_utility.process_item_name(title.value, brand)
 
@@ -49,8 +53,14 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         pas_utility.process_info(self.sheet, node_coordinate, node)
 
     def process_keywords(self, keywords: str):
-        keywords_coordinate = coordinate_to_tuple(str(self.keywords_cell).split('.')[-1][:-1])
-        pas_utility.process_info(self.sheet, keywords_coordinate, keywords)
+        if keywords == SECRET_CODE:
+            processed_keywords = ' '.join(pas_utility.high_frequent_words(self.all_titles))\
+                .replace(',', '').replace('*', '')[:200]
+            keywords_coordinate = coordinate_to_tuple(str(self.keywords_cell).split('.')[-1][:-1])
+            pas_utility.process_info(self.sheet, keywords_coordinate, processed_keywords)
+        else:
+            keywords_coordinate = coordinate_to_tuple(str(self.keywords_cell).split('.')[-1][:-1])
+            pas_utility.process_info(self.sheet, keywords_coordinate, keywords)
 
     def process_item_type(self, keywords: str):
         keywords_coordinate = coordinate_to_tuple(str(self.item_type_cell).split('.')[-1][:-1])
@@ -60,20 +70,12 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         self.process_price(float(input("输入汇率：")), int(input("输入最低价格")))
 
     def process_sheet(self):
-
-        # ========= PROCESS TITLE =========
         self.process_title(str(input("请输入不需要首字母大写的品牌名(回车跳过)：")))
-        # ========= PROCESS TITLE =========
         self.process_bulletpoints()
-        # ========= PROCESS PRICE =========
-        self.process_price(float(input("输入汇率：")), int(input("输入最低价格")))
-        # ========= PROCESS NODE =========
+        self.process_price(float(input("输入汇率：")), int(input("输入最低价格:")))
         self.process_node(str(input("分类节点(-1跳过)：")))
-        # ========= PROCESS KEYWORDS =========
         self.process_keywords(str(input("关键词(-1跳过)：")))
-        # ========= PROCESS DESCRIPTION =========
         self.process_description()
-        # ========= REMOVE FIRST THREE ROW =========
         for row in range(1, 4):
             for col in range(1, 1000):
                 self.sheet.cell(row, col).value = None

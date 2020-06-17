@@ -29,7 +29,7 @@ class RandKeyWord(object):
             print('正在为您生成所需的关键词...')
         else:
             print(self._no_match_msg)
-            self.KW_generator_main()
+            self.kw_generator_main()
 
     # 选择需要生成的关键词
     def get_ui(self, indexed_kw_types: dict):
@@ -113,7 +113,7 @@ class RandKeyWord(object):
             f.write('\n')
 
     # 随机关键词
-    def mk_randKW(self, lang):
+    def mk_rand_kw(self, lang):
         self.set_lang_content(self.ui_kw, self.db_content)
         _this_db_list = KWu.get_db_conten_as_words_list(self.lang[str(lang)])
         _this_db_list = [item.lower() for item in _this_db_list]
@@ -137,14 +137,14 @@ class RandKeyWord(object):
         _is_again = str(input("是否再次生成关键字？（Y/N）："))
         if _is_again == 'y' or _is_again == 'Y':
             print('\n\n')
-            self.KW_generator_main()
+            self.kw_generator_main()
         elif _is_again == 'n' or _is_again == 'N':
             main_menu.main_menu()
         else:
             _is_again = str(input("输入错误，请输入Y或N："))
 
     # 主程序
-    def KW_generator_main(self):
+    def kw_generator_main(self):
         indexed_kw_types = KWu.show_current_kw_types()
         self.get_ui(indexed_kw_types)
         self.get_database_content(KWu.PATH_DATA_BASE, self.ui_kw)
@@ -153,7 +153,7 @@ class RandKeyWord(object):
         print('\n')
         for i in self.lang.keys():
             try:
-                self.mk_randKW(i)
+                self.mk_rand_kw(i)
             except IndexError:
                 print("数据库信息错误，请确保填写了所有国家的关键词(错误类型：IndexError)")
         print('\n')
@@ -167,7 +167,7 @@ def main():
     kw = RandKeyWord()
     pas_utility.print_current_menu('从关键词库生成关键词')
     _menu = {'退回主菜单': pas_utility.back_to_main_menu,
-             '生成关键词': kw.KW_generator_main,
+             '生成关键词': kw.kw_generator_main,
              '重命名关键词': rename}
     pas_utility.make_menu(_menu)
 
@@ -185,7 +185,7 @@ def rename():
 
 
 # 添加新的关键字
-def creat_new_kw():
+def create_new_kw():
     temp = '''格式示例，如果没有这些国家可以删掉\n\n\nEN:这里写上英文的关键词\n\nFR:这里写上法语的关键词\n\nDE:这里写上德语的关键词'''
     with open('new_kw_temp.txt', 'w', encoding='utf-8') as t:
         t.write(temp)
@@ -207,7 +207,7 @@ def menu():
     function_menu = {'退回主菜单': pas_utility.back_to_main_menu,
                      '从关键词库生成关键词': main,
                      '从html文件生成关键词': gk.validate_html_path,
-                     '添加新的关键字': creat_new_kw}
+                     '添加新的关键字': create_new_kw}
     pas_utility.make_menu(function_menu)
 
 

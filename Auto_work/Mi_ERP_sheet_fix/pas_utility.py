@@ -4,7 +4,9 @@ import re
 from openpyxl.utils import coordinate_to_tuple
 import main_menu
 import brands_utility
+import collections
 
+HOW_MANY_WORDS_IN_COUNTER = 50
 MENU_RESTRICTION = 200
 ROW_RESTRICTION = 2000
 COL_MAX = 2000
@@ -96,6 +98,15 @@ def process_info(sheet, info_coordinate: tuple, info):
         info_list = get_column_until_none_cell(sheet, info_coordinate[0], info_coordinate[1])
         for index, item in enumerate(info_list):
             info_list[index].value = info
+
+
+def high_frequent_words(key_words_list: list):
+    kw_string = ' '.join(key_words_list)
+    kw_string = kw_string.split(' ')
+    kw_list = []
+    for word, count in collections.Counter(kw_string).most_common(HOW_MANY_WORDS_IN_COUNTER):
+        kw_list.append(word)
+    return kw_list
 
 
 def process_description(sheet, desc_coordinate: tuple):
