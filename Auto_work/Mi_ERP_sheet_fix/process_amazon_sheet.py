@@ -79,37 +79,31 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
                 self.sheet.cell(row, col).value = None
 
     def save_sheet(self, path: str, original_filename: str) -> None:
-        self.wb.save(path+'\\输出文件_'+original_filename+'.xlsx')
+        self.wb.save(path+'\\_输出文件_'+original_filename+'.xlsx')
 
 
-# 索引用户输入的文件夹中的文件
-def index_files() -> tuple:
-    folder = input('输入包含表格的文件夹：')
-    files = {}
-    index = 0
-    for folder, subfolder, file in os.walk(folder):
-        for each_file in file:
-            files[index] = folder + '\\' + each_file
-            index += 1
-    print("当前文件夹中包含的文件有：")
-    for index, file in files.items():
-        print(index, end='')
-        print('\t' + file.split('\\')[-1])
-    ui = str(input('请选择需要处理的文件：')).strip()
-    which_file = ''
-    for selection in files.keys():
-        if len(ui.split(' ')) > 1:
-            which_file = []
-            for each_ui in ui.split(' '):
-                which_file.append(files[int(each_ui)])
-        if ui == str(selection):
-            which_file = files[selection]
-    return folder, which_file
+#  以相同数值处理多个表格的类
+class ProcessWithSameParameter(ProcessAmazonSheet):
+
+    def __init__(self, sheet_path, _same_parameter):
+        ProcessAmazonSheet.__init__(self, sheet_path)
+        self._same_parameter = _same_parameter
+
+    def process_sheet(self):
+        self.process_title(self._same_parameter['title'])
+        self.process_bulletpoints()
+        self.process_price(self._same_parameter['price'], self._same_parameter['lowest_pice'])
+        self.process_node(self._same_parameter['node'])
+        self.process_keywords(self._same_parameter['key_word'])
+        self.process_description()
+        for row in range(1, 4):
+            for col in range(1, 1000):
+                self.sheet.cell(row, col).value = None
 
 
 # 处理亚马逊表格（全部）
 def pas_main():
-    folder, which_file = index_files()
+    folder, which_file = pas_utility.index_files()
     if type(which_file) is list:
         for each_file in which_file:
             pas = ProcessAmazonSheet(each_file)
@@ -123,7 +117,7 @@ def pas_main():
 
 # 处理亚马逊表格（部分）
 def pas_part():
-    folder, which_file = index_files()
+    folder, which_file = pas_utility.index_files()
     if type(which_file) is list:
         for each_file in which_file:
             pas = ProcessAmazonSheet(each_file)
@@ -152,28 +146,15 @@ def pas_same_para():
                        'key_word': str(input("关键词(-1跳过)：")),
                        'lowest_pice': int(input("输入最低价格："))
                        }
-
-    class ProcessWithParameter(ProcessAmazonSheet):
-        def process_sheet(self):
-            self.process_title(_same_parameter['title'])
-            self.process_bulletpoints()
-            self.process_price(_same_parameter['price'], _same_parameter['lowest_pice'])
-            self.process_node(_same_parameter['node'])
-            self.process_keywords(_same_parameter['key_word'])
-            self.process_description()
-            for row in range(1, 4):
-                for col in range(1, 1000):
-                    self.sheet.cell(row, col).value = None
-
-    folder, which_file = index_files()
+    folder, which_file = pas_utility.index_files()
     if type(which_file) is list:
         for each_file in which_file:
             print('开始处理表格：'+each_file.split("\\")[-1])
-            pas = ProcessWithParameter(each_file)
+            pas = ProcessWithSameParameter(each_file, _same_parameter)
             pas.process_sheet()
             pas.save_sheet(folder, each_file.split('\\')[-1])
     else:
-        pas = ProcessWithParameter(which_file)
+        pas = ProcessWithSameParameter(which_file, _same_parameter)
         pas.process_sheet()
         pas.save_sheet(folder, which_file.split('\\')[-1])
     print("处理完成")

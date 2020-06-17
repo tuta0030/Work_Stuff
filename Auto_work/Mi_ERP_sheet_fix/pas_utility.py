@@ -207,6 +207,31 @@ def make_menu(functions: dict):
                 func()
 
 
+# 索引用户输入的文件夹中的文件
+def index_files() -> tuple:
+    folder = input('输入包含表格的文件夹：')
+    files = {}
+    index = 0
+    for folder, subfolder, file in os.walk(folder):
+        for each_file in file:
+            files[index] = folder + '\\' + each_file
+            index += 1
+    print("当前文件夹中包含的文件有：")
+    for index, file in files.items():
+        print(index, end='')
+        print('\t' + file.split('\\')[-1])
+    ui = str(input('请选择需要处理的文件：')).strip()
+    which_file = ''
+    for selection in files.keys():
+        if len(ui.split(' ')) > 1:
+            which_file = []
+            for each_ui in ui.split(' '):
+                which_file.append(files[int(each_ui)])
+        if ui == str(selection):
+            which_file = files[selection]
+    return folder, which_file
+
+
 def print_current_menu(current_menu: str):
     print('当前选项：'+current_menu)
     print('')
