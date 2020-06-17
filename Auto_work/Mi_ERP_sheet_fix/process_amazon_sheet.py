@@ -109,6 +109,10 @@ def index_files() -> tuple:
     # 传入表格文件的路径
     which_file = ''
     for selection in files.keys():
+        if len(ui.split(' ')) > 1:
+            which_file = []
+            for each_ui in ui.split(' '):
+                which_file.append(files[int(each_ui)])
         if ui == str(selection):
             which_file = files[selection]
     return folder, which_file
@@ -116,20 +120,36 @@ def index_files() -> tuple:
 
 def pas_main():
     folder, which_file = index_files()
-    pas = ProcessAmazonSheet(which_file)
-    pas.process_sheet()
-    pas.save_sheet(folder, which_file.split('\\')[-1])
+    if type(which_file) is list:
+        for each_file in which_file:
+            pas = ProcessAmazonSheet(each_file)
+            pas.process_sheet()
+            pas.save_sheet(folder, each_file.split('\\')[-1])
+    else:
+        pas = ProcessAmazonSheet(which_file)
+        pas.process_sheet()
+        pas.save_sheet(folder, which_file.split('\\')[-1])
 
 
 def pas_part():
     folder, which_file = index_files()
-    pas = ProcessAmazonSheet(which_file)
-    print("选择需要单独处理的功能")
-    _menu = {'仅处理价格': pas.only_price,
-             '仅标题首字母大写': pas.cap_title
-             }
-    pas_utilits.make_menu(_menu)
-    pas.save_sheet(folder, which_file.split('\\')[-1])
+    if type(which_file) is list:
+        for each_file in which_file:
+            pas = ProcessAmazonSheet(each_file)
+            print("选择需要单独处理的功能")
+            _menu = {'仅处理价格': pas.only_price,
+                     '仅标题首字母大写': pas.cap_title
+                     }
+            pas_utilits.make_menu(_menu)
+            pas.save_sheet(folder, each_file.split('\\')[-1])
+    else:
+        pas = ProcessAmazonSheet(which_file)
+        print("选择需要单独处理的功能")
+        _menu = {'仅处理价格': pas.only_price,
+                 '仅标题首字母大写': pas.cap_title
+                 }
+        pas_utilits.make_menu(_menu)
+        pas.save_sheet(folder, which_file.split('\\')[-1])
 
 
 def main_function():
@@ -144,6 +164,7 @@ def main_function():
             pas_utilits.make_menu(_menu)
             main_function()
         except Exception as e:
+            # raise e
             print(e)
             print('由于以上错误，无法处理本文件，请尝试重新输入正确的文件夹和文件序列号')
             main_function()

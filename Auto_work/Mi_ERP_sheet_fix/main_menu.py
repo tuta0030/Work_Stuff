@@ -14,7 +14,7 @@ import KW_generator
 """
 待添加功能：
     表格程序：
-        1. 去掉需要特定文件名称的限制
+        1. 添加可以选择处理多个表格文件的功能 √
     品牌程序：
         1. 添加下载JS Page报错之后自动更换user agent和cookie继续下载的功能
         3. 添加通过排名页面生成关键词的功能
@@ -38,7 +38,6 @@ def main_menu():
                      }
             pas_utilits.make_menu(_menu)
         except Exception as e:
-            print(e)
             raise e
         else:
             break

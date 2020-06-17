@@ -234,11 +234,14 @@ def make_menu(functions: dict):
 
 
 def main_menu_quit():
+    try:
+        quit()
+    except Exception as e:
+        print(e)
+        class QuitMainMenu(Exception):
+            pass
 
-    class QuitMainMenu(Exception):
-        pass
-
-    raise QuitMainMenu('退出程序')
+        raise QuitMainMenu('退出程序')
 
 
 if __name__ == '__main__':
