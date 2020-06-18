@@ -7,7 +7,6 @@
 
 import re
 import os
-from brands_utility import FILE_NAME_BRAND_FILE
 
 UNI_CHAR = r'[\u4E00-\u9FA5\u00A0-\u00FF\u0100-\u017F\u0180-\u024F\u2E80-\u9FFFa-zA-Z0-9\'?]+\s'
 PATH_MAIN = os.curdir
@@ -23,17 +22,13 @@ def write_keywords_to_working_txt(working_txt_path, g_keywords) -> None:
     return None
 
 
-def read_brand_file() -> str:
-    brands = open(FILE_NAME_BRAND_FILE, 'r', encoding='utf-8').read()
-    return brands
-
-
 def find_storage_path() -> str:
     if os.path.isdir(open(os.curdir+'\\main_folder_path.txt', 'r', encoding='utf-8').read()):
         return open(os.curdir+'\\main_folder_path.txt', 'r', encoding='utf-8').read()
     else:
         with open(os.curdir+'\\main_folder_path.txt', 'w', encoding='utf-8') as f:
-            f.write(input('未找到品牌和关键词的根目录，输入需要设定的文件夹路径：'))
+            f.write(input('未设定输出关键词的文件夹，输入需要设定的文件夹路径：'))
+        return open(os.curdir+'\\main_folder_path.txt', 'r', encoding='utf-8').read()
 
 
 # 将所有包含各国字符的关键词以列表形式返回

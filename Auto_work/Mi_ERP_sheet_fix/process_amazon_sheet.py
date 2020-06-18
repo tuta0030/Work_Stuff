@@ -59,8 +59,9 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
     def process_keywords(self, keywords: str):
         if keywords == SECRET_CODE:
             processed_keywords = ' '.join(pas_utility.high_frequent_words(self.all_titles))\
-                .replace(',', '').replace('*', '').replace(BRAND_TO_REPLACE_KW, '').replace('  ', ' ')\
+                .replace(',', '').replace('*', '').replace(BRAND_TO_REPLACE_KW, '')\
                 .replace('(', '').replace(')', '')[:KW_TRIMMER]
+            processed_keywords = processed_keywords.replace('  ', ' ')
             keywords_coordinate = coordinate_to_tuple(str(self.keywords_cell).split('.')[-1][:-1])
             pas_utility.process_info(self.sheet, keywords_coordinate, processed_keywords)
         else:

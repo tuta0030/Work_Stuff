@@ -46,7 +46,7 @@ class RandKeyWord(object):
             self.how_many_to_keep = int(input("需要保留前几位的关键词？："))
         self._out_keywords_path = \
             KWu.find_storage_path() +\
-            f'\\关键词文件_{self.ui_kw}{str(datetime.datetime.now()).replace(":", "_").replace(".", "_")}.txt '
+            f'\\关键词文件_{self.ui_kw}_{str(datetime.datetime.now()).replace(":", "_").replace(".", "_")}.txt '
 
     # 获取输出关键词时连接关键词类型和内容的开头
     def get_keywords_cat(self):
@@ -59,10 +59,6 @@ class RandKeyWord(object):
         with open(data_base_path, 'r', encoding='utf-8') as db:
             content = db.read().split('\n')
             content = ' '.join(content)
-            brands = KWu.read_brand_file()
-            brands = brands.split('|')
-            for each_brand in brands:
-                content = content.replace(each_brand, '')
             pattern = re.compile(str(key_word))
             _match = re.findall(pattern, content)
             if _match:
@@ -162,13 +158,9 @@ class RandKeyWord(object):
 
 # 主程序:从关键词库生成关键词
 def main():
-    os.system('cls')
     kw = RandKeyWord()
-    pas_utility.print_current_menu('从关键词库生成关键词')
-    _menu = {'退回主菜单': pas_utility.back_to_main_menu,
-             '生成关键词': kw.kw_generator_main,
-             '重命名关键词': rename}
-    pas_utility.make_menu(_menu)
+    kw.kw_generator_main()
+    pas_utility.back_to_main_menu()
 
 
 # 重命名关键词
@@ -222,6 +214,7 @@ def menu():
     pas_utility.print_current_menu('关键词相关')
     function_menu = {'退回主菜单': pas_utility.back_to_main_menu,
                      '从关键词库生成关键词': main,
+                     '重命名关键词': rename,
                      '删除关键词': delete_kw,
                      '添加新的关键词': create_new_kw}
     pas_utility.make_menu(function_menu)

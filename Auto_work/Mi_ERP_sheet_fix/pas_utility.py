@@ -3,13 +3,12 @@ import datetime
 import re
 from openpyxl.utils import coordinate_to_tuple
 import main_menu
-import brands_utility
 import collections
 
 HOW_MANY_WORDS_IN_COUNTER = 100
 MENU_RESTRICTION = 200
-ROW_RESTRICTION = 2000
-COL_MAX = 2000
+ROW_RESTRICTION = 3000
+COL_MAX = 3000
 NO_FILE = '\n' + r'没有找到文件，请确认表格在正确的路径下，并确定表格文件名称格式正确'
 STANDARD_MESSAGE = 'The photo was taken in natural light because there is a slight chromatic aberration between the ' \
                    'device and the monitor, please understand'
@@ -182,19 +181,6 @@ def show_menu(ui: str, menu: dict):
     else:
         print("无法识别的选项")
         show_menu(ui, menu)
-
-
-def open_folder():
-    try:
-        # os.system('cls')
-        # print_current_menu('打开根目录')
-        _menu = {'退回主菜单': back_to_main_menu,
-                 '品牌名和关键词根目录': brands_utility.open_main_folder()}
-        make_menu(_menu)
-    except Exception as e:
-        print("暂无根目录可以打开")
-        print(e)
-        main_menu.main_menu()
 
 
 def make_menu(functions: dict):
