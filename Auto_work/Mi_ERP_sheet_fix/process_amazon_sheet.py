@@ -2,6 +2,8 @@ import os
 import load_amazon_sheet
 from openpyxl.utils import coordinate_to_tuple
 import pas_utility
+import xlsxwriter
+import output_usable_sheet_head
 
 SECRET_CODE = '666'
 BRAND_TO_REPLACE_KW = open('kw_brand.txt', 'r', encoding='utf-8').read()
@@ -57,7 +59,8 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
     def process_keywords(self, keywords: str):
         if keywords == SECRET_CODE:
             processed_keywords = ' '.join(pas_utility.high_frequent_words(self.all_titles))\
-                .replace(',', '').replace('*', '').replace(BRAND_TO_REPLACE_KW, '').replace('  ', ' ')[:KW_TRIMMER]
+                .replace(',', '').replace('*', '').replace(BRAND_TO_REPLACE_KW, '').replace('  ', ' ')\
+                .replace('(', '').replace(')', '')[:KW_TRIMMER]
             keywords_coordinate = coordinate_to_tuple(str(self.keywords_cell).split('.')[-1][:-1])
             pas_utility.process_info(self.sheet, keywords_coordinate, processed_keywords)
         else:
@@ -84,6 +87,8 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 
     def save_sheet(self, path: str, original_filename: str) -> None:
         self.wb.save(path+'\\_输出文件_'+original_filename+'.xlsx')
+        output_usable_sheet_head.main(path+'\\_输出文件_'+original_filename+'.xlsx',
+                                      path+'\\__完整文件_'+original_filename+'.xlsx')
 
 
 #  以相同数值处理多个表格的类

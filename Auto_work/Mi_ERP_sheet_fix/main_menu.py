@@ -10,6 +10,7 @@ import pas_utility
 import process_amazon_sheet
 import brands
 import KW_generator
+import output_usable_sheet_head
 
 """
 待添加功能：
@@ -17,6 +18,7 @@ import KW_generator
         1. 选择处理多个表格文件的功能 √
         2. 按照相同参数处理多个文件的功能 √
         3. 添加从表格文件中的标题里获取高频率关键词的功能 √
+        4. 直接输出可以上传的表格文件 √
     品牌程序：
         1. 添加下载JS Page报错之后自动更换user agent和cookie继续下载的功能
         3. 添加通过排名页面生成关键词的功能
