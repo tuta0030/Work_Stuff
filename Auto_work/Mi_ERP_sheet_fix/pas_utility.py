@@ -6,7 +6,7 @@ import main_menu
 import brands_utility
 import collections
 
-HOW_MANY_WORDS_IN_COUNTER = 50
+HOW_MANY_WORDS_IN_COUNTER = 100
 MENU_RESTRICTION = 200
 ROW_RESTRICTION = 2000
 COL_MAX = 2000

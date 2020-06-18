@@ -3,7 +3,8 @@ import load_amazon_sheet
 from openpyxl.utils import coordinate_to_tuple
 import pas_utility
 
-SECRET_CODE = '0030'
+SECRET_CODE = '666'
+KW_TRIMMER = 200
 
 
 class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
@@ -55,7 +56,7 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
     def process_keywords(self, keywords: str):
         if keywords == SECRET_CODE:
             processed_keywords = ' '.join(pas_utility.high_frequent_words(self.all_titles))\
-                .replace(',', '').replace('*', '')[:200]
+                .replace(',', '').replace('*', '')[:KW_TRIMMER]
             keywords_coordinate = coordinate_to_tuple(str(self.keywords_cell).split('.')[-1][:-1])
             pas_utility.process_info(self.sheet, keywords_coordinate, processed_keywords)
         else:
