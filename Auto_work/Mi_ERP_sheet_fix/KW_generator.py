@@ -3,7 +3,6 @@ import datetime
 import os
 import re
 import main_menu
-import generating_kw_from_html as gk
 import pas_utility
 import KW_generator_utility as KWu
 
@@ -184,7 +183,7 @@ def rename():
     pas_utility.back_to_main_menu()
 
 
-# 添加新的关键字
+# 添加新的关键词
 def create_new_kw():
     temp = '''格式示例，如果没有这些国家可以删掉\n\n\nEN:这里写上英文的关键词\n\nFR:这里写上法语的关键词\n\nDE:这里写上德语的关键词'''
     with open('new_kw_temp.txt', 'w', encoding='utf-8') as t:
@@ -200,14 +199,31 @@ def create_new_kw():
         pas_utility.back_to_main_menu()
 
 
+# 删除关键词
+def delete_kw():
+    indexed_kw = KWu.show_current_kw_types()
+    content = open(KWu.PATH_DATA_BASE, 'r', encoding='utf-8').read()
+    _ui = str(input("选择需要删除的关键词："))
+    _make_sure = input(f'确认删除({indexed_kw[int(_ui)]})?(y/n)')
+    _del_pattern = re.compile(f'{indexed_kw[int(_ui)]}[:：]'+'{.+}'+f'{indexed_kw[int(_ui)]}', re.DOTALL)
+    if _make_sure == 'y':
+        content = re.sub(_del_pattern, '', content)
+        with open(KWu.PATH_DATA_BASE, 'w', encoding='utf-8') as f:
+            f.write(content)
+    else:
+        print("取消删除操作，退回主菜单...")
+        pas_utility.back_to_main_menu()
+    pas_utility.back_to_main_menu()
+
+
 # 菜单选项：用来调用主程序和子程序
 def menu():
     os.system('cls')
     pas_utility.print_current_menu('关键词相关')
     function_menu = {'退回主菜单': pas_utility.back_to_main_menu,
                      '从关键词库生成关键词': main,
-                     '从html文件生成关键词': gk.validate_html_path,
-                     '添加新的关键字': create_new_kw}
+                     '删除关键词': delete_kw,
+                     '添加新的关键词': create_new_kw}
     pas_utility.make_menu(function_menu)
 
 
