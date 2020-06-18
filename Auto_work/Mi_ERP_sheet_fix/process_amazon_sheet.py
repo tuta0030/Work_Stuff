@@ -2,7 +2,7 @@ import os
 import load_amazon_sheet
 from openpyxl.utils import coordinate_to_tuple
 import pas_utility
-import xlsxwriter
+import send2trash
 import output_usable_sheet_head
 
 SECRET_CODE = '666'
@@ -89,6 +89,7 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         self.wb.save(path+'\\_输出文件_'+original_filename+'.xlsx')
         output_usable_sheet_head.main(path+'\\_输出文件_'+original_filename+'.xlsx',
                                       path+'\\__完整文件_'+original_filename+'.xlsx')
+        send2trash.send2trash(path+'\\_输出文件_'+original_filename+'.xlsx')
 
 
 #  以相同数值处理多个表格的类
