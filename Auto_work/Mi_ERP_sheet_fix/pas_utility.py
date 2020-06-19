@@ -104,6 +104,8 @@ def process_info(sheet, info_coordinate: tuple, info):
 
 
 def high_frequent_words(key_words_list: list):
+    key_words_list = [each_word.capitalize() for each_word in key_words_list]
+    key_words_list = list(dict.fromkeys(key_words_list))
     kw_string = ' '.join(key_words_list)
     kw_string = kw_string.split(' ')
     kw_list = []
