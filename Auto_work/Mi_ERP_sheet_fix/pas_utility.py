@@ -209,6 +209,28 @@ def make_menu(functions: dict):
                 func()
 
 
+def make_menu_part_functions(functions: dict):
+    """传入dict，key为描述，value函数的名称"""
+    _menu = {}
+    index = 0
+    for descreption, func_name in functions.items():
+        _menu[(index, descreption)] = func_name
+        index = index + 1
+
+    for item in _menu.keys():
+        print(str(item[0]) + '\t' + item[1])
+    ui = input('输入选项：')
+    if len(ui.split(' ')) > 1:
+        for each_ui in ui.split(' '):
+            for item, func_name in _menu.items():
+                if each_ui == str(item[0]):
+                    return func_name
+    else:
+        for item, func_name in _menu.items():
+            if ui == str(item[0]):
+                return func_name
+
+
 # 索引用户输入的文件夹中的文件
 def index_files() -> tuple:
     folder = input('输入包含表格的文件夹：')
@@ -245,6 +267,7 @@ def back_to_main_menu():
 
 
 def multiple_file_process(process_class, class_parameter: dict, **pas_args):
+    """可以传入的选项：method_para, process_method, 自动调用save_sheet """
     folder, which_file = index_files()
     if type(which_file) is list:
         for each_file in which_file:

@@ -119,32 +119,21 @@ class ProcessWithSameParameter(ProcessAmazonSheet):
 
 # 处理亚马逊表格（单独功能）
 def pas_part():
-    print("选择需要单独处理的功能")
-    _menu = {'仅处理价格': 'only_price',
-             '仅标题首字母大写': 'cap_title'
-             }
-    pasu.make_menu()
-    _parameter = {}
-    pasu.multiple_file_process(ProcessWithSameParameter, _parameter, process_method='')
-
-    # folder, which_file = pasu.index_files()
-    # if type(which_file) is list:
-    #     for each_file in which_file:
-    #         pas = ProcessAmazonSheet(each_file)
-    #         print("选择需要单独处理的功能")
-    #         _menu = {'仅处理价格': pas.only_price,
-    #                  '仅标题首字母大写': pas.cap_title
-    #                  }
-    #         pasu.make_menu(_menu)
-    #         pas.save_sheet(folder, each_file)
-    # else:
-    #     pas = ProcessAmazonSheet(which_file)
-    #     print("选择需要单独处理的功能")
-    #     _menu = {'仅处理价格': pas.only_price,
-    #              '仅标题首字母大写': pas.cap_title
-    #              }
-    #     pasu.make_menu(_menu)
-    #     pas.save_sheet(folder, which_file)
+    # key:功能描述， value:需要调用的函数名称
+    part_functions = {'仅处理价格': 'only_price',
+                      '仅标题首字母大写': 'cap_title',
+                      '仅处理关键词': 'process_keywords'
+                      }
+    func_name = pasu.make_menu_part_functions(part_functions)
+    if func_name == 'process_keywords':
+        _parameter = {}
+        pasu.multiple_file_process(ProcessWithSameParameter,
+                                   _parameter,
+                                   process_method=func_name,
+                                   method_para=str(input("关键词(-1跳过)：")))
+    else:
+        _parameter = {}
+        pasu.multiple_file_process(ProcessWithSameParameter, _parameter, process_method=func_name)
 
 
 # 处理选择的表格文件（全部）
@@ -180,7 +169,7 @@ def main_function():
             os.system('cls')
             pasu.print_current_menu('ERP表格相关')
             _menu = {'退回主菜单': pasu.back_to_main_menu,
-                     # '处理选择的表格文件（单独功能）': pas_part,
+                     '处理选择的表格文件（单独功能）': pas_part,
                      '处理选择的表格文件（全部功能）': pas_same_para,
                      '更新或下架产品': pas_update_delete}
             pasu.make_menu(_menu)
@@ -188,7 +177,7 @@ def main_function():
         except Exception as e:
             raise e
             print(e)
-            print('由于以上错误，无法处理本文件，请尝试重新输入正确的文件夹和文件序列号')
+            input('由于以上错误，无法处理本文件，请尝试重新输入正确的文件夹和文件序列号')
             main_function()
         else:
             break
