@@ -9,12 +9,12 @@ import xlsxwriter
 import xlrd
 
 
-def main(body_file, out_file_name: str):
+def main(original_file, body_file, out_file_name: str):
     head_dict = {}
     body_dict = {}
 
     headless_file = xlrd.open_workbook(body_file).sheets()[0]
-    head_file = xlrd.open_workbook('head.xlsx').sheets()[0]
+    head_file = xlrd.open_workbook(original_file).sheets()[0]
 
     for row in range(head_file.nrows):
         head_data = head_file.row_values(row)

@@ -19,6 +19,10 @@ def get_date() -> str:
     return str(time)
 
 
+def get_coordinate(which_cell) -> tuple:
+    return coordinate_to_tuple(str(which_cell).split('.')[-1][:-1])
+
+
 def validate_product() -> str:
     print('')
     print(f'当前产品类别：' + open(os.curdir + '\\product_type.txt', 'r', encoding='utf-8').read())
@@ -184,6 +188,7 @@ def show_menu(ui: str, menu: dict):
 
 
 def make_menu(functions: dict):
+    """传入dict，key为描述，value为需要执行的函数"""
     _menu = {}
     index = 0
     for descreption, func in functions.items():
@@ -237,6 +242,30 @@ def print_current_menu(current_menu: str):
 def back_to_main_menu():
     main_menu.main_menu()
     return 0
+
+
+def multiple_file_process(process_class, class_parameter: dict, **pas_args):
+    folder, which_file = index_files()
+    if type(which_file) is list:
+        for each_file in which_file:
+            print('开始处理表格：' + each_file.split("\\")[-1])
+            pas = process_class(each_file, class_parameter)
+            pas_args['method_para'] = pas_args.get('method_para', None)
+            if pas_args['method_para'] is None:
+                pas.__getattribute__(pas_args['process_method'])()
+            else:
+                pas.__getattribute__(pas_args['process_method'])(pas_args['method_para'])
+            pas.__getattribute__('save_sheet')(folder, each_file.split('\\')[-1])
+    else:
+        print('开始处理表格：' + which_file.split("\\")[-1])
+        pas = process_class(which_file, class_parameter)
+        pas_args['method_para'] = pas_args.get('method_para', None)
+        if pas_args['method_para'] is None:
+            pas.__getattribute__(pas_args['process_method'])()
+        else:
+            pas.__getattribute__(pas_args['process_method'])(pas_args['method_para'])
+        pas.__getattribute__('save_sheet')(folder, which_file.split('\\')[-1])
+    print("处理完成")
 
 
 def main_menu_quit():

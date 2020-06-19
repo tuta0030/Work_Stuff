@@ -39,6 +39,9 @@ class LoadAmazonSheet(object):
         # find "product_description" cell
         self.description = find_cell(self.sheet, 'product_description')
 
+        # find "update_delete" cell
+        self.update_delete = find_cell(self.sheet, 'update_delete')
+
 
 if __name__ == '__main__':
     pass

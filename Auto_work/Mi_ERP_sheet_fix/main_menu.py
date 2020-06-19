@@ -10,6 +10,13 @@ import pas_utility
 import process_amazon_sheet
 import KW_generator
 
+"""
+TODO：
+    1. 高频词首字母大写，去重
+    2. 添加单独批量处理部分表格内容的功能
+
+"""
+
 
 def main_menu():
     while True:
