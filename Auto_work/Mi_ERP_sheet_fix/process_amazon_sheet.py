@@ -38,15 +38,18 @@ def pas_same_para():
                                process_method='process_sheet')
 
 
-def new_del_sheet_by_sku():  # P19tXn5b9-13739855566055684826  D:\小米ERP相关数据\上传产品表格\20200613_置物架
+def new_del_sheet_by_sku():  # P1c0pb53f-11683870895082338686 P1c0jk98b-2237820982760922098
+    # D:\小米ERP相关数据\上传产品表格\20200619_充气游泳池
     _ui = input('输入sku/ean:')
     folder, which_file = pasu.index_files()
-    print(which_file)
     if type(which_file) is str:
+        print('处理(' + which_file + ')...')
         opsh.write_sku_delete_file(folder, which_file, _ui)
     elif type(which_file) is list:
         for each_file in which_file:
+            print('处理(' + each_file + ')...')
             opsh.write_sku_delete_file(folder, each_file, _ui)
+    print('处理完成')
     pasu.back_to_main_menu()
 
 

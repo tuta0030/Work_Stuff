@@ -53,7 +53,7 @@ def get_head(original_file: str) -> dict:
     return head_dict
 
 
-def write_sku_delete_file(folder, which_file, sku):
+def write_sku_delete_file(folder: str, which_file, sku: str):
     wb = xlrd.open_workbook(which_file)
     ws = wb.sheets()[0]
     original_content = {}
@@ -61,15 +61,23 @@ def write_sku_delete_file(folder, which_file, sku):
     for row in range(ws.nrows):
         row_data = ws.row_values(row)
         original_content[row] = row_data
-    out_index = 0
-    for row_number, each_row in original_content.items():
-        if sku in each_row:
-            out_put_content[out_index] = each_row
-            out_index += 1
+    if ' ' in sku:
+        sku = sku.split(' ')
+        out_index = 0
+        for each_sku in sku:
+            for row_number, each_row in original_content.items():
+                if each_sku in each_row:
+                    out_put_content[out_index] = each_row
+                    out_index += 1
+    else:
+        out_index = 0
+        for row_number, each_row in original_content.items():
+            if sku in each_row:
+                out_put_content[out_index] = each_row
+                out_index += 1
     finall_wb = xlsxwriter.Workbook(folder + f'\\_下架的_' + which_file.split("\\")[-1])
     finall_ws = finall_wb.add_worksheet('sheet1')
     head_dict = get_head(which_file)
-    print(head_dict)
     for row, row_value in head_dict.items():
         col_n = 0
         for col in row_value:
