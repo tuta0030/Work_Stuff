@@ -1,6 +1,9 @@
 import os
 import pas_utility as pasu
 import pas_class as pasc
+import xlrd
+import xlsxwriter as xw
+import output_usable_sheet_head as opsh
 
 
 def pas_part():
@@ -35,6 +38,18 @@ def pas_same_para():
                                process_method='process_sheet')
 
 
+def new_del_sheet_by_sku():  # P19tXn5b9-13739855566055684826  D:\小米ERP相关数据\上传产品表格\20200613_置物架
+    _ui = input('输入sku/ean:')
+    folder, which_file = pasu.index_files()
+    print(which_file)
+    if type(which_file) is str:
+        opsh.write_sku_delete_file(folder, which_file, _ui)
+    elif type(which_file) is list:
+        for each_file in which_file:
+            opsh.write_sku_delete_file(folder, each_file, _ui)
+    pasu.back_to_main_menu()
+
+
 # 更新或下架产品
 def pas_update_delete():
     _ui = input('选择需要的选项：0: delete, 1: update:')
@@ -56,11 +71,12 @@ def main_function():
             _menu = {'退回主菜单': pasu.back_to_main_menu,
                      '处理选择的表格文件（单独功能）': pas_part,
                      '处理选择的表格文件（全部功能）': pas_same_para,
+                     '下架目标sku/ean产品': new_del_sheet_by_sku,
                      '更新或下架产品': pas_update_delete}
             pasu.make_menu(_menu)
             main_function()
         except Exception as e:
-            # raise e
+            raise e
             print(e)
             input('由于以上错误，无法处理本文件，请尝试重新输入正确的文件夹和文件序列号')
             main_function()

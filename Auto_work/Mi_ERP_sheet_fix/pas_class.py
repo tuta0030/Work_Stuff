@@ -15,6 +15,7 @@ import pas_utility as pasu
 SECRET_CODE = '666'
 BRAND_TO_REPLACE_KW = open('kw_brand.txt', 'r', encoding='utf-8').read()
 KW_TRIMMER = 200
+KW_FILTER_CHAR = ': * ( ) [ ] { }'
 
 
 class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
@@ -70,6 +71,8 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
             processed_keywords = ' '.join(pasu.high_frequent_words(self.all_titles)) \
                                      .replace(',', '').replace('*', '').replace(BRAND_TO_REPLACE_KW, '') \
                                      .replace('(', '').replace(')', '')[:KW_TRIMMER]
+            for each_char in KW_FILTER_CHAR.split(' '):
+                processed_keywords = processed_keywords.replace(each_char, '')
             processed_keywords = processed_keywords.replace('  ', ' ')
             keywords_coordinate = coordinate_to_tuple(str(self.keywords_cell).split('.')[-1][:-1])
             pasu.process_info(self.sheet, keywords_coordinate, processed_keywords)
