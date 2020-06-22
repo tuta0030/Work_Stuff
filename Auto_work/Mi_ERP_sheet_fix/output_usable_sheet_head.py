@@ -15,15 +15,17 @@ def main(original_file, body_file, out_file_name: str):
     head_dict = {}
     body_dict = {}
 
-    headless_file = xlrd.open_workbook(body_file).sheets()[0]
+    body_file = xlrd.open_workbook(body_file).sheets()[0]
     head_file = xlrd.open_workbook(original_file).sheets()[0]
 
     for row in range(AMAZON_SHEET_HEAD_NUM):
         head_data = head_file.row_values(row)
-        head_dict[row] = head_data
+        if head_data is not None:
+            head_dict[row] = head_data
 
-    for row in range(headless_file.nrows):
-        body_data = headless_file.row_values(row)
+    for row in range(body_file.nrows):
+
+        body_data = body_file.row_values(row)
         body_dict[row] = body_data
 
     finall_wb = xlsxwriter.Workbook(out_file_name)

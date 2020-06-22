@@ -13,9 +13,7 @@ import pas_utility as pasu
 
 
 SECRET_CODE = '666'
-BRAND_TO_REPLACE_KW = open('kw_brand.txt', 'r', encoding='utf-8').read()
 KW_TRIMMER = 200
-KW_FILTER_CHAR = ': * ( ) [ ] { }'
 
 
 class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
@@ -68,12 +66,16 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 
     def process_keywords(self, keywords: str):
         if keywords == SECRET_CODE:
-            processed_keywords = ' '.join(pasu.high_frequent_words(self.all_titles)) \
-                                     .replace(',', '').replace('*', '').replace(BRAND_TO_REPLACE_KW, '') \
-                                     .replace('(', '').replace(')', '')[:KW_TRIMMER]
-            for each_char in KW_FILTER_CHAR.split(' '):
-                processed_keywords = processed_keywords.replace(each_char, '')
+            # 获取所有的标题
+            item_name_coordinate = pasu.get_coordinate(self.item_name_cell)
+            title_list = pasu.get_column_until_none_cell(self.sheet,
+                                                         item_name_coordinate[0],
+                                                         item_name_coordinate[1])
+            self.all_titles = [each_title.value for each_title in title_list]
+            # 用标题高频词处理关键字
+            processed_keywords = ' '.join(pasu.high_frequent_words(self.all_titles))[:KW_TRIMMER]
             processed_keywords = processed_keywords.replace('  ', ' ')
+            # 处理关键词
             keywords_coordinate = coordinate_to_tuple(str(self.keywords_cell).split('.')[-1][:-1])
             pasu.process_info(self.sheet, keywords_coordinate, processed_keywords)
         else:

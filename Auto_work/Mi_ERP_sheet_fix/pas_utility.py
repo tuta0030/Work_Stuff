@@ -12,6 +12,8 @@ COL_MAX = 3000
 NO_FILE = '\n' + r'没有找到文件，请确认表格在正确的路径下，并确定表格文件名称格式正确'
 STANDARD_MESSAGE = 'The photo was taken in natural light because there is a slight chromatic aberration between the ' \
                    'device and the monitor, please understand'
+BRAND_TO_REPLACE_KW = open('kw_brand.txt', 'r', encoding='utf-8').read()
+KW_FILTER_CHAR = ': * ( ) [ ] { } ,'
 
 
 def get_date() -> str:
@@ -104,13 +106,15 @@ def process_info(sheet, info_coordinate: tuple, info):
 
 
 def high_frequent_words(key_words_list: list):
-    key_words_list = [each_word.capitalize() for each_word in key_words_list]
+    key_words_list = ' '.join(key_words_list).replace(BRAND_TO_REPLACE_KW, '')
+    for each_char in KW_FILTER_CHAR.split(' '):
+        key_words_list = key_words_list.replace(each_char, ' ')
+    key_words_list = key_words_list.split(' ')
+    key_words_list = [each_word.lower() for each_word in key_words_list]
     key_words_list = list(dict.fromkeys(key_words_list))
-    kw_string = ' '.join(key_words_list)
-    kw_string = kw_string.split(' ')
     kw_list = []
-    for word, count in collections.Counter(kw_string).most_common(HOW_MANY_WORDS_IN_COUNTER):
-        kw_list.append(word)
+    for word, count in collections.Counter(key_words_list).most_common(HOW_MANY_WORDS_IN_COUNTER):
+        kw_list.append(word.capitalize())
     return kw_list
 
 
@@ -130,9 +134,7 @@ def cap_title(title: str, brand: str) -> str:
 
 
 def process_item_name(item_name: str, brand: str) -> str:
-    # random words
     item_name = __random_title(item_name, brand)
-
     return item_name
 
 
