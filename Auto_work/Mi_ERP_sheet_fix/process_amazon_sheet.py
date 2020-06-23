@@ -62,7 +62,7 @@ def new_del_sheet_by_sku():  # P1c0pb53f-11683870895082338686 P1c0jk98b-22378209
         for each_file in which_file:
             print('处理(' + each_file + ')...')
             opsh.write_sku_delete_file(folder, each_file, _ui)
-    print('处理完成')
+    input('处理完成')
     pasu.back_to_main_menu()
 
 
@@ -92,7 +92,7 @@ def main_function():
             pasu.make_menu(_menu)
             main_function()
         except Exception as e:
-            raise e
+            # raise e
             print(e)
             input('由于以上错误，无法处理本文件，请尝试重新输入正确的文件夹和文件序列号')
             main_function()
