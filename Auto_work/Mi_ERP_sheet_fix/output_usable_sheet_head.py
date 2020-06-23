@@ -22,10 +22,13 @@ def main(original_file, body_file, out_file_name: str):
         head_data = head_file.row_values(row)
         head_dict[row] = head_data
 
-    row_index = 0
+    row_index = AMAZON_SHEET_HEAD_NUM
     for row in range(body_file.nrows):
         body_data = body_file.row_values(row)
-        if body_data[0] != '':
+        if body_data[0] != '' and \
+           body_data[0] != 'TemplateType=fptcustom' and \
+           body_data[0] != 'Product Type' and \
+           body_data[0] != 'feed_product_type':
             body_dict[row_index] = body_data
             row_index += 1
 
