@@ -24,6 +24,13 @@ def pas_part():
                                    _parameter,
                                    process_method=func_name,
                                    method_para=(_parameter['exchange_rate'], _parameter['lowest_price']))
+    elif func_name == 'cap_title':
+        brand = input("输入不需要大写的品牌名（没有的话按回车继续）：")
+        _parameter = {}
+        pasu.multiple_file_process(pasc.ProcessWithSameParameter,
+                                   _parameter,
+                                   process_method=func_name,
+                                   method_para=[brand])
     else:
         _parameter = {}
         pasu.multiple_file_process(pasc.ProcessWithSameParameter, _parameter, process_method=func_name)

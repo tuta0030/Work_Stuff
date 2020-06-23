@@ -26,8 +26,7 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
             print(pasu.NO_FILE)
             raise _e
 
-    def cap_title(self):
-        brand = input("输入不需要大写的品牌名（没有的话按回车继续）：")
+    def cap_title(self, brand: str):
         item_name_coordinate = pasu.get_coordinate(self.item_name_cell)
         title_list = pasu.get_column_until_none_cell(self.sheet,
                                                      item_name_coordinate[0],
@@ -102,11 +101,11 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 
     def save_sheet(self, path: str, original_file: str) -> None:
         file_name = original_file.split('\\')[-1]
-        _out_put_file_name = '\\_输出文件_' + file_name + '.xlsx'
+        _out_put_file_name = '\\_输出文件_' + file_name.replace('.xlsx', '') + '.xlsx'
         self.wb.save(_out_put_file_name)
         output_usable_sheet_head.main(path+'\\'+original_file,
                                       _out_put_file_name,
-                                      path + '\\__完整文件_' + file_name + '.xlsx')
+                                      path + '\\__完整文件_' + file_name.replace('.xlsx', '') + '.xlsx')
         send2trash.send2trash(_out_put_file_name)
 
 
