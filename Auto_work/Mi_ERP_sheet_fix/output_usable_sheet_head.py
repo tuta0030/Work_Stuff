@@ -20,13 +20,14 @@ def main(original_file, body_file, out_file_name: str):
 
     for row in range(AMAZON_SHEET_HEAD_NUM):
         head_data = head_file.row_values(row)
-        if head_data is not None:
-            head_dict[row] = head_data
+        head_dict[row] = head_data
 
+    row_index = 0
     for row in range(body_file.nrows):
-
         body_data = body_file.row_values(row)
-        body_dict[row] = body_data
+        if body_data[0] != '':
+            body_dict[row_index] = body_data
+            row_index += 1
 
     finall_wb = xlsxwriter.Workbook(out_file_name)
     finall_ws = finall_wb.add_worksheet('sheet1')

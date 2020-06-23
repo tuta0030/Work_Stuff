@@ -4,6 +4,7 @@ import pas_class as pasc
 import output_usable_sheet_head as opsh
 
 
+# 处理选择的表格文件（单独）
 def pas_part():
     # key:功能描述， value:需要调用的函数名称
     part_functions = {'仅处理价格': 'only_price',

@@ -10,12 +10,6 @@ import pas_utility
 import process_amazon_sheet
 import KW_generator
 
-"""
-修复：
-    1. 输出文件多个后缀
-    2. 批量修改单独功能
-"""
-
 
 def main_menu():
     while True:
