@@ -86,8 +86,8 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         keywords_coordinate = coordinate_to_tuple(str(self.item_type_cell).split('.')[-1][:-1])
         pasu.process_info(self.sheet, keywords_coordinate, keywords)
 
-    def only_price(self):
-        self.process_price(float(input("输入汇率：")), int(input("输入最低价格")))
+    def only_price(self, exchange_rate: float, lowest_price: int):
+        self.process_price(exchange_rate, lowest_price)
 
     def process_sheet(self):
         self.process_title(str(input("请输入不需要首字母大写的品牌名(回车跳过)：")))

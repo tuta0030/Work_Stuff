@@ -1,8 +1,6 @@
 import os
 import pas_utility as pasu
 import pas_class as pasc
-import xlrd
-import xlsxwriter as xw
 import output_usable_sheet_head as opsh
 
 
@@ -19,6 +17,13 @@ def pas_part():
                                    _parameter,
                                    process_method=func_name,
                                    method_para=str(input("关键词(-1跳过)：")))
+    elif func_name == 'only_price':
+        _parameter = {'exchange_rate': float(input("输入汇率：")),
+                      'lowest_price': int(input('输入最低价格：'))}
+        pasu.multiple_file_process(pasc.ProcessWithSameParameter,
+                                   _parameter,
+                                   process_method=func_name,
+                                   method_para=(_parameter['exchange_rate'], _parameter['lowest_price']))
     else:
         _parameter = {}
         pasu.multiple_file_process(pasc.ProcessWithSameParameter, _parameter, process_method=func_name)

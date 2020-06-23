@@ -281,7 +281,7 @@ def multiple_file_process(process_class, class_parameter: dict, **pas_args):
             if pas_args['method_para'] is None:
                 pas.__getattribute__(pas_args['process_method'])()
             else:
-                pas.__getattribute__(pas_args['process_method'])(pas_args['method_para'])
+                pas.__getattribute__(pas_args['process_method'])(*pas_args['method_para'])
             pas.__getattribute__('save_sheet')(folder, each_file.split('\\')[-1])
     else:
         print('开始处理表格：' + which_file.split("\\")[-1])
