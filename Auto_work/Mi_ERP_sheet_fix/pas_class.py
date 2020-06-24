@@ -59,9 +59,9 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         node_coordinate = pasu.get_coordinate(self.node_cell)
         pasu.process_info(self.sheet, node_coordinate, node)
 
-    def process_update_delete(self, _same_parameter: dict):
+    def process_update_delete(self, _ui: str):
         update_coordinate = pasu.get_coordinate(self.update_delete)
-        pasu.process_info(self.sheet, update_coordinate, _same_parameter['update_delete'])
+        pasu.process_info(self.sheet, update_coordinate, _ui)
 
     def process_keywords(self, keywords: str):
         if keywords == SECRET_CODE:
