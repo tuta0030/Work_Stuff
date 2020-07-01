@@ -7,7 +7,8 @@ import output_usable_sheet_head as opsh
 # 处理选择的表格文件（单独）
 def pas_part():
     # key:功能描述， value:需要调用的函数名称
-    part_functions = {'仅处理价格': 'only_price',
+    part_functions = {'返回主菜单': 'back_to_main',
+                      '仅处理价格': 'only_price',
                       '仅标题首字母大写': 'cap_title',
                       '仅处理关键词': 'process_keywords'
                       }
@@ -32,6 +33,8 @@ def pas_part():
                                    _parameter,
                                    process_method=func_name,
                                    method_para=[brand])
+    elif func_name == 'back_to_main':
+        pasu.back_to_main_menu()
     else:
         _parameter = {}
         pasu.multiple_file_process(pasc.ProcessWithSameParameter, _parameter, process_method=func_name)
