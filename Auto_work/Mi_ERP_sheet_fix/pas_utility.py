@@ -201,6 +201,7 @@ def make_menu(functions: dict):
 
     for item in _menu.keys():
         print(str(item[0]) + '\t' + item[1])
+        print('')
     ui = input('输入选项：')
     if len(ui.split(' ')) > 1:
         for each_ui in ui.split(' '):
