@@ -161,12 +161,18 @@ def process_bulletpoints(sheet, bullet_point_coordinate: tuple):
 def process_price(sheet, coordinate: tuple, exchange_rate: float, lowest_price: int):
     price = get_column_until_none_cell(sheet, coordinate[0], coordinate[1])
     for index, item in enumerate(price):
-        price[index].value = str(int(int(str(item.value).split('.')[0]) * exchange_rate) - 1)
-        if int(price[index].value) < lowest_price:
+        if price[index].value is '':
+            # 删除低于最低价格的行
+            print(f"表格中{price[index]}的价格为空值，正在删除")
+            for col in range(1, COL_MAX):
+                sheet.cell(coordinate_to_tuple(str(item).split('.')[-1][:-1])[0], col).value = None
+        elif int(float(price[index].value)) < lowest_price:
             # 删除低于最低价格的行
             print(f"表格中{price[index]}的价格过低，正在删除")
             for col in range(1, COL_MAX):
                 sheet.cell(coordinate_to_tuple(str(item).split('.')[-1][:-1])[0], col).value = None
+        else:
+            price[index].value = str(int(int(str(item.value).split('.')[0]) * exchange_rate) - 1)
 
 
 def add_function(menu: dict, index: int, des: str, function):

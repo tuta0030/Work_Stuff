@@ -101,12 +101,14 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 
     def save_sheet(self, path: str, original_file: str) -> None:
         file_name = original_file.split('\\')[-1]
-        _out_put_file_name = '\\_输出文件_' + file_name.replace('.xlsx', '') + '.xlsx'
+        _out_put_file_name = path + '\\_输出文件_' + file_name.replace('.xlsx', '') + '.xlsx'
         self.wb.save(_out_put_file_name)
         output_usable_sheet_head.main(path+'\\'+original_file,
                                       _out_put_file_name,
                                       path + '\\__完整文件_' + file_name.replace('.xlsx', '') + '.xlsx')
-        send2trash.send2trash(_out_put_file_name)
+
+        print(path + '\\_输出文件_' + file_name.replace('.xlsx', '') + '.xlsx')
+        send2trash.send2trash(path + '\\_输出文件_' + file_name.replace('.xlsx', '') + '.xlsx')
 
 
 #  以相同数值处理多个表格的类
