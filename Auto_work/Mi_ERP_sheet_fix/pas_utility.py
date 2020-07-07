@@ -345,8 +345,8 @@ def get_asin_price():
         listing[','.join(each_listing.xpath('//@data-asin'))] = \
             {'asin': ','.join(each_listing.xpath('//@data-asin')),
              'title': ','.join(each_listing.xpath(title)),
-             'image': ','.join(each_listing.xpath('//img/@src')).replace('320', '1000'),
-             'url': ','.join(each_listing.xpath('//a[@class="a-link-normal a-text-normal"]/@href')),
+             'image': ','.join(each_listing.xpath('//img/@src')).split('AC')[0]+'_SL1024_.jpg',
+             # 'url': ','.join(each_listing.xpath('//a[@class="a-link-normal a-text-normal"]/@href')),
              'price': ','.join(each_listing.xpath('//span[@class="a-offscreen"]/text()')).replace('\xa0', ' ')
              }
     out_file = xw.Workbook(out_path)
@@ -358,7 +358,7 @@ def get_asin_price():
             print(j)
             out_sheet.write(row, col, j)
             col += 1
-            if col == 5:
+            if col == len(v):
                 col = 0
         row += 1
     out_file.close()
