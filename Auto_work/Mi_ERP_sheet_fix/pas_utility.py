@@ -362,7 +362,7 @@ def get_asin_price():
                 col = 0
         row += 1
     out_file.close()
-
+    back_to_main_menu()
 
 
 if __name__ == '__main__':
