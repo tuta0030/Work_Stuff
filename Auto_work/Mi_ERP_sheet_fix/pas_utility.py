@@ -1,6 +1,7 @@
 import os
 import datetime
 import re
+import xlsxwriter as xw
 from openpyxl.utils import coordinate_to_tuple
 import main_menu
 import collections
@@ -320,6 +321,7 @@ def main_menu_quit():
 
 def get_asin_price():
     folder, which_file = index_files()
+    out_path = '\\'.join(str(which_file).split('\\')[:-1])+'\\输出文件_'+str(which_file).split("\\")[-1]+'.xlsx'
     listing_xpath = '//*[@id="search"]/div[1]/div[2]/div/span[3]/div[2]'
     title = '//h2/a/span/text()'
     ads = 'aok-inline-block s-sponsored-label-info-icon'
@@ -327,13 +329,40 @@ def get_asin_price():
     html = etree.HTML(open(which_file, 'r', encoding='utf-8').read(), etree.HTMLParser())
 
     all_items = html.xpath(listing_xpath)[0][:-3]
+    print(len(all_items))
 
     for index, each_listing in enumerate(all_items):
         if ads in str(etree.tostring(each_listing)):
             all_items[index] = None
     all_items = [item for item in all_items if item is not None]
 
-    listing = {'asin': {'title': '标题', 'image': '图片', 'url': '链接', 'price': '价格', 'brand': '品牌'}}
+    print(len(all_items))
+
+    listing = {}
+    index = 1
+    for each_listing in all_items:
+        each_listing = etree.HTML(etree.tostring(each_listing), etree.HTMLParser())
+        listing[','.join(each_listing.xpath('//@data-asin'))] = \
+            {'asin': ','.join(each_listing.xpath('//@data-asin')),
+             'title': ','.join(each_listing.xpath(title)),
+             'image': ','.join(each_listing.xpath('//img/@src')).replace('320', '1000'),
+             'url': ','.join(each_listing.xpath('//a[@class="a-link-normal a-text-normal"]/@href')),
+             'price': ','.join(each_listing.xpath('//span[@class="a-offscreen"]/text()')).replace('\xa0', ' ')
+             }
+    out_file = xw.Workbook(out_path)
+    out_sheet = out_file.add_worksheet('sheet1')
+    row = 0
+    col = 0
+    for k, v in listing.items():
+        for i, j in v.items():
+            print(j)
+            out_sheet.write(row, col, j)
+            col += 1
+            if col == 5:
+                col = 0
+        row += 1
+    out_file.close()
+
 
 
 if __name__ == '__main__':
