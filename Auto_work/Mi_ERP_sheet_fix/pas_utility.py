@@ -4,6 +4,7 @@ import re
 from openpyxl.utils import coordinate_to_tuple
 import main_menu
 import collections
+from lxml import etree
 
 HOW_MANY_WORDS_IN_COUNTER = 100
 MENU_RESTRICTION = 200
@@ -161,7 +162,7 @@ def process_bulletpoints(sheet, bullet_point_coordinate: tuple):
 def process_price(sheet, coordinate: tuple, exchange_rate: float, lowest_price: int):
     price = get_column_until_none_cell(sheet, coordinate[0], coordinate[1])
     for index, item in enumerate(price):
-        if price[index].value is '':
+        if price[index].value == '':
             # 删除低于最低价格的行
             print(f"表格中{price[index]}的价格为空值，正在删除")
             for col in range(1, COL_MAX):
@@ -247,6 +248,9 @@ def index_files() -> tuple:
     folder = input('输入包含表格的文件夹：')
     files = {}
     index = 0
+    if not os.path.isdir(folder):
+        print('请输入一个文件夹路径')
+        index_files()
     for folder, subfolder, file in os.walk(folder):
         for each_file in file:
             files[index] = folder + '\\' + each_file
@@ -314,5 +318,25 @@ def main_menu_quit():
         raise QuitMainMenu('退出程序')
 
 
+def get_asin_price():
+    folder, which_file = index_files()
+    listing_xpath = '//*[@id="search"]/div[1]/div[2]/div/span[3]/div[2]'
+    title = '//h2/a/span/text()'
+    ads = 'aok-inline-block s-sponsored-label-info-icon'
+
+    html = etree.HTML(open(which_file, 'r', encoding='utf-8').read(), etree.HTMLParser())
+
+    all_items = html.xpath(listing_xpath)[0][:-3]
+
+    for index, each_listing in enumerate(all_items):
+        if ads in str(etree.tostring(each_listing)):
+            all_items[index] = None
+    all_items = [item for item in all_items if item is not None]
+
+    listing = {'asin': {'title': '标题', 'image': '图片', 'url': '链接', 'price': '价格', 'brand': '品牌'}}
+
+
 if __name__ == '__main__':
+    while True:
+        get_asin_price()
     pass
