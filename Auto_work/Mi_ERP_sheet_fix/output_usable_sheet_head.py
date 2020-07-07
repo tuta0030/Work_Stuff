@@ -65,18 +65,11 @@ def write_sku_delete_file(folder: str, which_file, sku: str):
     for row in range(ws.nrows):
         row_data = ws.row_values(row)
         original_content[row] = row_data
-    if ' ' in sku:
-        sku = sku.split(' ')
-        out_index = 0
-        for each_sku in sku:
-            for row_number, each_row in original_content.items():
-                if each_sku in each_row:
-                    out_put_content[out_index] = each_row
-                    out_index += 1
-    else:
-        out_index = 0
+    sku = sku.split(' ')
+    out_index = 0
+    for each_sku in sku:
         for row_number, each_row in original_content.items():
-            if sku in each_row:
+            if each_sku in each_row:
                 out_put_content[out_index] = each_row
                 out_index += 1
     finall_wb = xlsxwriter.Workbook(folder + f'\\_下架的_' + which_file.split("\\")[-1])
@@ -97,3 +90,4 @@ def write_sku_delete_file(folder: str, which_file, sku: str):
     finall_wb.close()
 
     # C:\Users\Administrator\Desktop\sheet_test
+    # P11YTe2a0-1174707027799851250 P11YPZd46-15562711399807942428
