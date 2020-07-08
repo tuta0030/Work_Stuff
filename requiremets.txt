@@ -1,0 +1,7 @@
+et-xmlfile==1.0.1
+jdcal==1.4.1
+lxml==4.5.1
+openpyxl==3.0.4
+Send2Trash==1.5.0
+xlrd==1.2.0
+XlsxWriter==1.2.9
