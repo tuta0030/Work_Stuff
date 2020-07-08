@@ -249,7 +249,9 @@ def index_files() -> tuple:
     folder = input('输入包含表格的文件夹：')
     files = {}
     index = 0
-    if not os.path.isdir(folder):
+    if folder == '-1':
+        back_to_main_menu()
+    elif not os.path.isdir(folder):
         print('请输入一个文件夹路径')
         index_files()
     for folder, subfolder, file in os.walk(folder):
@@ -317,6 +319,12 @@ def main_menu_quit():
             pass
 
         raise QuitMainMenu('退出程序')
+
+
+def asin_price_menu():
+    _menu = {'回主菜单': back_to_main_menu,
+             '爬取ASIN，价格和主图链接': get_asin_price}
+    make_menu(_menu)
 
 
 def get_asin_price():
