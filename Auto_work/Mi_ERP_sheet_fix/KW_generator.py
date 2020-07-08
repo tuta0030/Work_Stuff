@@ -166,13 +166,16 @@ def main():
 # 重命名关键词
 def rename():
     indexed_kw_types = KWu.show_current_kw_types()
-    _ui = str(input("选择需要重命名的关键词："))
-    _uo = str(input("输入新的词汇："))
-    content = open(KWu.PATH_DATA_BASE, 'r', encoding='utf-8').read()
-    content = content.replace(indexed_kw_types[int(_ui)], _uo)
-    with open(KWu.PATH_DATA_BASE, 'w', encoding='utf-8') as f:
-        f.write(content)
-    pas_utility.back_to_main_menu()
+    _ui = str(input("选择需要重命名的关键词(-1退出)："))
+    if _ui == '-1':
+        menu()
+    else:
+        _uo = str(input("输入新的词汇："))
+        content = open(KWu.PATH_DATA_BASE, 'r', encoding='utf-8').read()
+        content = content.replace(indexed_kw_types[int(_ui)], _uo)
+        with open(KWu.PATH_DATA_BASE, 'w', encoding='utf-8') as f:
+            f.write(content)
+        pas_utility.back_to_main_menu()
 
 
 # 添加新的关键词
