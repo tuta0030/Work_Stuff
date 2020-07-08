@@ -347,7 +347,6 @@ def get_asin_price():
     print(len(all_items))
 
     listing = {}
-    index = 1
     for each_listing in all_items:
         each_listing = etree.HTML(etree.tostring(each_listing), etree.HTMLParser())
         listing[','.join(each_listing.xpath('//@data-asin'))] = \
