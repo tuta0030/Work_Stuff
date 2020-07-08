@@ -96,8 +96,5 @@ def main_function():
             main_function()
         except Exception as e:
             raise e
-            print(e)
-            input('由于以上错误，无法处理本文件，请尝试重新输入正确的文件夹和文件序列号')
-            main_function()
         else:
             break

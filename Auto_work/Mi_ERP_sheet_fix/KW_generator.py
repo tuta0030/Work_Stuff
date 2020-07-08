@@ -177,7 +177,12 @@ def rename():
 
 # 添加新的关键词
 def create_new_kw():
-    temp = '''格式示例，如果没有这些国家可以删掉\n\n\nEN:这里写上英文的关键词\n\nFR:这里写上法语的关键词\n\nDE:这里写上德语的关键词'''
+    temp = '格式示例，如果没有这些国家可以删掉\n\n\n'\
+           'EN:这里写上英文的关键词\n\n'\
+           'FR:这里写上法语的关键词\n\n'\
+           'DE:这里写上德语的关键词\n\n'\
+           'IT:这里写上意大利语的关键词\n\n'\
+           'ES:这里写上西班牙语的关键词'
     with open('new_kw_temp.txt', 'w', encoding='utf-8') as t:
         t.write(temp)
     print("在打开的文件中按照对应格式添加关键词")
