@@ -58,10 +58,8 @@ class MkWorkingFile(object):
         return filename_time
 
     def get_dest_name_product(self):
-        self.product = str(input("请输入需要创建的产品名称(0：产品名称，1:智能手表)："))
-        if self.product == str(1):
-            self.product = "智能手表"
-        elif self.product == str(0):
+        self.product = str(input("请输入需要创建的产品名称(0：产品名称)："))
+        if self.product == str(0):
             self.product = "产品名称"
 
     def get_dest_name(self, product_index):
