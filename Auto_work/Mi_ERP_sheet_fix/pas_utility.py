@@ -164,7 +164,7 @@ def process_price(sheet, coordinate: tuple, exchange_rate: float, lowest_price: 
     price = get_column_until_none_cell(sheet, coordinate[0], coordinate[1])
     for index, item in enumerate(price):
         if price[index].value == '':
-            # 删除低于最低价格的行
+            # 删除空值
             print(f"表格中{price[index]}的价格为空值，正在删除")
             for col in range(1, COL_MAX):
                 sheet.cell(coordinate_to_tuple(str(item).split('.')[-1][:-1])[0], col).value = None
