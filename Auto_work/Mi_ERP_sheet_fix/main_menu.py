@@ -9,6 +9,7 @@ import os
 import pas_utility
 import process_amazon_sheet
 import KW_generator
+import make_folder_and_log
 
 
 def main_menu():
@@ -19,7 +20,8 @@ def main_menu():
             _menu = {'退出': pas_utility.main_menu_quit,
                      'ERP表格相关': process_amazon_sheet.main_function,
                      '关键词相关': KW_generator.menu,
-                     '爬取ASIN，价格和主图链接': pas_utility.asin_price_menu
+                     '爬取ASIN，价格和主图链接': pas_utility.asin_price_menu,
+                     '创建文件夹和日志': make_folder_and_log.main
                      }
             pas_utility.make_menu(_menu)
         except Exception as e:

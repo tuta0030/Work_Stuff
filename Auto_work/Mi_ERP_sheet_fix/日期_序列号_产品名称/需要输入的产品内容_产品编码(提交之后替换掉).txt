@@ -1,0 +1,61 @@
+网址：
+------------------------------------
+
+产品编码：
+
+可以发的规格：
+
+价格：
+
+重量：
+
+利润率： 
+
+库存： 
+
+标题title(主词往前写)(特点往前写)(首字母大写)（区分标题）(100字符以上)(主词后面可以加逗号“，”和空格“ ”):
+--------------------------------------------------------
+
+	Brand + KW1(核心) + KW2(精准高转化) + KW3 + Function + Color/Size
+	
+EN: 
+
+FR: 
+
+DE: 
+
+IT: 
+
+ES: 
+
+关键字keywords(首字母大写)(按照各国的写)(250字符):
+--------------------------------------------------------
+
+	EN: 
+
+	FR: 
+
+	DE: 
+
+	IT: 
+
+	ES: 
+
+
+内容简介features(不要有句号):
+--------------------------------------------------------
+
+
+
+产品描述Product Description:
+--------------------------------------------------------
+
+名称：
+颜色：
+尺寸：
+
+
+
+Hints:
+1,The photo was taken in natural light because there is a slight chromatic aberration between the device and the monitor, please understand
+2,Warranty: 15 days free return for any reason. You have 7 days to contact us and 30 days to return it after you received it if you are not satisfied with the product.
