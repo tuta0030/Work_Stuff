@@ -7,6 +7,7 @@
 
 import re
 import os
+import pas_utility as pasu
 
 UNI_CHAR = r'[\u4E00-\u9FA5\u00A0-\u00FF\u0100-\u017F\u0180-\u024F\u2E80-\u9FFFa-zA-Z0-9\'?]+\s'
 PATH_MAIN = os.curdir
@@ -90,3 +91,32 @@ def process_new_kw():
         f.write('\n')
         f.write('\n')
         f.write('}'+ui)
+
+
+def edit_bullet_points():
+    #           0.1: add bullet points into file
+    #           0.2: remove bullet points
+    #           0.3: edit specific catagory's bullet points
+    _menu = {'添加五点描述': add_bullet_points,
+             '删除五点描述': remove_bullet_points,
+             '编辑五点描述': edit_which}
+    pasu.make_menu(_menu)
+    pass
+
+
+def mk_random_bulletpoints():
+    pass
+
+
+def random_bullet_point():
+    # save some general bullet points by catagory
+    # load the file, index the catagory
+    # select which one
+    # save the generated random bulletpoints into the clip board
+    # again?
+    # menu: 0: edit general bullet points file
+    #       1: generate random bullet points
+    _menu = {'编辑五点描述': edit_bullet_points,
+             '生成随机五点描述': mk_random_bulletpoints}
+    pasu.make_menu(_menu)
+    pass

@@ -224,7 +224,8 @@ def menu():
                      '从关键词库生成关键词': main,
                      '重命名关键词': rename,
                      '删除关键词': delete_kw,
-                     '添加新的关键词': create_new_kw}
+                     '添加新的关键词': create_new_kw,
+                     '生成五点描述': KWu.random_bullet_point}
     pas_utility.make_menu(function_menu)
 
 
