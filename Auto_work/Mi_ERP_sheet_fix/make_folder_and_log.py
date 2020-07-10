@@ -22,12 +22,6 @@ class MkWorkingFile(object):
         return _path
 
     @staticmethod
-    def get_log_dest_path() -> str:
-        import sku_profile
-        _log_dest_path = sku_profile.path['log_path']
-        return _log_dest_path
-
-    @staticmethod
     def get_file_template_path() -> str:
         try:
             import sku_profile
@@ -35,19 +29,6 @@ class MkWorkingFile(object):
             return ftpath
         except Exception as e:
             raise e
-
-    @staticmethod
-    def get_log_template():
-        try:
-            import sku_profile
-            ltpath = sku_profile.path['log_template_path']
-            return ltpath
-        except Exception as e:
-            raise e
-
-    def get_log_dest_name(self):
-        _log_dest_name = f'log_{self.get_time()}'
-        return _log_dest_name
 
     @staticmethod
     def get_time():
@@ -75,11 +56,6 @@ class MkWorkingFile(object):
         print(f'把 （{template_path}） 复制到 （{dest_path}） 重命名为 {dest_name} 最后的路径是 {dest_path}\\{dest_name}')
         shutil.copytree(template_path, f'{dest_path}\\{dest_name}')
 
-    @staticmethod
-    def mk_log(log_dest_name, log_dest_path, log_template):
-        print(f'把（{log_template}）复制到 （{log_dest_path}） 重命名为（{log_dest_name}.txt） 最后的路径是（{log_dest_path}\\{log_dest_name}）')
-        shutil.copy(log_template, f'{log_dest_path}\\{log_dest_name}.txt')
-
     def mk_files(self):
         self.get_dest_name_product()
         start = int(input("请输入开始的序列号(-1退出到选项)："))
@@ -88,21 +64,11 @@ class MkWorkingFile(object):
         end = int(input("请输入结束的序列号：")) + 1
         for product_index in range(start, end):
             self.copy_file(self.get_dest_name(product_index), self.get_dest_path(), self.get_file_template_path())
-        _do_we_need_log = str(input("是否同时创建日志文件（Y/N）:"))
-        if _do_we_need_log == 'y' or _do_we_need_log == 'Y':
-            self.mk_log(self.get_log_dest_name(), self.get_log_dest_path(), self.get_log_template())
-        elif _do_we_need_log == 'n' or _do_we_need_log == 'N':
-            self.again()
-        else:
-            print(self.invalid_input_msg)
-            _do_we_need_log = str(input("是否同时创建日志文件（Y/N）:"))
 
     def options(self):
-        _option = int(input("选项[1：创建文件，2：创建日志，-1：退出]："))
+        _option = int(input("选项[1：创建文件，-1：退出]："))
         if _option == 1:
             self.mk_files()
-        elif _option == 2:
-            self.mk_log(self.get_log_dest_name(), self.get_log_dest_path(), self.get_log_template())
         elif _option == -1:
             quit()
         else:
@@ -130,9 +96,6 @@ def main():
         f1 = MkWorkingFile()
         f1.main()
     except Exception as _e:
-        print(str(_e))
-        with open(os.curdir+"\\error_log.txt", 'a', encoding='utf-8') as ef:
-            ef.write(f"{datetime.datetime.now()} - {str(_e).encode('utf-8')}\n")
         raise _e
 
 
