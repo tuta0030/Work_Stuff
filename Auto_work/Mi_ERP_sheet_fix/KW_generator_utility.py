@@ -113,13 +113,6 @@ def mk_random_bulletpoints():
 
 
 def random_bullet_point():
-    # save some general bullet points by catagory
-    # load the file, index the catagory
-    # select which one
-    # save the generated random bulletpoints into the clip board
-    # again?
-    # menu: 0: edit general bullet points file
-    #       1: generate random bullet points
     _menu = {'回主菜单': pasu.back_to_main_menu,
              '编辑五点描述': edit_bullet_points,
              '生成随机五点描述': mk_random_bulletpoints}

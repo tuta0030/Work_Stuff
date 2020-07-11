@@ -12,9 +12,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7b980693-0a6b-4dcf-af56-054d34272c4e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Auto_work/Mi_ERP_sheet_fix/KW_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/Auto_work/Mi_ERP_sheet_fix/KW_generator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Auto_work/Mi_ERP_sheet_fix/KW_generator_utility.py" beforeDir="false" afterPath="$PROJECT_DIR$/Auto_work/Mi_ERP_sheet_fix/KW_generator_utility.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Auto_work/Mi_ERP_sheet_fix/main_menu.py" beforeDir="false" afterPath="$PROJECT_DIR$/Auto_work/Mi_ERP_sheet_fix/main_menu.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -184,13 +182,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1588653188651</updated>
-    </task>
-    <task id="LOCAL-00060" summary="为从关键词文本中创建关键词添加菜单选项，替换提示当前选项的方式">
-      <created>1592368194440</created>
-      <option name="number" value="00060" />
-      <option name="presentableId" value="LOCAL-00060" />
-      <option name="project" value="LOCAL" />
-      <updated>1592368194440</updated>
     </task>
     <task id="LOCAL-00061" summary="关键词生成程序，已有关键词索引函数解耦">
       <created>1592374348548</created>
@@ -528,7 +519,14 @@
       <option name="project" value="LOCAL" />
       <updated>1594447471130</updated>
     </task>
-    <option name="localTasksCounter" value="109" />
+    <task id="LOCAL-00109" summary="开始添加生成随机五点描述的功能，修改菜单选项">
+      <created>1594447673647</created>
+      <option name="number" value="00109" />
+      <option name="presentableId" value="LOCAL-00109" />
+      <option name="project" value="LOCAL" />
+      <updated>1594447673647</updated>
+    </task>
+    <option name="localTasksCounter" value="110" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -554,7 +552,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="添加单独批量处理部分表格内容的功能" />
     <MESSAGE value="把pas类单独整理到一个文件中" />
     <MESSAGE value="高频词首字母大写，去重" />
     <MESSAGE value="根据sku或ean码，将目标文件夹中的所有包含本sku或ean的产品整理成新的delete表格" />
@@ -579,7 +576,8 @@
     <MESSAGE value="添加之前的创建文件夹和日志功能" />
     <MESSAGE value="去除日志功能" />
     <MESSAGE value="开始添加生成随机五点描述的功能" />
-    <option name="LAST_COMMIT_MESSAGE" value="开始添加生成随机五点描述的功能" />
+    <MESSAGE value="开始添加生成随机五点描述的功能，修改菜单选项" />
+    <option name="LAST_COMMIT_MESSAGE" value="开始添加生成随机五点描述的功能，修改菜单选项" />
   </component>
   <component name="WindowStateProjectService">
     <state x="842" y="381" key="#Notifications" timestamp="1592448198287">
@@ -596,11 +594,11 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="690" y="265" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1594175941014" />
-    <state x="558" y="83" key="CommitChangelistDialog2" timestamp="1594447469925">
+    <state x="558" y="83" key="CommitChangelistDialog2" timestamp="1594447673151">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="276" y="0" key="CommitChangelistDialog2/0.0.1536.834@0.0.1536.834" timestamp="1592403031482" />
-    <state x="558" y="83" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1594447469925" />
+    <state x="558" y="83" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1594447673151" />
     <state x="184" y="85" key="DiffContextDialog" timestamp="1594172842469">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -655,11 +653,11 @@
     </state>
     <state x="369" y="121" key="SettingsEditor/0.0.1536.834@0.0.1536.834" timestamp="1591797076646" />
     <state x="366" y="127" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1594172512109" />
-    <state x="552" y="252" key="Vcs.Push.Dialog.v2" timestamp="1594447472617">
+    <state x="552" y="252" key="Vcs.Push.Dialog.v2" timestamp="1594447675093">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="442" y="202" key="Vcs.Push.Dialog.v2/0.0.1536.834@0.0.1536.834" timestamp="1592403046481" />
-    <state x="552" y="252" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1594447472617" />
+    <state x="552" y="252" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1594447675093" />
     <state x="753" y="432" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1592289596167">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
