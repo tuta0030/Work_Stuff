@@ -7,6 +7,7 @@
 
 import re
 import os
+import json
 import pas_utility as pasu
 
 UNI_CHAR = r'[\u4E00-\u9FA5\u00A0-\u00FF\u0100-\u017F\u0180-\u024F\u2E80-\u9FFFa-zA-Z0-9\'?]+\s'
@@ -105,6 +106,9 @@ def edit_bullet_points():
 
 
 def mk_random_bulletpoints():
+    content = open('random_bullet_points.json', 'r', encoding='utf-8').read()
+    content = json.loads(content)
+    print(content)
     pass
 
 
