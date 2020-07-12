@@ -9,6 +9,7 @@ import re
 import os
 import json
 import pas_utility as pasu
+import pyperclip
 
 UNI_CHAR = r'[\u4E00-\u9FA5\u00A0-\u00FF\u0100-\u017F\u0180-\u024F\u2E80-\u9FFFa-zA-Z0-9\'?]+\s'
 PATH_MAIN = os.curdir
@@ -105,11 +106,24 @@ def edit_bullet_points():
     pass
 
 
-def mk_random_bulletpoints():
+def mk_random_bulletpoints() -> str:
     content = open('random_bullet_points.json', 'r', encoding='utf-8').read()
     content = json.loads(content)
-    print(content)
-    pass
+    _out_bullet_points = '\n'.join(list(set(content['测试']))[:5])
+    print(_out_bullet_points)
+    pyperclip.copy(_out_bullet_points)
+
+    def _again():
+        again = input('是否再次生成？(y/n):')
+        if again == 'y':
+            mk_random_bulletpoints()
+        elif again == 'n':
+            pasu.back_to_main_menu()
+        else:
+            '请输入y或n'
+            _again()
+    _again()
+    return _out_bullet_points
 
 
 def random_bullet_point():
