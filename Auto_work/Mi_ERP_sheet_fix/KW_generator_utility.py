@@ -104,11 +104,21 @@ def edit_bullet_points():
         file = open('random_bullet_points.json', 'r', encoding='utf-8').read()
         file = json.loads(file)
         which_product = input("输入需要添加的五点描述名称：")
-        how_many_bp = input("需要添加几条：")
-        for _ in range(int(how_many_bp)):
-            file[which_product] = [input("输入通用的五点描述")]
-        with open('random_bullet_points.json', 'w', encoding='utf-8') as f:
-            json.dump(file, f, ensure_ascii=False)
+        if which_product not in file.keys():
+            print('没有此名称，添加新的内容...')
+            input("请先添加一条内容，然后重新选择此选项以添加更多内容(回车继续)")
+            file[which_product] = [input("输入通用的五点描述：")]
+            with open('random_bullet_points.json', 'w', encoding='utf-8') as f:
+                json.dump(file, f, ensure_ascii=False)
+        else:
+            file = open('random_bullet_points.json', 'r', encoding='utf-8').read()
+            file = json.loads(file)
+            print('已有名称，添加更多...')
+            how_many_bp = input("需要添加几条：")
+            for _ in range(int(how_many_bp)):
+                file[which_product] = file[which_product].append(input("输入通用的五点描述："))
+            with open('random_bullet_points.json', 'w', encoding='utf-8') as f:
+                json.dump(file, f, ensure_ascii=False)
         pasu.back_to_main_menu()
 
     def remove_bullet_points():
@@ -120,7 +130,8 @@ def edit_bullet_points():
             json.dump(file, f, ensure_ascii=False)
         pasu.back_to_main_menu()
 
-    _menu = {'添加五点描述': add_bullet_points,
+    _menu = {'返回': random_bullet_point,
+             '添加五点描述': add_bullet_points,
              '删除五点描述': remove_bullet_points
              # '编辑五点描述': edit_which
              }
