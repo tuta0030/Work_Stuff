@@ -99,9 +99,31 @@ def edit_bullet_points():
     #           0.1: add bullet points into file
     #           0.2: remove bullet points
     #           0.3: edit specific catagory's bullet points
+
+    def add_bullet_points():
+        file = open('random_bullet_points.json', 'r', encoding='utf-8').read()
+        file = json.loads(file)
+        which_product = input("输入需要添加的五点描述名称：")
+        how_many_bp = input("需要添加几条：")
+        for _ in range(int(how_many_bp)):
+            file[which_product] = [input("输入通用的五点描述")]
+        with open('random_bullet_points.json', 'w', encoding='utf-8') as f:
+            json.dump(file, f, ensure_ascii=False)
+        pasu.back_to_main_menu()
+
+    def remove_bullet_points():
+        file = open('random_bullet_points.json', 'r', encoding='utf-8').read()
+        file = json.loads(file)
+        which_product = input("输入需要删除的五点描述名称：")
+        del file[which_product]
+        with open('random_bullet_points.json', 'w', encoding='utf-8') as f:
+            json.dump(file, f, ensure_ascii=False)
+        pasu.back_to_main_menu()
+
     _menu = {'添加五点描述': add_bullet_points,
-             '删除五点描述': remove_bullet_points,
-             '编辑五点描述': edit_which}
+             '删除五点描述': remove_bullet_points
+             # '编辑五点描述': edit_which
+             }
     pasu.make_menu(_menu)
     pass
 
@@ -109,7 +131,8 @@ def edit_bullet_points():
 def mk_random_bulletpoints() -> str:
     content = open('random_bullet_points.json', 'r', encoding='utf-8').read()
     content = json.loads(content)
-    _out_bullet_points = '\n'.join(list(set(content['测试']))[:5])
+    which_product = input('输入哪个类别：')
+    _out_bullet_points = '\n'.join(list(set(content[which_product]))[:5])
     print(_out_bullet_points)
     pyperclip.copy(_out_bullet_points)
 
