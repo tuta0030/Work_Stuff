@@ -10,6 +10,7 @@ import os
 import json
 import pas_utility as pasu
 import pyperclip
+from random import sample
 
 UNI_CHAR = r'[\u4E00-\u9FA5\u00A0-\u00FF\u0100-\u017F\u0180-\u024F\u2E80-\u9FFFa-zA-Z0-9\'?]+\s'
 PATH_MAIN = os.curdir
@@ -103,6 +104,7 @@ def edit_bullet_points():
     def add_bullet_points():
         file = open('random_bullet_points.json', 'r', encoding='utf-8').read()
         file = json.loads(file)
+        
         which_product = input("输入需要添加的五点描述名称：")
         if which_product not in file.keys():
             print('没有此名称，添加新的内容...')
@@ -142,8 +144,23 @@ def edit_bullet_points():
 def mk_random_bulletpoints() -> str:
     content = open('random_bullet_points.json', 'r', encoding='utf-8').read()
     content = json.loads(content)
-    which_product = input('输入哪个类别：')
-    _out_bullet_points = '\n'.join(list(set(content[which_product]))[:5])
+
+    def index_rbp_json(json_content: dict):
+        _index = 0
+        _menu = {}
+        for k, v in json_content.items():
+            _menu[(_index, k)] = v
+            print(_index, end='\t')
+            print(k)
+            _index += 1
+        _which_product = input('请选择：')
+        for k, v in _menu.items():
+            _index, key = k
+            if _which_product == str(_index):
+                print(f'已选择：{key}')
+                return '\n'.join(sample(v, 5))
+
+    _out_bullet_points = index_rbp_json(content)
     print(_out_bullet_points)
     pyperclip.copy(_out_bullet_points)
 
