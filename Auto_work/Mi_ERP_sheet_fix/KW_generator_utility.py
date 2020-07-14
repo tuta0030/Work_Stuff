@@ -100,36 +100,58 @@ def edit_bullet_points():
     #           0.1: add bullet points into file
     #           0.2: remove bullet points
     #           0.3: edit specific catagory's bullet points
+    def save_json_file(file):
+        with open('random_bullet_points.json', 'w', encoding='utf-8') as f:
+            json.dump(file, f, ensure_ascii=False)
+
+    def index_rbp_json(json_content: dict):
+        _index = 0
+        _indexed_json_content = {}
+        for k, v in json_content.items():
+            _indexed_json_content[(_index, k)] = v
+            print(_index, end='\t')
+            print(k)
+            _index += 1
+        _which_product = input('请选择(-1退出)：')
+        if _which_product == str(-1):
+            edit_bullet_points()
+        for k, v in _indexed_json_content.items():
+            _index, key = k
+            if _which_product == str(_index):
+                print(f'已选择：{key}')
+                return key
+
+    def add_how_many_bp(**kwargs) -> list:
+        how_many_bp = int(input('需要添加几条内容？'))
+        out_list = kwargs.get('current_dict_value', [])
+        for _ in range(1, how_many_bp+1):
+            out_list = out_list.append(input(f'输入第{_}条内容'))
+        return out_list
 
     def add_bullet_points():
         file = open('random_bullet_points.json', 'r', encoding='utf-8').read()
         file = json.loads(file)
         
-        which_product = input("输入需要添加的五点描述名称：")
+        which_product = input('请输入需要添加的内容：')
         if which_product not in file.keys():
             print('没有此名称，添加新的内容...')
-            input("请先添加一条内容，然后重新选择此选项以添加更多内容(回车继续)")
-            file[which_product] = [input("输入通用的五点描述：")]
-            with open('random_bullet_points.json', 'w', encoding='utf-8') as f:
-                json.dump(file, f, ensure_ascii=False)
+            file[which_product] = add_how_many_bp()
+            save_json_file(file)
         else:
             file = open('random_bullet_points.json', 'r', encoding='utf-8').read()
             file = json.loads(file)
             print('已有名称，添加更多...')
-            how_many_bp = input("需要添加几条：")
-            for _ in range(int(how_many_bp)):
-                file[which_product] = file[which_product].append(input("输入通用的五点描述："))
-            with open('random_bullet_points.json', 'w', encoding='utf-8') as f:
-                json.dump(file, f, ensure_ascii=False)
+            file[which_product] = add_how_many_bp(current_dict_value=file[which_product])
+            save_json_file(file)
         pasu.back_to_main_menu()
 
     def remove_bullet_points():
         file = open('random_bullet_points.json', 'r', encoding='utf-8').read()
         file = json.loads(file)
-        which_product = input("输入需要删除的五点描述名称：")
+        which_product = index_rbp_json(file)
+        print(f'删除{file[which_product]}')
         del file[which_product]
-        with open('random_bullet_points.json', 'w', encoding='utf-8') as f:
-            json.dump(file, f, ensure_ascii=False)
+        save_json_file(file)
         pasu.back_to_main_menu()
 
     _menu = {'返回': random_bullet_point,
