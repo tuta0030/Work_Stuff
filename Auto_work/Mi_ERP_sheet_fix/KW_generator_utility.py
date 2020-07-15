@@ -11,11 +11,13 @@ import json
 import pas_utility as pasu
 import pyperclip
 from random import sample
+from send2trash import send2trash
 
 UNI_CHAR = r'[\u4E00-\u9FA5\u00A0-\u00FF\u0100-\u017F\u0180-\u024F\u2E80-\u9FFFa-zA-Z0-9\'?]+\s'
 PATH_MAIN = os.curdir
 PATH_DATA_BASE = PATH_MAIN + r'\KW_data_base.txt'
 NO_DB_MSG = r'没有找到关键词数据，请确认关键词已经添加到以下文件：E:\TUTA\文档\Python\创建工作日志和工作文件夹\KW_data_base.txt， 已自动创建文件模板'
+BP_HINT = '在此文件中添加新的五点描述，每条描述用回车隔开'
 
 
 def write_keywords_to_working_txt(working_txt_path, g_keywords) -> None:
@@ -121,12 +123,23 @@ def edit_bullet_points():
                 print(f'已选择：{key}')
                 return key
 
-    def add_how_many_bp(**kwargs) -> list:
-        how_many_bp = int(input('需要添加几条内容？'))
-        out_list = kwargs.get('current_dict_value', [])
-        for _ in range(1, how_many_bp+1):
-            out_list = out_list.append(input(f'输入第{_}条内容'))
-        return out_list
+    def add_bp(current_bp: list):
+        if current_bp is None:
+            current_bp = []
+        with open('new_bp_template.txt', 'w', encoding='utf-8') as f:
+            f.write(BP_HINT)
+            for each_bp in current_bp:
+                f.write(each_bp)
+                f.write('\n')
+        os.startfile('new_bp_template.txt')
+        is_finished = input('是否添加完成(y/n)?')
+        if is_finished == 'y':
+            return_list = open('new_bp_template.txt', 'r', encoding='utf-8').read().replace(BP_HINT, '').split('\n')
+            send2trash('new_bp_template.txt')
+            return [each_line for each_line in return_list if each_line != '']
+        else:
+            print('未添加完成，取消添加...')
+            send2trash('new_bp_template.txt')
 
     def add_bullet_points():
         file = open('random_bullet_points.json', 'r', encoding='utf-8').read()
@@ -135,13 +148,13 @@ def edit_bullet_points():
         which_product = input('请输入需要添加的内容：')
         if which_product not in file.keys():
             print('没有此名称，添加新的内容...')
-            file[which_product] = add_how_many_bp()
+            file[which_product] = add_bp([])
             save_json_file(file)
         else:
             file = open('random_bullet_points.json', 'r', encoding='utf-8').read()
             file = json.loads(file)
             print('已有名称，添加更多...')
-            file[which_product] = add_how_many_bp(current_dict_value=file[which_product])
+            file[which_product] = add_bp(file[which_product])
             save_json_file(file)
         pasu.back_to_main_menu()
 
