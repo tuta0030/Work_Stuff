@@ -146,7 +146,7 @@ def edit_bullet_points():
         file = open('random_bullet_points.json', 'r', encoding='utf-8').read()
         file = json.loads(file)
         
-        which_product = input('请输入需要添加的内容：')
+        which_product = input('请输入需要添加的内容名称：')
         if which_product not in file.keys():
             print('没有此名称，添加新的内容...')
             file[which_product] = add_bp([])
