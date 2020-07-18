@@ -135,6 +135,7 @@ def edit_bullet_points():
         is_finished = input('是否添加完成(y/n)?')
         if is_finished == 'y':
             return_list = open('new_bp_template.txt', 'r', encoding='utf-8').read().replace(BP_HINT, '').split('\n')
+            return_list = [each_line[:-1] for each_line in return_list if each_line.strip().endswith('.')]
             send2trash('new_bp_template.txt')
             return [each_line for each_line in return_list if each_line != '']
         else:
@@ -173,7 +174,6 @@ def edit_bullet_points():
              # '编辑五点描述': edit_which
              }
     pasu.make_menu(_menu)
-    pass
 
 
 def mk_random_bulletpoints() -> str:
@@ -217,4 +217,3 @@ def random_bullet_point():
              '编辑五点描述': edit_bullet_points,
              '生成随机五点描述': mk_random_bulletpoints}
     pasu.make_menu(_menu)
-    pass
