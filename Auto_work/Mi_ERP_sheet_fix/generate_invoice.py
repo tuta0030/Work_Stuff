@@ -5,6 +5,7 @@ from lxml import etree
 import invoice_parse_page
 import selector_path
 from order_info import info
+import pas_utility as pasu
 
 
 def addToClipBoard():
@@ -79,6 +80,7 @@ class Invoice(object):
 def main():
     _i = Invoice()
     _i.main()
+    pasu.back_to_main_menu()
 
 
 if __name__ == '__main__':
