@@ -28,9 +28,10 @@ def main_menu():
                      }
             pas_utility.make_menu(_menu)
         except Exception as e:
-            # raise e
+            raise e
             print(e)
             print('由于以上错误导致程序出错，请重试')
+            input('回车继续')
             main_menu()
         else:
             break
