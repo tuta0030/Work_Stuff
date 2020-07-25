@@ -123,9 +123,14 @@ def edit_bullet_points():
                 print(f'已选择：{key}')
                 return key
 
-    def add_bp(current_bp: list):
+    def validate_current_bp(current_bp: list):
         if current_bp is None or current_bp == []:
-            current_bp = []
+            return []
+        else:
+            return current_bp
+
+    def add_bp(current_bp: list):
+        current_bp = validate_current_bp(current_bp)
         with open('new_bp_template.txt', 'w', encoding='utf-8') as f:
             f.write(BP_HINT)
             for each_bp in current_bp:
@@ -135,14 +140,12 @@ def edit_bullet_points():
         is_finished = input('是否添加完成(y/n)?')
         if is_finished == 'y':
             return_list = open('new_bp_template.txt', 'r', encoding='utf-8').read().replace(BP_HINT, '').split('\n')
-            return_list = [each_line[:-1] for each_line in return_list if each_line.strip().endswith('.')]
             return_list = [each_line for each_line in return_list if each_line != '']
+            print('文件中获取的内容：', end='\t')
             print(return_list)
-            input('回车继续')
             return return_list
         else:
             print('未添加完成，取消添加...')
-        send2trash('new_bp_template.txt')
 
     def add_bullet_points():
         file = open('random_bullet_points.json', 'r', encoding='utf-8').read()
@@ -195,7 +198,11 @@ def mk_random_bulletpoints() -> str:
             _index, key = k
             if _which_product == str(_index):
                 print(f'已选择：{key}')
-                return '\n'.join(sample(v, 5))
+                if v:
+                    return '\n'.join(sample(v, 5))
+                else:
+                    input('内容为空值，请先添加内容，回车返回主菜单')
+                    pasu.back_to_main_menu()
 
     _out_bullet_points = index_rbp_json(content)
     print(_out_bullet_points)
