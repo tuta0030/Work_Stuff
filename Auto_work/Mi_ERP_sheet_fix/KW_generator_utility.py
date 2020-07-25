@@ -136,14 +136,13 @@ def edit_bullet_points():
         if is_finished == 'y':
             return_list = open('new_bp_template.txt', 'r', encoding='utf-8').read().replace(BP_HINT, '').split('\n')
             return_list = [each_line[:-1] for each_line in return_list if each_line.strip().endswith('.')]
-            send2trash('new_bp_template.txt')
             return_list = [each_line for each_line in return_list if each_line != '']
             print(return_list)
             input('回车继续')
             return return_list
         else:
             print('未添加完成，取消添加...')
-            send2trash('new_bp_template.txt')
+        send2trash('new_bp_template.txt')
 
     def add_bullet_points():
         file = open('random_bullet_points.json', 'r', encoding='utf-8').read()
