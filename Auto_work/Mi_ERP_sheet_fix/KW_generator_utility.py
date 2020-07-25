@@ -141,6 +141,8 @@ def edit_bullet_points():
         if is_finished == 'y':
             return_list = open('new_bp_template.txt', 'r', encoding='utf-8').read().replace(BP_HINT, '').split('\n')
             return_list = [each_line for each_line in return_list if each_line != '']
+            return_list = \
+                [each_line[:-1] if str(each_line).strip().endswith('.') else each_line for each_line in return_list]
             print('文件中获取的内容：', end='\t')
             print(return_list)
             return return_list
