@@ -124,7 +124,7 @@ def edit_bullet_points():
                 return key
 
     def add_bp(current_bp: list):
-        if current_bp is None:
+        if current_bp is None or current_bp == []:
             current_bp = []
         with open('new_bp_template.txt', 'w', encoding='utf-8') as f:
             f.write(BP_HINT)
@@ -139,6 +139,7 @@ def edit_bullet_points():
             send2trash('new_bp_template.txt')
             return_list = [each_line for each_line in return_list if each_line != '']
             print(return_list)
+            input('回车继续')
             return return_list
         else:
             print('未添加完成，取消添加...')
