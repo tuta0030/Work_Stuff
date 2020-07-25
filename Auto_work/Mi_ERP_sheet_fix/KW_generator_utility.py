@@ -137,7 +137,9 @@ def edit_bullet_points():
             return_list = open('new_bp_template.txt', 'r', encoding='utf-8').read().replace(BP_HINT, '').split('\n')
             return_list = [each_line[:-1] for each_line in return_list if each_line.strip().endswith('.')]
             send2trash('new_bp_template.txt')
-            return [each_line for each_line in return_list if each_line != '']
+            return_list = [each_line for each_line in return_list if each_line != '']
+            print(return_list)
+            return return_list
         else:
             print('未添加完成，取消添加...')
             send2trash('new_bp_template.txt')
