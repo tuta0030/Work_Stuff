@@ -30,9 +30,14 @@ def title_case():
 
 
 def main_loop():
+    import keyboard
+    from main_menu import main_menu
     while True:
         try:
-            print('Not working yet...')
+            keyboard.add_hotkey('ctrl+r', random_clipboard)
+            keyboard.add_hotkey('ctrl+shift+alt+r', title_case)
+            keyboard.wait('esc')
+            main_menu()
         except Exception as e:
             raise e
         else:
