@@ -4,7 +4,6 @@
 # @Email   : Eric_Shenarrzine@outlook.com
 # @File    : main_menu.py
 # @Software: PyCharm
-# 回到 40bb890a4c7c619ddaf7d3331720a2042bcb77e7 版本
 
 import os
 import pas_utility
@@ -29,7 +28,7 @@ def main_menu():
                      }
             pas_utility.make_menu(_menu)
         except Exception as e:
-            raise e
+            # raise e
             print(e)
             print('由于以上错误导致程序出错，请重试')
             input('回车继续')
