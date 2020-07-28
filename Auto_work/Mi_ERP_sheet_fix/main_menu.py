@@ -11,6 +11,7 @@ import process_amazon_sheet
 import KW_generator
 import make_folder_and_log
 import generate_invoice
+import text_process
 
 
 def main_menu():
@@ -24,7 +25,8 @@ def main_menu():
                      '解析ASIN，价格和主图链接': pas_utility.asin_price_menu,
                      '创建工作文件夹': make_folder_and_log.main,
                      '五点描述': KW_generator.KWu.random_bullet_point,
-                     '生成发票': generate_invoice.main
+                     '生成发票': generate_invoice.main,
+                     '文本处理程序': text_process.main_loop,
                      }
             pas_utility.make_menu(_menu)
         except Exception as e:
