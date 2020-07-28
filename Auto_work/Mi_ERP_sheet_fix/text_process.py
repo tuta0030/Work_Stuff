@@ -30,12 +30,13 @@ def title_case():
 
 
 def main_loop():
+    import system_hotkey
     import keyboard
     from main_menu import main_menu
     while True:
         try:
-            keyboard.add_hotkey('ctrl+r', random_clipboard)
-            keyboard.add_hotkey('ctrl+shift+alt+r', title_case)
+            hotkey_random_clipboard = system_hotkey.SystemHotkey()
+            hotkey_random_clipboard.register(('control', 'shift', 'r'), callback=random_clipboard)
             keyboard.wait('esc')
             main_menu()
         except Exception as e:
