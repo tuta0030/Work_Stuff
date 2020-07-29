@@ -30,6 +30,8 @@ def title_case():
 
 
 def main_loop():
+    import win32con
+    import ctypes
     import system_hotkey
     import keyboard
     from main_menu import main_menu

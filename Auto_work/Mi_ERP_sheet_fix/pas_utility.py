@@ -68,32 +68,11 @@ def get_column_until_none_cell(sheet, row_start: int, column_const: int) -> list
     return cell_list
 
 
-def __random_title(item_name: str, brand: str) -> str:
-    _pattern = re.compile(r'\s°')
-    length = len(item_name)
-    item_name = re.sub(_pattern, '°', item_name)  # 移除°前的空格
-
-    item_name_h = item_name.split(' ')[:-round(len(item_name.split(' ')) / 2)]
-    item_name_t = item_name.split(' ')[round(len(item_name.split(' ')) / 2):]
-
-    color_size = []
-
-    # 将带有","的变体数值保留
-    for word in item_name_t:
-        if ',' in word or '(' in word or ')' in word:
-            try:
-                color_size.append(' '.join(item_name_t[item_name_t.index(word):]))
-                item_name_t = item_name_t[:item_name_t.index(word)]
-                if length > 199:
-                    item_name_t = []
-            except ValueError:
-                item_name_t = []
-
-    rand_item_name_t = list(set(item_name_t))
-    rand_item_name_t = rand_item_name_t + color_size
-    new_item_name = item_name_h + rand_item_name_t
-    new_item_name = [word.capitalize() for word in new_item_name]
-    new_item_name = ' '.join(new_item_name).replace('  ', ' ').replace(brand.capitalize(), brand)
+def _process_title(item_name: str, brand: str) -> str:
+    item_name = item_name[:200]
+    new_item_name = item_name.split(' ')[:-1]
+    new_item_name = [str(each_word).capitalize() for each_word in new_item_name]
+    new_item_name = ' '.join(new_item_name).replace(brand.capitalize(), brand)
     return new_item_name
 
 
@@ -136,7 +115,7 @@ def cap_title(title: str, brand: str) -> str:
 
 
 def process_item_name(item_name: str, brand: str) -> str:
-    item_name = __random_title(item_name, brand)
+    item_name = _process_title(item_name, brand)
     return item_name
 
 
