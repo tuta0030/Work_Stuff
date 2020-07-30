@@ -282,6 +282,7 @@ def back_to_main_menu():
     return 0
 
 
+# 使用统一参数处理多个文件
 def multiple_file_process(process_class, class_parameter: dict, **pas_args):
     """可以传入的选项：method_para, process_method, 自动调用save_sheet """
     folder, which_file = index_files()
