@@ -71,8 +71,25 @@ def get_column_until_none_cell(sheet, row_start: int, column_const: int) -> list
 def _process_title(item_name: str, brand: str) -> str:
     item_name = item_name[:200]
     new_item_name = item_name.split(' ')[:-1]
+    new_item_name = ['' if each_word == ','
+                     or each_word == '/'
+                     or each_word == '\\'
+                     else each_word
+                     for each_word in new_item_name]
+    new_item_name = ['' if ('(' in each_word) and (')' not in each_word)
+                     or (')' in each_word) and ('(' not in each_word)
+                     else each_word for each_word in new_item_name]
+    new_item_name = ['' if ('[' in each_word) and (']' not in each_word)
+                     or (']' in each_word) and ('[' not in each_word)
+                     else each_word for each_word in new_item_name]
     new_item_name = [str(each_word).capitalize() for each_word in new_item_name]
-    new_item_name = ' '.join(new_item_name).replace(brand.capitalize(), brand)
+    new_item_name = ' '.join(new_item_name).replace(brand.capitalize(), brand).replace('  ', ' ')
+    if new_item_name.endswith(',') \
+            or new_item_name.endswith('*') \
+            or new_item_name.endswith(' ') \
+            or new_item_name.endswith(':') \
+            or new_item_name.endswith('.'):
+        new_item_name = new_item_name[:-1]
     return new_item_name
 
 
