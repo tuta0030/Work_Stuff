@@ -103,7 +103,7 @@ def process_info(sheet, info_coordinate: tuple, info):
 
 
 def high_frequent_words(key_words_list: list):
-    key_words_list = ' '.join(key_words_list).replace(BRAND_TO_REPLACE_KW, '')
+    key_words_list = ' '.join(key_words_list)
     for each_char in KW_FILTER_CHAR.split(' '):
         key_words_list = key_words_list.replace(each_char, ' ')
     key_words_list = key_words_list.split(' ')
@@ -112,6 +112,9 @@ def high_frequent_words(key_words_list: list):
     kw_list = []
     for word, count in collections.Counter(key_words_list).most_common(HOW_MANY_WORDS_IN_COUNTER):
         kw_list.append(word.capitalize())
+    for each_word in BRAND_TO_REPLACE_KW.split(' '):
+        if each_word.capitalize() in kw_list:
+            kw_list.remove(each_word.capitalize())
     return kw_list
 
 

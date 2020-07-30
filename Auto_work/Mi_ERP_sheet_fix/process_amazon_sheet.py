@@ -4,7 +4,7 @@ import pas_class as pasc
 import output_usable_sheet_head as opsh
 
 
-# 处理选择的表格文件（单独）
+# 统一处理选择的表格文件（单独）
 def pas_part():
     # key:功能描述， value:需要调用的函数名称
     part_functions = {'返回主菜单': 'back_to_main',
@@ -40,7 +40,7 @@ def pas_part():
         pasu.multiple_file_process(pasc.ProcessWithSameParameter, _parameter, process_method=func_name)
 
 
-# 处理选择的表格文件（全部）
+# 统一处理选择的表格文件（全部）
 def pas_same_para():
     print("输入统一的参数：")
     _parameter = {"title": str(input("请输入不需要首字母大写的品牌名(回车跳过)：")),
