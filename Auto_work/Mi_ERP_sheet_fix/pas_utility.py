@@ -1,6 +1,5 @@
 import os
 import datetime
-import re
 import xlsxwriter as xw
 from openpyxl.utils import coordinate_to_tuple
 import main_menu
