@@ -26,7 +26,7 @@ def main_menu():
                      '创建工作文件夹': make_folder_and_log.main,
                      '五点描述': KW_generator.KWu.random_bullet_point,
                      '生成发票': generate_invoice.main,
-                     '文本处理程序': text_process.main,
+                     '文本处理程序(输出翻译文件)': text_process.main,
                      }
             pas_utility.make_menu(_menu)
         except Exception as e:
