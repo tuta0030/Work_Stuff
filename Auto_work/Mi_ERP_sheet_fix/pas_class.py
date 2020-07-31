@@ -43,9 +43,20 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
                                                      item_name_coordinate[1])
         self.all_titles = [each_title.value for each_title in title_list]
         for index, title in enumerate(title_list):
-            title_list[index].value = pasu.process_item_name(title.value, brand) + ' ' +\
-                                      self.sheet.cell(pasu.get_coordinate(title)[0], color_name_column).value + ' ' +\
-                                      self.sheet.cell(pasu.get_coordinate(title)[0], size_name_column).value
+            if self.sheet.cell(pasu.get_coordinate(title)[0], color_name_column).value is '' and \
+               self.sheet.cell(pasu.get_coordinate(title)[0], size_name_column).value is '':
+                title_list[index].value = pasu.process_item_name(title.value, brand)
+            elif self.sheet.cell(pasu.get_coordinate(title)[0], color_name_column).value is '':
+                title_list[index].value = pasu.process_item_name(title.value, brand) + ',' + \
+                                          self.sheet.cell(pasu.get_coordinate(title)[0], size_name_column).value
+            elif self.sheet.cell(pasu.get_coordinate(title)[0], size_name_column).value is '':
+                title_list[index].value = pasu.process_item_name(title.value, brand) + ',' + \
+                                          self.sheet.cell(pasu.get_coordinate(title)[0],
+                                                          color_name_column).value
+            else:
+                title_list[index].value = pasu.process_item_name(title.value, brand) + ',' +\
+                                          self.sheet.cell(pasu.get_coordinate(title)[0], color_name_column).value + ',' +\
+                                          self.sheet.cell(pasu.get_coordinate(title)[0], size_name_column).value
 
     def process_description(self):
         description_coordinate = pasu.get_coordinate(self.description)
@@ -66,6 +77,10 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
     def process_update_delete(self, _ui: str):
         update_coordinate = pasu.get_coordinate(self.update_delete)
         pasu.process_info(self.sheet, update_coordinate, _ui)
+
+    def process_ship_time(self):
+        fulfillment_latency_coordinate = pasu.get_coordinate(self.fulfillment_latency)
+        pasu.process_info(self.sheet, fulfillment_latency_coordinate, 3)
 
     def process_keywords(self, keywords: str):
         if keywords == SECRET_CODE:
@@ -99,6 +114,7 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         self.process_node(str(input("分类节点(-1跳过)：")))
         self.process_keywords(str(input("关键词(-1跳过)：")))
         self.process_description()
+        self.process_ship_time()
         for row in range(1, 4):
             for col in range(1, 1000):
                 self.sheet.cell(row, col).value = None
@@ -110,8 +126,6 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         output_usable_sheet_head.main(path+'\\'+original_file,
                                       _out_put_file_name,
                                       path + '\\__完整文件_' + file_name.replace('.xlsx', '') + '.xlsx')
-
-        print(path + '\\_输出文件_' + file_name.replace('.xlsx', '') + '.xlsx')
         send2trash.send2trash(path + '\\_输出文件_' + file_name.replace('.xlsx', '') + '.xlsx')
 
 
