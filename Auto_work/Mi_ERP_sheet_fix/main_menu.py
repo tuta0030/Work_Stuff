@@ -26,11 +26,11 @@ def main_menu():
                      '创建工作文件夹': make_folder_and_log.main,
                      '五点描述': KW_generator.KWu.random_bullet_point,
                      '生成发票': generate_invoice.main,
-                     '文本处理程序': text_process.main_loop,
+                     '文本处理程序': text_process.main,
                      }
             pas_utility.make_menu(_menu)
         except Exception as e:
-            # raise e
+            raise e
             print(e)
             print('由于以上错误导致程序出错，请重试')
             input('回车继续')

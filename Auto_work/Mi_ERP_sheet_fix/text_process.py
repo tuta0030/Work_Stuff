@@ -5,43 +5,120 @@
 # @File    : text_process.py
 # @Software: PyCharm
 
-
-def random_clipboard():
-    import pyperclip
-    from random import sample
-
-    content = pyperclip.paste()
-    content = content.split(' ')
-    content = ' '.join(sample(content, len(content)))
-    pyperclip.copy(content)
-    pyperclip.paste()
-    print(pyperclip.paste())
+import pas_utility as pasu
+import os
+import htm_file_warp
+import openpyxl
+import xlsxwriter
 
 
-def title_case():
-    import pyperclip
-
-    content = pyperclip.paste()
-    content = content.split(' ')
-    content = [str(each_word).capitalize() for each_word in content]
-    content = ' '.join(content)
-    pyperclip.copy(content)
-    print(pyperclip.paste())
+ROW_RANGE_RESTRICTION = 2000
+COLUMN_RANGE_RESTRICTION = 2000
 
 
-def main_loop():
-    import win32con
-    import ctypes
-    import system_hotkey
-    import keyboard
-    from main_menu import main_menu
-    while True:
-        try:
-            hotkey_random_clipboard = system_hotkey.SystemHotkey()
-            hotkey_random_clipboard.register(('control', 'shift', 'r'), callback=random_clipboard)
-            keyboard.wait('esc')
-            main_menu()
-        except Exception as e:
-            raise e
+class Translate:
+
+    def __init__(self):
+        self.file_directory = input('输入表格文件路径:')
+        self.sheet = ''
+
+    def load_sheet(self, which_file) -> dict:
+        ws = openpyxl.load_workbook(which_file).get_sheet_by_name('sheet1')
+        self.sheet = ws
+
+        def find_cell(sheet, cell_name: str):
+            for _r in range(1, ROW_RANGE_RESTRICTION):
+                for _c in range(1, COLUMN_RANGE_RESTRICTION):
+                    if sheet.cell(_r, _c).value == cell_name:
+                        return sheet.cell(_r, _c)
+        item_name_cell = find_cell(ws, 'item_name')
+        bullet_point_cell = find_cell(ws, 'bullet_point1')
+        keywords_cell = find_cell(ws, 'generic_keywords1')
+        description = find_cell(ws, 'product_description')
+        sheet_cells = {'标题': item_name_cell,
+                       '五点': bullet_point_cell,
+                       '关键字': keywords_cell,
+                       '描述': description}
+        return sheet_cells
+
+    def select_which_content(self, load_sheet: dict):
+        _menu = {}
+        index = 0
+        for descreption, cell in load_sheet.items():
+            _menu[(index, descreption)] = cell
+            index = index + 1
+
+        for item in _menu.keys():
+            print(str(item[0]) + '\t' + item[1])
+            print('')
+        ui = input('输入选项：')
+        if len(ui.split(' ')) > 1:
+            for each_ui in ui.split(' '):
+                for item, cell in _menu.items():
+                    if each_ui == str(item[0]):
+                        return cell
         else:
-            break
+            for item, cell in _menu.items():
+                if ui == str(item[0]):
+                    return cell
+
+    def get_all_column(self, sheet, which_content):
+        item_name_coordinate = pasu.get_coordinate(which_content)
+        content_list = pasu.get_column_until_none_cell(sheet,
+                                                       item_name_coordinate[0],
+                                                       item_name_coordinate[1])
+        [print(each_cell.value) for each_cell in content_list]
+
+    def indexing_files(self):
+        files = {}
+        index = 0
+        if self.file_directory == '-1':
+            pasu.back_to_main_menu()
+        elif not os.path.isdir(self.file_directory):
+            print('请输入一个文件夹路径')
+            self.indexing_files()
+        for folder, subfolder, file in os.walk(self.file_directory):
+            for each_file in file:
+                files[index] = folder + '\\' + each_file
+                index += 1
+        print("当前文件夹中包含的文件有：")
+        for index, file in files.items():
+            print(index, end='')
+            print('\t' + file.split('\\')[-1])
+        ui = str(input('请选择需要处理的文件：')).strip()
+        for selection in files.keys():
+            if len(ui.split(' ')) > 1:
+                which_file = []
+                for each_ui in ui.split(' '):
+                    which_file.append(files[int(each_ui)])
+                return which_file
+            elif ui == str(selection):
+                which_file = files[selection]
+                return which_file
+
+    def save_as_html(self, what, content):
+        out_path = input('输入需要保存的路径:')
+        if not os.path.isdir(out_path):
+            print('输入的路径错误，请重新输入')
+            self.save_as_html(what, content)
+        with open(out_path+'\\'+what+'.htm', 'w', encoding='utf-8') as file:
+            file.write(htm_file_warp.htm_file_head)
+            file.write('\n')
+            file.write(content)
+            file.write('\n')
+            file.write(htm_file_warp.htm_file_tail)
+
+    @staticmethod
+    def htm_warp(content: list) -> str:
+        def add_htm_warp(title):
+            return f"""<tr height="18" style='height:13.50pt;'> <td class="xl65" height="18" colspan="14" 
+        style='height:13.50pt;mso-ignore:colspan;' x:str>{title}</td> <td></td> </tr> """
+        all_titles = [add_htm_warp(each_title) for each_title in content]
+        return '\n'.join(all_titles)
+# D:\小米ERP相关数据\上传产品表格\test\FENGRUDING_AE_desk_lamp_亚马逊表_20200729164603.xlsx
+
+
+def main():
+    translate = Translate()
+    which_content = translate.select_which_content(translate.load_sheet(translate.indexing_files()))
+    translate.get_all_column(translate.sheet, which_content)
