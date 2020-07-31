@@ -42,6 +42,12 @@ class LoadAmazonSheet(object):
         # find "update_delete" cell
         self.update_delete = find_cell(self.sheet, 'update_delete')
 
+        # find "color_name" cell
+        self.color_name = find_cell(self.sheet, 'color_name')
+
+        # find "size_name" cell
+        self.size_name = find_cell(self.sheet, 'size_name')
+
 
 if __name__ == '__main__':
     pass
