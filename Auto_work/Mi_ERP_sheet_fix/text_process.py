@@ -13,6 +13,7 @@ import xlsxwriter
 
 ROW_RANGE_RESTRICTION = 2000
 COLUMN_RANGE_RESTRICTION = 2000
+BR_PATTERN = ('(<(br)>)', '(</(br)>)')
 
 
 class Translate:
@@ -72,7 +73,7 @@ class Translate:
                                                        content_coordinate[1])
         [print(each_cell.value) for each_cell in content_list]
         content_list = \
-            [self.add_cor(each_cell).replace('<br>', '(<(br)>)')
+            [self.add_cor(each_cell).replace('<br>', BR_PATTERN[0]).replace('</br>', BR_PATTERN[1])
              for each_cell in content_list]
         return self.htm_warp(content_list)
 
@@ -134,11 +135,12 @@ class ReadTranslatedHtm(object):
 
     def __init__(self):
         self.directory = ''
+        self.langs = []
+        self.langs_dict = {}
 
-    def find_all_htm_file(self):
+    def find_all_htm_file(self) -> list:
         self.directory = input('输入htm文件路径:')
-        files = {}
-        index = 0
+        files = []
         if self.directory == '-1':
             pasu.back_to_main_menu()
         elif not os.path.isdir(self.directory):
@@ -150,18 +152,32 @@ class ReadTranslatedHtm(object):
                        (str(each_file) != '五点.htm' and
                         str(each_file) != '标题.htm' and
                         str(each_file) != '描述.htm'):
-                    files[index] = folder + '\\' + each_file
-                    index += 1
-        print("当前文件夹中包含的文件有：")
-        [print(each_htm) for each_htm in files.values()]
+                    files.append(folder + '\\' + each_file)
+        return files
 
+    def get_langs(self, files: list):
+        langs = []
+        [langs.append(str(each_htm).replace('五点', '').replace('标题', '').replace('描述', '')
+                      .split('\\')[-1].replace('.htm', ''))
+         for each_htm in files]
+        langs = list(set(langs))
+        self.langs = langs
 
-# D:\小米ERP相关数据\上传产品表格\test\FENGRUDING_AE_desk_lamp_亚马逊表_20200729164603.xlsx
+    def main(self):
+        files = self.find_all_htm_file()
+        self.get_langs(files)
+        for each_lang in self.langs:
+            self.langs_dict[each_lang] = []
+            for each_file in files:
+                if each_lang in each_file:
+                    self.langs_dict[each_lang].append(each_file)
+
+        print(self.langs_dict)
 
 
 def main():
     translate = Translate()
     readtranslate = ReadTranslatedHtm()
     _menu = {'通过表格保存htm文件': translate.save_all,
-             '通过htm生成新的表格文件': readtranslate.find_all_htm_file}
+             '通过htm生成新的表格文件': readtranslate.main}
     pasu.make_menu(_menu)
