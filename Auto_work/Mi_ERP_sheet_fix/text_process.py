@@ -163,15 +163,21 @@ class ReadTranslatedHtm(object):
         langs = list(set(langs))
         self.langs = langs
 
-    def main(self):
-        files = self.find_all_htm_file()
-        self.get_langs(files)
+    def get_langs_dict(self, files: list):
         for each_lang in self.langs:
             self.langs_dict[each_lang] = []
             for each_file in files:
                 if each_lang in each_file:
                     self.langs_dict[each_lang].append(each_file)
 
+    def get_langs_and_langs_dict(self, files):
+        self.get_langs(files)
+        self.get_langs_dict(files)
+
+    def main(self):
+        files = self.find_all_htm_file()
+        self.get_langs_and_langs_dict(files)
+        # make a new xlsx file
         print(self.langs_dict)
 
 
