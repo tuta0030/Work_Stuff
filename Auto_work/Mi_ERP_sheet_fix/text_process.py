@@ -13,13 +13,12 @@ import xlsxwriter
 
 ROW_RANGE_RESTRICTION = 2000
 COLUMN_RANGE_RESTRICTION = 2000
-COORDINATE_WARP = '::c::'
 
 
 class Translate:
 
     def __init__(self):
-        self.file_directory = input('输入表格文件路径:')
+        self.file_directory = ''
         self.sheet = ''
 
     def load_sheet(self, which_file) -> dict:
@@ -44,7 +43,7 @@ class Translate:
     @staticmethod
     def add_cor(each_cell) -> str:
         """add coordinate for cell content"""
-        return f'{COORDINATE_WARP}{str(pasu.get_coordinate(each_cell))}{COORDINATE_WARP} ' + str(each_cell.value)
+        return f'[[[{str(pasu.get_coordinate(each_cell))}]]] ' + str(each_cell.value)
 
     def get_all_column(self, sheet, which_content):
         """which_content should be the cell"""
@@ -78,6 +77,7 @@ class Translate:
         return self.htm_warp(content_list)
 
     def indexing_files(self):
+        self.file_directory = input('输入表格文件路径:')
         files = {}
         index = 0
         if self.file_directory == '-1':
@@ -130,9 +130,38 @@ class Translate:
             self.save_as_html(key, save_this_content)
 
 
+class ReadTranslatedHtm(object):
+
+    def __init__(self):
+        self.directory = ''
+
+    def find_all_htm_file(self):
+        self.directory = input('输入htm文件路径:')
+        files = {}
+        index = 0
+        if self.directory == '-1':
+            pasu.back_to_main_menu()
+        elif not os.path.isdir(self.directory):
+            print('请输入一个文件夹路径')
+            self.find_all_htm_file()
+        for folder, subfolder, file in os.walk(self.directory):
+            for each_file in file:
+                if each_file.split('.')[-1] == 'htm' and \
+                       (str(each_file) != '五点.htm' and
+                        str(each_file) != '标题.htm' and
+                        str(each_file) != '描述.htm'):
+                    files[index] = folder + '\\' + each_file
+                    index += 1
+        print("当前文件夹中包含的文件有：")
+        [print(each_htm) for each_htm in files.values()]
+
+
 # D:\小米ERP相关数据\上传产品表格\test\FENGRUDING_AE_desk_lamp_亚马逊表_20200729164603.xlsx
 
 
 def main():
     translate = Translate()
-    translate.save_all()
+    readtranslate = ReadTranslatedHtm()
+    _menu = {'通过表格保存htm文件': translate.save_all,
+             '通过htm生成新的表格文件': readtranslate.find_all_htm_file}
+    pasu.make_menu(_menu)
