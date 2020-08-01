@@ -13,6 +13,7 @@ import xlsxwriter
 
 ROW_RANGE_RESTRICTION = 2000
 COLUMN_RANGE_RESTRICTION = 2000
+COORDINATE_WARP = '::c::'
 
 
 class Translate:
@@ -33,35 +34,20 @@ class Translate:
 
         item_name_cell = find_cell(ws, 'item_name')
         bullet_point_cell = find_cell(ws, 'bullet_point1')
-        keywords_cell = find_cell(ws, 'generic_keywords1')
+        # keywords_cell = find_cell(ws, 'generic_keywords1')
         description = find_cell(ws, 'product_description')
         sheet_cells = {'标题': item_name_cell,
                        '五点': bullet_point_cell,
-                       '关键字': keywords_cell,
                        '描述': description}
         return sheet_cells
 
-    def select_which_content(self, content_cell: dict):
-        _menu = {}
-        index = 0
-        for descreption, cell in content_cell.items():
-            _menu[(index, descreption)] = cell
-            index = index + 1
-        for item in _menu.keys():
-            print(str(item[0]) + '\t' + item[1])
-            print('')
-        ui = input('输入选项：')
-        if len(ui.split(' ')) > 1:
-            for each_ui in ui.split(' '):
-                for item, cell in _menu.items():
-                    if each_ui == str(item[0]):
-                        return cell
-        else:
-            for item, cell in _menu.items():
-                if ui == str(item[0]):
-                    return cell
+    @staticmethod
+    def add_cor(each_cell) -> str:
+        """add coordinate for cell content"""
+        return f'{COORDINATE_WARP}{str(pasu.get_coordinate(each_cell))}{COORDINATE_WARP} ' + str(each_cell.value)
 
     def get_all_column(self, sheet, which_content):
+        """which_content should be the cell"""
         content_coordinate = pasu.get_coordinate(which_content)
         if which_content.value == 'bullet_point1':
             bullet_points_dict = {'first_column': pasu.get_column_until_none_cell(sheet, content_coordinate[0],
@@ -75,12 +61,21 @@ class Translate:
                                   'fifth_column': pasu.get_column_until_none_cell(sheet, content_coordinate[0],
                                                                                   content_coordinate[1] + 4)
                                   }
+            full_bp_list = []
             for key, value in bullet_points_dict.items():
                 [print(each_cell.value) for each_cell in value]
+                content_list = \
+                    [self.add_cor(each_cell) for each_cell in value]
+                full_bp_list.append(self.htm_warp(content_list))
+            return '\n'.join(full_bp_list)
         content_list = pasu.get_column_until_none_cell(sheet,
                                                        content_coordinate[0],
                                                        content_coordinate[1])
         [print(each_cell.value) for each_cell in content_list]
+        content_list = \
+            [self.add_cor(each_cell).replace('<br>', '(<(br)>)')
+             for each_cell in content_list]
+        return self.htm_warp(content_list)
 
     def indexing_files(self):
         files = {}
@@ -109,12 +104,8 @@ class Translate:
                 which_file = files[selection]
                 return which_file
 
-    def save_as_html(self, what, content):
-        out_path = input('输入需要保存的路径:')
-        if not os.path.isdir(out_path):
-            print('输入的路径错误，请重新输入')
-            self.save_as_html(what, content)
-        with open(out_path + '\\' + what + '.htm', 'w', encoding='utf-8') as file:
+    def save_as_html(self, what, content: str):
+        with open(self.file_directory + '\\' + what + '.htm', 'w', encoding='utf-8') as file:
             file.write(htm_file_warp.htm_file_head)
             file.write('\n')
             file.write(content)
@@ -130,11 +121,18 @@ class Translate:
         all_titles = [add_htm_warp(each_title) for each_title in content]
         return '\n'.join(all_titles)
 
+    def save_all(self):
+        content_dict = self.load_sheet(self.indexing_files())
+        for key, value in content_dict.items():
+            save_this_content = self.get_all_column(self.sheet, value)
+            if key == '五点':
+                self.save_as_html(key, save_this_content)
+            self.save_as_html(key, save_this_content)
+
 
 # D:\小米ERP相关数据\上传产品表格\test\FENGRUDING_AE_desk_lamp_亚马逊表_20200729164603.xlsx
 
 
 def main():
     translate = Translate()
-    which_content = translate.select_which_content(translate.load_sheet(translate.indexing_files()))
-    translate.get_all_column(translate.sheet, which_content)
+    translate.save_all()
