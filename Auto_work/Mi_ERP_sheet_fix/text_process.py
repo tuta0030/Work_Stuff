@@ -44,7 +44,7 @@ class Translate:
     @staticmethod
     def add_cor(each_cell) -> str:
         """add coordinate for cell content"""
-        return f'[[[{str(pasu.get_coordinate(each_cell))}]]] ' + str(each_cell.value)
+        return f'{str(pasu.get_coordinate(each_cell))}^^^ ' + str(each_cell.value)
 
     def get_all_column(self, sheet, which_content):
         """which_content should be the cell"""
@@ -148,17 +148,14 @@ class ReadTranslatedHtm(object):
             self.find_all_htm_file()
         for folder, subfolder, file in os.walk(self.directory):
             for each_file in file:
-                if each_file.split('.')[-1] == 'htm' and \
-                       (str(each_file) != '五点.htm' and
-                        str(each_file) != '标题.htm' and
-                        str(each_file) != '描述.htm'):
+                if each_file.split('.')[-1] == 'txt':
                     files.append(folder + '\\' + each_file)
         return files
 
     def get_langs(self, files: list):
         langs = []
         [langs.append(str(each_htm).replace('五点', '').replace('标题', '').replace('描述', '')
-                      .split('\\')[-1].replace('.htm', ''))
+                      .split('\\')[-1].replace('.txt', ''))
          for each_htm in files]
         langs = list(set(langs))
         self.langs = langs
@@ -178,12 +175,56 @@ class ReadTranslatedHtm(object):
         files = self.find_all_htm_file()
         self.get_langs_and_langs_dict(files)
         # make a new xlsx file
-        print(self.langs_dict)
+        oc = indexing_files()
+        original_wb = openpyxl.load_workbook(str(oc))
+        original_sheet = original_wb.get_sheet_by_name('sheet1')
+        for lang, file_list in self.langs_dict.items():
+            for each_file in file_list:
+                content_list = open(each_file, encoding='utf-8').read().split('\n')
+                content_list = [each_line for each_line in content_list if each_line != '']
+                content_list = [each_line for each_line in content_list if '^^^' in each_line]
+                for each_content in content_list:
+                    each_content = str(each_content).split('^^^')
+                    row = int(each_content[0].strip()[1:-1].split(',')[0])
+                    col = int(each_content[0].strip()[1:-1].split(',')[1])
+                    original_sheet.cell(row, col).value = each_content[-1].strip()\
+                        .replace(BR_PATTERN[0], '<br>').replace(BR_PATTERN[1], '</br>')
+                    print(original_sheet.cell(row, col).value)
+            original_wb.save(self.directory+'\\'+lang+'_'+str(oc).split('\\')[-1])
+
+
+def indexing_files():
+    file_directory = input('输入表格文件路径:')
+    files = {}
+    index = 0
+    if file_directory == '-1':
+        pasu.back_to_main_menu()
+    elif not os.path.isdir(file_directory):
+        print('请输入一个文件夹路径')
+        indexing_files()
+    for folder, subfolder, file in os.walk(file_directory):
+        for each_file in file:
+            files[index] = folder + '\\' + each_file
+            index += 1
+    print("当前文件夹中包含的文件有：")
+    for index, file in files.items():
+        print(index, end='')
+        print('\t' + file.split('\\')[-1])
+    ui = str(input('请选择需要处理的文件：')).strip()
+    for selection in files.keys():
+        if len(ui.split(' ')) > 1:
+            which_file = []
+            for each_ui in ui.split(' '):
+                which_file.append(files[int(each_ui)])
+            return which_file
+        elif ui == str(selection):
+            which_file = files[selection]
+            return which_file
 
 
 def main():
     translate = Translate()
     readtranslate = ReadTranslatedHtm()
     _menu = {'通过表格保存htm文件': translate.save_all,
-             '通过htm生成新的表格文件': readtranslate.main}
+             '通过txt生成新的表格文件': readtranslate.main}
     pasu.make_menu(_menu)
