@@ -275,6 +275,8 @@ def print_current_menu(current_menu: str):
 
 
 def back_to_main_menu():
+    input('输入回车返回主菜单')
+    os.system('cls')
     main_menu.main_menu()
     return 0
 

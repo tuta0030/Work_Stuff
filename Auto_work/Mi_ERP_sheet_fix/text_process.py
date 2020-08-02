@@ -129,6 +129,7 @@ class Translate:
             if key == '五点':
                 self.save_as_html(key, save_this_content)
             self.save_as_html(key, save_this_content)
+        pasu.back_to_main_menu()
 
 
 class ReadTranslatedHtm(object):
@@ -191,6 +192,7 @@ class ReadTranslatedHtm(object):
                         .replace(BR_PATTERN[0], '<br>').replace(BR_PATTERN[1], '</br>')
                     print(original_sheet.cell(row, col).value)
             original_wb.save(self.directory+'\\'+lang+'_'+str(oc).split('\\')[-1])
+        pasu.back_to_main_menu()
 
 
 def indexing_files():
