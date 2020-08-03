@@ -188,9 +188,14 @@ class ReadTranslatedHtm(object):
                     row = int(each_content[0].strip()[1:-1].split(',')[0])
                     col = int(each_content[0].strip()[1:-1].split(',')[1])
                     original_sheet.cell(row, col).value = each_content[-1].strip()\
-                        .replace(BR_PATTERN[0], '<br>').replace(BR_PATTERN[1], '</br>')
-                    print(original_sheet.cell(row, col).value)
-            original_wb.save(self.directory+'\\'+lang+'_'+str(oc).split('\\')[-1])
+                        .replace(BR_PATTERN[0], '<br>').replace(BR_PATTERN[1], '</br>')\
+                        .replace('(<(Br)>)', '<br>').replace('(<(/Br)>)', '</br>')
+            if len(file_list) >= 3:
+                out_file_name = self.directory+'\\'+lang+'_'+str(oc).split('\\')[-1]
+                print(f'正在处理  {out_file_name}')
+                original_wb.save(out_file_name)
+            else:
+                print(f'{lang} 缺少文件')
         pasu.back_to_main_menu()
 
 
