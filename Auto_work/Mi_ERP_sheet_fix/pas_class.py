@@ -142,6 +142,7 @@ class ProcessWithSameParameter(ProcessAmazonSheet):
         self.process_price(self._same_parameter['price'], self._same_parameter['lowest_pice'])
         self.process_node(self._same_parameter['node'])
         self.process_keywords(self._same_parameter['key_word'])
+        self.process_ship_time()
         self.process_description()
         for row in range(1, 4):
             for col in range(1, 1000):
