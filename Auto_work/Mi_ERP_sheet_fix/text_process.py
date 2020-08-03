@@ -9,7 +9,6 @@ import pas_utility as pasu
 import os
 import htm_file_warp
 import openpyxl
-import xlsxwriter
 
 ROW_RANGE_RESTRICTION = 2000
 COLUMN_RANGE_RESTRICTION = 2000
@@ -139,14 +138,14 @@ class ReadTranslatedHtm(object):
         self.langs = []
         self.langs_dict = {}
 
-    def find_all_htm_file(self) -> list:
-        self.directory = input('输入htm文件路径:')
+    def find_all_txt_file(self) -> list:
+        self.directory = input('输入txt文件路径:')
         files = []
         if self.directory == '-1':
             pasu.back_to_main_menu()
         elif not os.path.isdir(self.directory):
             print('请输入一个文件夹路径')
-            self.find_all_htm_file()
+            self.find_all_txt_file()
         for folder, subfolder, file in os.walk(self.directory):
             for each_file in file:
                 if each_file.split('.')[-1] == 'txt':
@@ -173,10 +172,10 @@ class ReadTranslatedHtm(object):
         self.get_langs_dict(files)
 
     def main(self):
-        files = self.find_all_htm_file()
+        files = self.find_all_txt_file()
         self.get_langs_and_langs_dict(files)
         # make a new xlsx file
-        oc = indexing_files()
+        oc = indexing_files('输入表格文件所在路径:')
         original_wb = openpyxl.load_workbook(str(oc))
         original_sheet = original_wb.get_sheet_by_name('sheet1')
         for lang, file_list in self.langs_dict.items():
@@ -195,15 +194,15 @@ class ReadTranslatedHtm(object):
         pasu.back_to_main_menu()
 
 
-def indexing_files():
-    file_directory = input('输入表格文件路径:')
+def indexing_files(msg: str):
+    file_directory = input(msg)
     files = {}
     index = 0
     if file_directory == '-1':
         pasu.back_to_main_menu()
     elif not os.path.isdir(file_directory):
         print('请输入一个文件夹路径')
-        indexing_files()
+        indexing_files(msg)
     for folder, subfolder, file in os.walk(file_directory):
         for each_file in file:
             files[index] = folder + '\\' + each_file
