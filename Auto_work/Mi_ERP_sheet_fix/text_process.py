@@ -33,11 +33,15 @@ class Translate:
 
         item_name_cell = find_cell(ws, 'item_name')
         bullet_point_cell = find_cell(ws, 'bullet_point1')
-        # keywords_cell = find_cell(ws, 'generic_keywords1')
+        color_name = find_cell(ws, 'color_name')
+        size_name = find_cell(ws, 'size_name')
         description = find_cell(ws, 'product_description')
         sheet_cells = {'标题': item_name_cell,
                        '五点': bullet_point_cell,
-                       '描述': description}
+                       '描述': description,
+                       '变体-颜色': color_name,
+                       '变体-尺寸': size_name
+                       }
         return sheet_cells
 
     @staticmethod
