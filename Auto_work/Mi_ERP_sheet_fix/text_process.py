@@ -24,13 +24,6 @@ class Translate:
     def load_sheet(self, which_file) -> dict:
         ws = openpyxl.load_workbook(which_file).get_sheet_by_name('sheet1')
         self.sheet = ws
-
-        def find_cell(sheet, cell_name: str):
-            for _r in range(1, ROW_RANGE_RESTRICTION):
-                for _c in range(1, COLUMN_RANGE_RESTRICTION):
-                    if sheet.cell(_r, _c).value == cell_name:
-                        return sheet.cell(_r, _c)
-
         item_name_cell = find_cell(ws, 'item_name')
         bullet_point_cell = find_cell(ws, 'bullet_point1')
         color_name = find_cell(ws, 'color_name')
@@ -40,7 +33,7 @@ class Translate:
                        '五点': bullet_point_cell,
                        '描述': description,
                        '变体-颜色': color_name,
-                       '变体-尺寸': size_name
+                       '变体-尺寸': size_name,
                        }
         return sheet_cells
 
@@ -66,7 +59,6 @@ class Translate:
                                   }
             full_bp_list = []
             for key, value in bullet_points_dict.items():
-                [print(each_cell.value) for each_cell in value]
                 content_list = \
                     [self.add_cor(each_cell) for each_cell in value]
                 full_bp_list.append(self.htm_warp(content_list))
@@ -74,39 +66,10 @@ class Translate:
         content_list = pasu.get_column_until_none_cell(sheet,
                                                        content_coordinate[0],
                                                        content_coordinate[1])
-        [print(each_cell.value) for each_cell in content_list]
         content_list = \
             [self.add_cor(each_cell).replace('<br>', BR_PATTERN[0]).replace('</br>', BR_PATTERN[1])
              for each_cell in content_list]
         return self.htm_warp(content_list)
-
-    def indexing_files(self):
-        self.file_directory = input('输入表格文件路径:')
-        files = {}
-        index = 0
-        if self.file_directory == '-1':
-            pasu.back_to_main_menu()
-        elif not os.path.isdir(self.file_directory):
-            print('请输入一个文件夹路径')
-            self.indexing_files()
-        for folder, subfolder, file in os.walk(self.file_directory):
-            for each_file in file:
-                files[index] = folder + '\\' + each_file
-                index += 1
-        print("当前文件夹中包含的文件有：")
-        for index, file in files.items():
-            print(index, end='')
-            print('\t' + file.split('\\')[-1])
-        ui = str(input('请选择需要处理的文件：')).strip()
-        for selection in files.keys():
-            if len(ui.split(' ')) > 1:
-                which_file = []
-                for each_ui in ui.split(' '):
-                    which_file.append(files[int(each_ui)])
-                return which_file
-            elif ui == str(selection):
-                which_file = files[selection]
-                return which_file
 
     def save_as_html(self, what, content: str):
         with open(self.file_directory + '\\' + what + '.htm', 'w', encoding='utf-8') as file:
@@ -126,7 +89,7 @@ class Translate:
         return '\n'.join(all_titles)
 
     def save_all(self):
-        content_dict = self.load_sheet(self.indexing_files())
+        content_dict = self.load_sheet(indexing_files('输入表格文件路径:'))
         for key, value in content_dict.items():
             save_this_content = self.get_all_column(self.sheet, value)
             if key == '五点':
@@ -164,6 +127,15 @@ class ReadTranslatedHtm(object):
         langs = list(set(langs))
         self.langs = langs
 
+    def specify_price_node(self) -> tuple:
+        exchange_rate = {}
+        node = {}
+        print(f'当前拥有的语言：{self.langs}')
+        for each_lang in self.langs:
+            exchange_rate[each_lang] = input(f'输入 {each_lang} 的汇率:')
+            node[each_lang] = input(f'输入 {each_lang} 的节点:')
+        return exchange_rate, node
+
     def get_langs_dict(self, files: list):
         for each_lang in self.langs:
             self.langs_dict[each_lang] = []
@@ -178,10 +150,12 @@ class ReadTranslatedHtm(object):
     def main(self):
         files = self.find_all_txt_file()
         self.get_langs_and_langs_dict(files)
-        # make a new xlsx file
         oc = indexing_files('输入表格文件所在路径:')
         original_wb = openpyxl.load_workbook(str(oc))
         original_sheet = original_wb.get_sheet_by_name('sheet1')
+        exchange_rate, node = self.specify_price_node()
+        node_list = get_content_list(original_sheet, 'recommended_browse_nodes')
+        price_list = get_content_list(original_sheet, 'standard_price')
         for lang, file_list in self.langs_dict.items():
             for each_file in file_list:
                 content_list = open(each_file, encoding='utf-8').read().split('\n')
@@ -194,6 +168,11 @@ class ReadTranslatedHtm(object):
                     original_sheet.cell(row, col).value = each_content[-1].strip()\
                         .replace(BR_PATTERN[0], '<br>').replace(BR_PATTERN[1], '</br>')\
                         .replace('(<(Br)>)', '<br>').replace('(<(/Br)>)', '</br>')
+                for each_node in node_list:
+                    original_sheet.cell(pasu.get_coordinate(each_node)).value = node[lang]
+                for each_price in price_list:
+                    original_sheet.cell(pasu.get_coordinate(each_price)).value = \
+                        int(float(float(each_price.value)*exchange_rate[lang]))
             if len(file_list) >= 3:
                 out_file_name = self.directory+'\\'+lang+'_'+str(oc).split('\\')[-1]
                 print(f'正在处理  {out_file_name}')
@@ -201,6 +180,13 @@ class ReadTranslatedHtm(object):
             else:
                 print(f'{lang} 缺少文件')
         pasu.back_to_main_menu()
+
+
+def get_content_list(sheet, cell_name: str) -> list:
+    cell = find_cell(sheet, cell_name)
+    cell_coordinate = pasu.get_coordinate(cell)
+    content_list = pasu.get_column_until_none_cell(sheet, cell_coordinate[0], COLUMN_RANGE_RESTRICTION)
+    return content_list
 
 
 def indexing_files(msg: str):
@@ -230,6 +216,13 @@ def indexing_files(msg: str):
         elif ui == str(selection):
             which_file = files[selection]
             return which_file
+
+
+def find_cell(sheet, cell_name: str):
+    for _r in range(1, ROW_RANGE_RESTRICTION):
+        for _c in range(1, COLUMN_RANGE_RESTRICTION):
+            if sheet.cell(_r, _c).value == cell_name:
+                return sheet.cell(_r, _c)
 
 
 def main():
