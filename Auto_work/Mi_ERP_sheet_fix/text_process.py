@@ -72,12 +72,14 @@ class Translate:
         return self.htm_warp(content_list)
 
     def save_as_html(self, what, content: str):
-        with open(self.file_directory + '\\' + what + '.htm', 'w', encoding='utf-8') as file:
+        out_path = '\\'.join(self.file_directory.split('\\')[:-1])
+        with open(out_path + '\\' + what + '.htm', 'w', encoding='utf-8') as file:
             file.write(htm_file_warp.htm_file_head)
             file.write('\n')
             file.write(content)
             file.write('\n')
             file.write(htm_file_warp.htm_file_tail)
+        print(f'保存 {what + ".htm"} 到 {self.file_directory}')
 
     @staticmethod
     def htm_warp(content: list) -> str:
@@ -89,7 +91,8 @@ class Translate:
         return '\n'.join(all_titles)
 
     def save_all(self):
-        content_dict = self.load_sheet(indexing_files('输入表格文件路径:'))
+        self.file_directory = indexing_files('输入表格文件路径:')
+        content_dict = self.load_sheet(self.file_directory)
         for key, value in content_dict.items():
             save_this_content = self.get_all_column(self.sheet, value)
             if key == '五点':
@@ -153,9 +156,13 @@ class ReadTranslatedHtm(object):
         oc = indexing_files('输入表格文件所在路径:')
         original_wb = openpyxl.load_workbook(str(oc))
         original_sheet = original_wb.get_sheet_by_name('sheet1')
+
         exchange_rate, node = self.specify_price_node()
+
         node_list = get_content_list(original_sheet, 'recommended_browse_nodes')
         price_list = get_content_list(original_sheet, 'standard_price')
+        price_list = [each_cell for each_cell in price_list if each_cell.value != '']
+
         for lang, file_list in self.langs_dict.items():
             for each_file in file_list:
                 content_list = open(each_file, encoding='utf-8').read().split('\n')
@@ -168,12 +175,18 @@ class ReadTranslatedHtm(object):
                     original_sheet.cell(row, col).value = each_content[-1].strip()\
                         .replace(BR_PATTERN[0], '<br>').replace(BR_PATTERN[1], '</br>')\
                         .replace('(<(Br)>)', '<br>').replace('(<(/Br)>)', '</br>')
-                for each_node in node_list:
-                    original_sheet.cell(pasu.get_coordinate(each_node)).value = node[lang]
-                for each_price in price_list:
-                    original_sheet.cell(pasu.get_coordinate(each_price)).value = \
-                        int(float(float(each_price.value)*exchange_rate[lang]))
-            if len(file_list) >= 3:
+
+            for each_node in node_list:
+                row, col = pasu.get_coordinate(each_node)
+                original_sheet.cell(int(row), int(col)).value = node[lang]
+            for each_price in price_list:
+                row, col = pasu.get_coordinate(each_price)
+                original_sheet.cell(int(row), int(col)).value = \
+                    int(float(float(each_price.value) * float(exchange_rate[lang])))
+
+            if len(file_list) >= 3 and '标题' in str(file_list) \
+                                   and '五点' in str(file_list) \
+                                   and '描述' in str(file_list):
                 out_file_name = self.directory+'\\'+lang+'_'+str(oc).split('\\')[-1]
                 print(f'正在处理  {out_file_name}')
                 original_wb.save(out_file_name)
@@ -185,7 +198,7 @@ class ReadTranslatedHtm(object):
 def get_content_list(sheet, cell_name: str) -> list:
     cell = find_cell(sheet, cell_name)
     cell_coordinate = pasu.get_coordinate(cell)
-    content_list = pasu.get_column_until_none_cell(sheet, cell_coordinate[0], COLUMN_RANGE_RESTRICTION)
+    content_list = pasu.get_column_until_none_cell(sheet, cell_coordinate[0], cell_coordinate[1])
     return content_list
 
 
@@ -206,7 +219,7 @@ def indexing_files(msg: str):
     for index, file in files.items():
         print(index, end='')
         print('\t' + file.split('\\')[-1])
-    ui = str(input('请选择需要处理的文件：')).strip()
+    ui = str(input('请选择文件：')).strip()
     for selection in files.keys():
         if len(ui.split(' ')) > 1:
             which_file = []
