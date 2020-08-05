@@ -5,6 +5,7 @@ from openpyxl.utils import coordinate_to_tuple
 import main_menu
 import collections
 from lxml import etree
+import re
 
 HOW_MANY_WORDS_IN_COUNTER = 100
 MENU_RESTRICTION = 200
@@ -15,6 +16,19 @@ STANDARD_MESSAGE = 'The photo was taken in natural light because there is a slig
                    'device and the monitor, please understand'
 BRAND_TO_REPLACE_KW = open('kw_brand.txt', 'r', encoding='utf-8').read()
 KW_FILTER_CHAR = ': * ( ) [ ] { } ,'
+
+
+def cjk_detect(texts):
+    # korean
+    if re.search("[\uac00-\ud7a3]", texts):
+        return "ko"
+    # japanese
+    if re.search("[\u3040-\u30ff]", texts):
+        return "ja"
+    # chinese
+    if re.search("[\u4e00-\u9FFF]", texts):
+        return "zh"
+    return None
 
 
 def get_date() -> str:
@@ -69,6 +83,8 @@ def get_column_until_none_cell(sheet, row_start: int, column_const: int) -> list
 
 def _process_title(item_name: str, brand: str) -> str:
     item_name = item_name[:200]
+    if cjk_detect(item_name) is not None:
+        return item_name
     new_item_name = item_name.split(' ')[:-1]
     new_item_name = ['' if each_word == ','
                      or each_word == '/'

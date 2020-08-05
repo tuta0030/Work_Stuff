@@ -246,6 +246,7 @@ def find_cell(sheet, cell_name: str):
 def main():
     translate = Translate()
     readtranslate = ReadTranslatedHtm()
-    _menu = {'通过表格保存htm文件': translate.save_all,
+    _menu = {'返回主菜单': pasu.back_to_main_menu,
+             '通过表格保存htm文件': translate.save_all,
              '通过txt生成新的表格文件': readtranslate.main}
     pasu.make_menu(_menu)
