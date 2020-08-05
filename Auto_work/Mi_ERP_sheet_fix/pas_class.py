@@ -36,27 +36,12 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 
     def process_title(self, brand: str):
         item_name_coordinate = pasu.get_coordinate(self.item_name_cell)
-        color_name_column = pasu.get_coordinate(self.color_name)[1]
-        size_name_column = pasu.get_coordinate(self.size_name)[1]
         title_list = pasu.get_column_until_none_cell(self.sheet,
                                                      item_name_coordinate[0],
                                                      item_name_coordinate[1])
         self.all_titles = [each_title.value for each_title in title_list]
         for index, title in enumerate(title_list):
-            if self.sheet.cell(pasu.get_coordinate(title)[0], color_name_column).value is '' and \
-               self.sheet.cell(pasu.get_coordinate(title)[0], size_name_column).value is '':
-                title_list[index].value = pasu.process_item_name(title.value, brand)
-            elif self.sheet.cell(pasu.get_coordinate(title)[0], color_name_column).value is '':
-                title_list[index].value = pasu.process_item_name(title.value, brand) + ',' + \
-                                          self.sheet.cell(pasu.get_coordinate(title)[0], size_name_column).value
-            elif self.sheet.cell(pasu.get_coordinate(title)[0], size_name_column).value is '':
-                title_list[index].value = pasu.process_item_name(title.value, brand) + ',' + \
-                                          self.sheet.cell(pasu.get_coordinate(title)[0],
-                                                          color_name_column).value
-            else:
-                title_list[index].value = pasu.process_item_name(title.value, brand) + ',' +\
-                                          self.sheet.cell(pasu.get_coordinate(title)[0], color_name_column).value + ',' +\
-                                          self.sheet.cell(pasu.get_coordinate(title)[0], size_name_column).value
+            title_list[index].value = pasu.process_item_name(title.value, brand)
 
     def process_description(self):
         description_coordinate = pasu.get_coordinate(self.description)

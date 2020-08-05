@@ -14,7 +14,7 @@ import datetime
 ROW_RANGE_RESTRICTION = 2000
 COLUMN_RANGE_RESTRICTION = 2000
 BR_PATTERN = ('(<(br)>)', '(</(br)>)')
-SEPERATOR = '(<$$$>)'
+SEPERATOR = '^^^'
 
 
 class Translate:
@@ -29,13 +29,17 @@ class Translate:
         item_name_cell = find_cell(ws, 'item_name')
         bullet_point_cell = find_cell(ws, 'bullet_point1')
         color_name = find_cell(ws, 'color_name')
+        color_map = find_cell(ws, 'color_map')
         size_name = find_cell(ws, 'size_name')
+        size_map = find_cell(ws, 'size_map')
         description = find_cell(ws, 'product_description')
         sheet_cells = {'标题': item_name_cell,
                        '五点': bullet_point_cell,
                        '描述': description,
                        '变体-颜色': color_name,
                        '变体-尺寸': size_name,
+                       '变体-颜色map': color_map,
+                       '变体-尺寸map': size_map
                        }
         return sheet_cells
 
@@ -97,7 +101,7 @@ class Translate:
         content_dict = self.load_sheet(self.file_directory)
         for key, value in content_dict.items():
             save_this_content = self.get_all_column(self.sheet, value)
-            self.save_as_html(f'所有内容_{datetime.datetime.now().strftime("%Y_%H_%M_%S")}', save_this_content)
+            self.save_as_html(f'所有内容_{datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")}', save_this_content)
         pasu.back_to_main_menu()
 
 
@@ -169,14 +173,17 @@ class ReadTranslatedHtm(object):
                 content_list = [each_line for each_line in content_list if each_line != '']
                 content_list = [each_line for each_line in content_list if SEPERATOR in each_line]
                 for each_content in content_list:
-                    if each_content.strip().endswith(SEPERATOR):
+                    if len(each_content.split(SEPERATOR)[0]) > 12:
                         continue
                     each_content = str(each_content).split(SEPERATOR)
-                    row = int(each_content[0].strip()[1:-1].split(',')[0])
-                    col = int(each_content[0].strip()[1:-1].split(',')[1])
+                    row = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[0])
+                    col = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[1])
                     original_sheet.cell(row, col).value = each_content[-1].strip() \
                         .replace(BR_PATTERN[0], '<br>').replace(BR_PATTERN[1], '</br>') \
                         .replace('(<(Br)>)', '<br>').replace('(<(/Br)>)', '</br>')
+
+            print(f'当前使用的节点：{node[lang]}')
+            print(f'当前使用的汇率:{exchange_rate[lang]}')
 
             for each_node in node_list:
                 row, col = pasu.get_coordinate(each_node)
@@ -184,7 +191,7 @@ class ReadTranslatedHtm(object):
             for each_price in price_list:
                 row, col = pasu.get_coordinate(each_price)
                 original_sheet.cell(int(row), int(col)).value = \
-                    int(float(float(each_price.value) * float(exchange_rate[lang])))
+                    int(float(each_price.value) * float(exchange_rate[lang]))
 
             out_file_name = self.directory + '\\' + lang + '_' + str(oc_file).split('\\')[-1]
             print(f'正在处理  {out_file_name}')
