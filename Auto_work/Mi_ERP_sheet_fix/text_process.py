@@ -9,10 +9,12 @@ import pas_utility as pasu
 import os
 import htm_file_warp
 import openpyxl
+import datetime
 
 ROW_RANGE_RESTRICTION = 2000
 COLUMN_RANGE_RESTRICTION = 2000
 BR_PATTERN = ('(<(br)>)', '(</(br)>)')
+SEPERATOR = '(<$$$>)'
 
 
 class Translate:
@@ -40,7 +42,7 @@ class Translate:
     @staticmethod
     def add_cor(each_cell) -> str:
         """add coordinate for cell content"""
-        return f'{str(pasu.get_coordinate(each_cell))}^^^ ' + str(each_cell.value)
+        return f'{str(pasu.get_coordinate(each_cell))} {SEPERATOR} ' + str(each_cell.value)
 
     def get_all_column(self, sheet, which_content):
         """which_content should be the cell"""
@@ -73,7 +75,7 @@ class Translate:
 
     def save_as_html(self, what, content: str):
         out_path = '\\'.join(self.file_directory.split('\\')[:-1])
-        with open(out_path + '\\' + what + '.htm', 'w', encoding='utf-8') as file:
+        with open(out_path + '\\' + what + '.htm', 'a', encoding='utf-8') as file:
             file.write(htm_file_warp.htm_file_head)
             file.write('\n')
             file.write(content)
@@ -95,9 +97,7 @@ class Translate:
         content_dict = self.load_sheet(self.file_directory)
         for key, value in content_dict.items():
             save_this_content = self.get_all_column(self.sheet, value)
-            if key == '五点':
-                self.save_as_html(key, save_this_content)
-            self.save_as_html(key, save_this_content)
+            self.save_as_html(f'所有内容_{datetime.datetime.now().strftime("%Y_%H_%M_%S")}', save_this_content)
         pasu.back_to_main_menu()
 
 
@@ -153,8 +153,8 @@ class ReadTranslatedHtm(object):
     def main(self):
         files = self.find_all_txt_file()
         self.get_langs_and_langs_dict(files)
-        oc = indexing_files('输入表格文件所在路径:')
-        original_wb = openpyxl.load_workbook(str(oc))
+        oc_file = indexing_files('输入表格文件所在路径:')
+        original_wb = openpyxl.load_workbook(str(oc_file))
         original_sheet = original_wb.get_sheet_by_name('sheet1')
 
         exchange_rate, node = self.specify_price_node()
@@ -167,9 +167,11 @@ class ReadTranslatedHtm(object):
             for each_file in file_list:
                 content_list = open(each_file, encoding='utf-8').read().split('\n')
                 content_list = [each_line for each_line in content_list if each_line != '']
-                content_list = [each_line for each_line in content_list if '^^^' in each_line]
+                content_list = [each_line for each_line in content_list if SEPERATOR in each_line]
                 for each_content in content_list:
-                    each_content = str(each_content).split('^^^')
+                    if each_content.strip().endswith(SEPERATOR):
+                        continue
+                    each_content = str(each_content).split(SEPERATOR)
                     row = int(each_content[0].strip()[1:-1].split(',')[0])
                     col = int(each_content[0].strip()[1:-1].split(',')[1])
                     original_sheet.cell(row, col).value = each_content[-1].strip() \
@@ -184,14 +186,10 @@ class ReadTranslatedHtm(object):
                 original_sheet.cell(int(row), int(col)).value = \
                     int(float(float(each_price.value) * float(exchange_rate[lang])))
 
-            if len(file_list) >= 3 and '标题' in str(file_list) \
-                    and '五点' in str(file_list) \
-                    and '描述' in str(file_list):
-                out_file_name = self.directory + '\\' + lang + '_' + str(oc).split('\\')[-1]
-                print(f'正在处理  {out_file_name}')
-                original_wb.save(out_file_name)
-            else:
-                print(f'{lang} 缺少文件')
+            out_file_name = self.directory + '\\' + lang + '_' + str(oc_file).split('\\')[-1]
+            print(f'正在处理  {out_file_name}')
+            original_wb.save(out_file_name)
+
         pasu.back_to_main_menu()
 
 
