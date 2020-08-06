@@ -10,11 +10,12 @@ import send2trash
 import output_usable_sheet_head
 from openpyxl.utils import coordinate_to_tuple
 import pas_utility as pasu
-from random import randint
+import random
 
 
 SECRET_CODE = '666'
 KW_TRIMMER = 200
+ALPHABET = list('ABCDEFGHIJKLMNOPQISTUVWXYZ')
 
 
 class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
@@ -44,8 +45,10 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         if pasu.cjk_detect(''.join(self.all_titles)) is not None:
             part_number_coordinate = pasu.get_coordinate(self.part_number_cell)
             model_coordinate = pasu.get_coordinate(self.model_cell)
-            pasu.process_info(self.sheet, part_number_coordinate, 'SB-'+str(randint(100, 999)))
-            pasu.process_info(self.sheet, model_coordinate, 'F' + str(randint(10, 99)))
+            pasu.process_info(self.sheet, part_number_coordinate,
+                              ''.join(random.sample(ALPHABET, 2)) + '-' + str(random.randint(100, 999)))
+            pasu.process_info(self.sheet, model_coordinate,
+                              ''.join(random.sample(ALPHABET, 1)) + str(random.randint(10, 99)))
         for index, title in enumerate(title_list):
             title_list[index].value = pasu.process_item_name(title.value, brand)
 
