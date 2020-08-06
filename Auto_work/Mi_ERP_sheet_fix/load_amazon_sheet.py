@@ -51,6 +51,12 @@ class LoadAmazonSheet(object):
         # find "fulfillment_latency" cell
         self.fulfillment_latency = find_cell(self.sheet, 'fulfillment_latency')
 
+        # find "part_number" cell
+        self.part_number_cell = find_cell(self.sheet, 'part_number')
+
+        # find "model" cell
+        self.model_cell = find_cell(self.sheet, 'model')
+
 
 if __name__ == '__main__':
     pass

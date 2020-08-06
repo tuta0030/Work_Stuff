@@ -10,6 +10,7 @@ import send2trash
 import output_usable_sheet_head
 from openpyxl.utils import coordinate_to_tuple
 import pas_utility as pasu
+from random import randint
 
 
 SECRET_CODE = '666'
@@ -40,6 +41,11 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
                                                      item_name_coordinate[0],
                                                      item_name_coordinate[1])
         self.all_titles = [each_title.value for each_title in title_list]
+        if pasu.cjk_detect(''.join(self.all_titles)) is not None:
+            part_number_coordinate = pasu.get_coordinate(self.part_number_cell)
+            model_coordinate = pasu.get_coordinate(self.model_cell)
+            pasu.process_info(self.sheet, part_number_coordinate, 'SB-'+str(randint(100, 999)))
+            pasu.process_info(self.sheet, model_coordinate, 'F' + str(randint(10, 99)))
         for index, title in enumerate(title_list):
             title_list[index].value = pasu.process_item_name(title.value, brand)
 
@@ -77,6 +83,8 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
             self.all_titles = [each_title.value for each_title in title_list]
             # 用标题高频词处理关键字
             processed_keywords = ' '.join(pasu.high_frequent_words(self.all_titles))[:KW_TRIMMER]
+            if pasu.cjk_detect(processed_keywords) is not None:
+                processed_keywords = processed_keywords[:50]
             processed_keywords = processed_keywords.replace('  ', ' ')
             # 处理关键词
             keywords_coordinate = coordinate_to_tuple(str(self.keywords_cell).split('.')[-1][:-1])
