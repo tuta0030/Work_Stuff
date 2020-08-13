@@ -17,7 +17,6 @@ import text_process
 def main_menu():
     while True:
         try:
-            os.system('cls')
             pas_utility.intro()
             _menu = {'退出': pas_utility.main_menu_quit,
                      'ERP表格相关': process_amazon_sheet.main_function,

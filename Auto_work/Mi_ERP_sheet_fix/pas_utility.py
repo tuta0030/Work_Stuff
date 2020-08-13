@@ -63,8 +63,7 @@ def select_time() -> str:
             time = str(datetime.datetime.now())[:4] + time
         return time
     elif which_time == -1:
-        os.system('cls')
-        main_menu.main_menu()
+        back_to_main_menu()
     else:
         print("只能输入0和1")
         select_time()
