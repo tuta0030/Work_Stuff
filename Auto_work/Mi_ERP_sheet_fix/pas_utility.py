@@ -1,5 +1,4 @@
 import os
-import datetime
 import xlsxwriter as xw
 from openpyxl.utils import coordinate_to_tuple
 import main_menu
@@ -45,11 +44,6 @@ def cjk_detect(texts: str):
     return None
 
 
-def get_date() -> str:
-    time = ''.join(str(datetime.datetime.now()).split(' ')[0].split('-'))
-    return str(time)
-
-
 def get_coordinate(which_cell) -> tuple:
     return coordinate_to_tuple(str(which_cell).split('.')[-1][:-1])
 
@@ -64,23 +58,6 @@ def validate_product() -> str:
         return open(os.curdir + '\\product_type.txt', 'r', encoding='utf-8').read()
     elif wanna_change == str(0):
         return open(os.curdir + '\\product_type.txt', 'r', encoding='utf-8').read()
-
-
-def select_time() -> str:
-    which_time = int(input("选择<需要处理的文件>名中的时间：0:默认时间（当前日期）， 1:自定义时间："))
-    if which_time == 0:
-        time = get_date()
-        return time
-    elif which_time == 1:
-        time = str(input("请输入需要设置的时间(格式:年月日-比如：20200501 可省略年份)："))
-        if len(time) == 4:
-            time = str(datetime.datetime.now())[:4] + time
-        return time
-    elif which_time == -1:
-        back_to_main_menu()
-    else:
-        print("只能输入0和1")
-        select_time()
 
 
 def get_column_until_none_cell(sheet, row_start: int, column_const: int) -> list:
