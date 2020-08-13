@@ -188,32 +188,23 @@ def process_price(sheet, coordinate: tuple, exchange_rate: float, lowest_price: 
             price[index].value = str(int(int(str(item.value).split('.')[0]) * exchange_rate) - 1)
 
 
-def add_function(menu: dict, index: int, des: str, function):
-    """添加程序到主菜单选项"""
-    menu[index] = (des, function)
-
-
 def intro():
     print("\n图沓的工具\n主菜单")
     print("请选择需要的操作：")
     print('')
 
 
-def show_menu(ui: str, menu: dict):
-    if ui in str(menu.keys()):
-        for key, value in menu.items():
-            if ui == str(key):
-                print('\n当前选项：'+value[0])
-                value[1]()
-    else:
-        print("无法识别的选项")
-        show_menu(ui, menu)
+def make_menu(functions: dict) -> None:
+    r"""
+    传入dict，key为描述，value为需要执行的函数
+    **将会执行选中的函数
 
-
-def make_menu(functions: dict):
-    """传入dict，key为描述，value为需要执行的函数"""
+    :Return:
+        None
+    """
     _menu = {}
     index = 0
+    os.system('cls')
     for descreption, func in functions.items():
         _menu[(index, descreption)] = func
         index = index + 1
@@ -222,15 +213,12 @@ def make_menu(functions: dict):
         print(str(item[0]) + '\t' + item[1])
         print('')
 
-    def check_input() -> str:
-        _menu_options = [str(_index_desc[0]) for _index_desc in _menu.keys()]
-        _ui = input('输入选项：')
-        if _ui in _menu_options:
-            return _ui
-        else:
-            print(f'没有找到输入的选项 {_ui}')
-            make_menu(functions)
-    ui = check_input()
+    ui = input('输入选项：')
+    _menu_options = [str(_index_desc[0]) for _index_desc in _menu.keys()]
+    if ui not in _menu_options:
+        input(f'没有找到输入的选项: {ui} (回车继续)')
+        make_menu(functions)
+
     if len(ui.split(' ')) > 1:
         for each_ui in ui.split(' '):
             for index_desc, func in _menu.items():
@@ -243,7 +231,13 @@ def make_menu(functions: dict):
 
 
 def make_menu_part_functions(functions: dict):
-    """传入dict，key为描述，value函数的名称"""
+    r"""
+    传入functions: dict
+    key为描述，value函数的名称
+
+    :Return:
+        func_name  函数的名称
+    """
     _menu = {}
     index = 0
     for descreption, func_name in functions.items():
@@ -266,7 +260,14 @@ def make_menu_part_functions(functions: dict):
 
 # 索引用户输入的文件夹中的文件
 def index_files(**kwargs) -> tuple:
-    """ 返回 (文件夹路径，文件路径) """
+    r"""
+    请求用户输入一个文件夹，返回文件夹的路径和选择的文件路径
+
+    :Keyword Arguments:
+        ui_msg: 请求输入是提示的字符串
+    :Return:
+        (文件夹路径，文件路径)
+    """
     folder = input(kwargs.get('ui_msg', '输入包含表格的文件夹：'))
     files = {}
     index = 0
@@ -296,6 +297,9 @@ def index_files(**kwargs) -> tuple:
 
 
 def back_to_main_menu(**kwargs):
+    r""":Keyword Arguments:
+            enter_quit
+    """
     if kwargs.get('enter_quit', False):
         input('输入回车返回主菜单')
     os.system('cls')

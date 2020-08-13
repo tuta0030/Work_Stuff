@@ -97,7 +97,7 @@ class Translate:
         return '\n'.join(all_titles)
 
     def save_all(self):
-        self.file_directory = pasu.index_files()[-1]  # indexing_files('输入表格文件路径:')
+        self.file_directory = pasu.index_files()[-1]
         content_dict = self.load_sheet(self.file_directory)
         for key, value in content_dict.items():
             save_this_content = self.get_all_column(self.sheet, value)
