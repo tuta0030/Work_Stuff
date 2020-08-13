@@ -97,7 +97,7 @@ class Translate:
         return '\n'.join(all_titles)
 
     def save_all(self):
-        self.file_directory = indexing_files('输入表格文件路径:')
+        self.file_directory = pasu.index_files()[-1]  # indexing_files('输入表格文件路径:')
         content_dict = self.load_sheet(self.file_directory)
         for key, value in content_dict.items():
             save_this_content = self.get_all_column(self.sheet, value)
@@ -157,7 +157,7 @@ class ReadTranslatedHtm(object):
     def main(self):
         files = self.find_all_txt_file()
         self.get_langs_and_langs_dict(files)
-        oc_file = indexing_files('输入表格文件所在路径:')
+        oc_file = pasu.index_files(ui_msg='输入表格文件所在路径')[-1]
         original_wb = openpyxl.load_workbook(str(oc_file))
         original_sheet = original_wb.get_sheet_by_name('sheet1')
 
@@ -205,35 +205,6 @@ def get_content_list(sheet, cell_name: str) -> list:
     cell_coordinate = pasu.get_coordinate(cell)
     content_list = pasu.get_column_until_none_cell(sheet, cell_coordinate[0], cell_coordinate[1])
     return content_list
-
-
-def indexing_files(msg: str):
-    file_directory = input(msg)
-    files = {}
-    index = 0
-    if file_directory == '-1':
-        pasu.back_to_main_menu()
-    elif not os.path.isdir(file_directory):
-        print('请输入一个文件夹路径')
-        indexing_files(msg)
-    for folder, subfolder, file in os.walk(file_directory):
-        for each_file in file:
-            files[index] = folder + '\\' + each_file
-            index += 1
-    print("当前文件夹中包含的文件有：")
-    for index, file in files.items():
-        print(index, end='')
-        print('\t' + file.split('\\')[-1])
-    ui = str(input('请选择文件：')).strip()
-    for selection in files.keys():
-        if len(ui.split(' ')) > 1:
-            which_file = []
-            for each_ui in ui.split(' '):
-                which_file.append(files[int(each_ui)])
-            return which_file
-        elif ui == str(selection):
-            which_file = files[selection]
-            return which_file
 
 
 def find_cell(sheet, cell_name: str):

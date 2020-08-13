@@ -231,7 +231,6 @@ def make_menu(functions: dict):
             print(f'没有找到输入的选项 {_ui}')
             make_menu(functions)
     ui = check_input()
-    print(ui)
     if len(ui.split(' ')) > 1:
         for each_ui in ui.split(' '):
             for index_desc, func in _menu.items():
@@ -266,14 +265,15 @@ def make_menu_part_functions(functions: dict):
 
 
 # 索引用户输入的文件夹中的文件
-def index_files() -> tuple:
-    folder = input('输入包含表格的文件夹：')
+def index_files(**kwargs) -> tuple:
+    """ 返回 (文件夹路径，文件路径) """
+    folder = input(kwargs.get('ui_msg', '输入包含表格的文件夹：'))
     files = {}
     index = 0
     if folder == '-1':
         back_to_main_menu()
     elif not os.path.isdir(folder):
-        print('请输入一个文件夹路径')
+        print('请确保输入的是一个文件夹路径')
         index_files()
     for folder, subfolder, file in os.walk(folder):
         for each_file in file:
@@ -283,7 +283,7 @@ def index_files() -> tuple:
     for index, file in files.items():
         print(index, end='')
         print('\t' + file.split('\\')[-1])
-    ui = str(input('请选择需要处理的文件：')).strip()
+    ui = str(input('请选择文件：')).strip()
     which_file = ''
     for selection in files.keys():
         if len(ui.split(' ')) > 1:
@@ -293,11 +293,6 @@ def index_files() -> tuple:
         if ui == str(selection):
             which_file = files[selection]
     return folder, which_file
-
-
-def print_current_menu(current_menu: str):
-    print('当前选项：'+current_menu)
-    print('')
 
 
 def back_to_main_menu(**kwargs):

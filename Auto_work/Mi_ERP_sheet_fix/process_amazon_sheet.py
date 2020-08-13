@@ -86,7 +86,6 @@ def main_function():
     while True:
         try:
             os.system('cls')
-            pasu.print_current_menu('ERP表格相关')
             _menu = {'退回主菜单': pasu.back_to_main_menu,
                      '处理选择的表格文件（单独功能）': pas_part,
                      '处理选择的表格文件（全部功能）': pas_same_para,

@@ -219,7 +219,6 @@ def delete_kw():
 # 菜单选项：用来调用主程序和子程序
 def menu():
     os.system('cls')
-    pas_utility.print_current_menu('关键词相关')
     function_menu = {'退回主菜单': pas_utility.back_to_main_menu,
                      '从关键词库生成关键词': main,
                      '重命名关键词': rename,
