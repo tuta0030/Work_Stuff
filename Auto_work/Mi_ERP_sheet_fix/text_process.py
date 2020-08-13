@@ -197,7 +197,7 @@ class ReadTranslatedHtm(object):
             print(f'正在处理  {out_file_name}')
             original_wb.save(out_file_name)
 
-        pasu.back_to_main_menu()
+        pasu.back_to_main_menu(enter_quit=True)
 
 
 def get_content_list(sheet, cell_name: str) -> list:

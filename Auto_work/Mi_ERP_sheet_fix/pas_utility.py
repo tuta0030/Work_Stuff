@@ -300,8 +300,9 @@ def print_current_menu(current_menu: str):
     print('')
 
 
-def back_to_main_menu():
-    input('输入回车返回主菜单')
+def back_to_main_menu(**kwargs):
+    if kwargs.get('enter_quit', False):
+        input('输入回车返回主菜单')
     os.system('cls')
     main_menu.main_menu()
     return 0
@@ -335,13 +336,12 @@ def multiple_file_process(process_class, class_parameter: dict, **pas_args):
 
 def main_menu_quit():
     try:
-        quit()
+        os.system('exit')
     except Exception as e:
         print(e)
 
         class QuitMainMenu(Exception):
             pass
-
         raise QuitMainMenu('退出程序')
 
 
@@ -357,19 +357,14 @@ def get_asin_price():
     listing_xpath = '//*[@id="search"]/div[1]/div[2]/div/span[3]/div[2]'
     title = '//h2/a/span/text()'
     ads = 'aok-inline-block s-sponsored-label-info-icon'
-
     html = etree.HTML(open(which_file, 'r', encoding='utf-8').read(), etree.HTMLParser())
-
     all_items = html.xpath(listing_xpath)[0][:-3]
     print(len(all_items))
-
     for index, each_listing in enumerate(all_items):
         if ads in str(etree.tostring(each_listing)):
             all_items[index] = None
     all_items = [item for item in all_items if item is not None]
-
     print(len(all_items))
-
     listing = {}
     for each_listing in all_items:
         each_listing = etree.HTML(etree.tostring(each_listing), etree.HTMLParser())
@@ -377,7 +372,6 @@ def get_asin_price():
             {'asin': ','.join(each_listing.xpath('//@data-asin')),
              'title': ','.join(each_listing.xpath(title)),
              'image': ','.join(each_listing.xpath('//img/@src')).split('AC')[0]+'_SL1024_.jpg',
-             # 'url': ','.join(each_listing.xpath('//a[@class="a-link-normal a-text-normal"]/@href')),
              'price': ','.join(each_listing.xpath('//span[@class="a-offscreen"]/text()')).replace('\xa0', ' ')
              }
     out_file = xw.Workbook(out_path)
