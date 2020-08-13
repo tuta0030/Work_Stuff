@@ -221,16 +221,17 @@ def make_menu(functions: dict):
     for item in _menu.keys():
         print(str(item[0]) + '\t' + item[1])
         print('')
-    _menu_options = [index_desc[0] for index_desc in _menu.keys()]
 
-    def check_input():
+    def check_input() -> str:
+        _menu_options = [str(_index_desc[0]) for _index_desc in _menu.keys()]
         _ui = input('输入选项：')
-        if _ui not in _menu_options:
-            print(f'没有找到输入的选项 {_ui}')
-            check_input()
-        else:
+        if _ui in _menu_options:
             return _ui
+        else:
+            print(f'没有找到输入的选项 {_ui}')
+            make_menu(functions)
     ui = check_input()
+    print(ui)
     if len(ui.split(' ')) > 1:
         for each_ui in ui.split(' '):
             for index_desc, func in _menu.items():
