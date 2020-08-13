@@ -5,7 +5,6 @@
 # @File    : main_menu.py
 # @Software: PyCharm
 
-import os
 import pas_utility
 import process_amazon_sheet
 import KW_generator
@@ -33,7 +32,7 @@ def main_menu():
             print(e)
             print('由于以上错误导致程序出错，请重试')
             input('回车继续')
-            main_menu()
+            pas_utility.back_to_main_menu(enter_quit=True)
         else:
             break
 

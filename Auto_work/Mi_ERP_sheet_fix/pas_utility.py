@@ -18,7 +18,21 @@ BRAND_TO_REPLACE_KW = open('kw_brand.txt', 'r', encoding='utf-8').read()
 KW_FILTER_CHAR = ': * ( ) [ ] { } ,'
 
 
-def cjk_detect(texts):
+def intro():
+    print("\n图沓的工具\n主菜单")
+    print("请选择需要的操作：")
+    print('')
+
+
+def cjk_detect(texts: str):
+    """检测是否有中日韩文字
+    :Requirement:
+        re module
+    :Argument:
+        texts
+    :Return:
+        str, None
+    """
     # korean
     if re.search("[\uac00-\ud7a3]", texts):
         return "ko"
@@ -187,14 +201,9 @@ def process_price(sheet, coordinate: tuple, exchange_rate: float, lowest_price: 
             price[index].value = str(int(int(str(item.value).split('.')[0]) * exchange_rate) - 1)
 
 
-def intro():
-    print("\n图沓的工具\n主菜单")
-    print("请选择需要的操作：")
-    print('')
-
-
 def make_menu(functions: dict) -> None:
-    r"""
+    r"""创建菜单函数，将会执行选中的函数
+
     传入dict，key为描述，value为需要执行的函数
     **将会执行选中的函数
 
@@ -230,7 +239,8 @@ def make_menu(functions: dict) -> None:
 
 
 def make_menu_part_functions(functions: dict):
-    r"""
+    r"""创建菜单函数，仅返回函数名称，不执行函数
+
     传入functions: dict
     key为描述，value函数的名称
 
@@ -259,8 +269,7 @@ def make_menu_part_functions(functions: dict):
 
 # 索引用户输入的文件夹中的文件
 def index_files(**kwargs) -> tuple:
-    r"""
-    请求用户输入一个文件夹，返回文件夹的路径和选择的文件路径
+    r"""请求用户输入一个文件夹，返回文件夹的路径和选择的文件路径
 
     :Keyword Arguments:
         ui_msg: 请求输入是提示的字符串
@@ -296,8 +305,9 @@ def index_files(**kwargs) -> tuple:
 
 
 def back_to_main_menu(**kwargs):
-    r""":Keyword Arguments:
-            enter_quit
+    r"""返回主菜单
+    :Keyword Arguments:
+            enter_quit: 按回车返回
     """
     if kwargs.get('enter_quit', False):
         input('输入回车返回主菜单')
