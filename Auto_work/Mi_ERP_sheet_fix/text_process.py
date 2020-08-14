@@ -160,9 +160,8 @@ class ReadTranslatedHtm(object):
         files = self.find_all_txt_file()
         self.get_langs_and_langs_dict(files)
         oc_file = pasu.index_files(ui_msg='输入表格文件所在路径')[-1]
-        original_wb = openpyxl.load_workbook(str(oc_file))
-        original_sheet = original_wb.get_sheet_by_name('sheet1')
-
+        original_sheet = openpyxl.load_workbook(str(oc_file)).get_sheet_by_name('sheet1')
+        # FIX PRICE PROBLEM
         node_list = get_content_list(original_sheet, 'recommended_browse_nodes')
         price_list = get_content_list(original_sheet, 'standard_price')
         price_list = [each_cell for each_cell in price_list if each_cell.value != '']
@@ -194,7 +193,7 @@ class ReadTranslatedHtm(object):
                         row, col = pasu.get_coordinate(each_price)
                         original_sheet.cell(int(row), int(col)).value = \
                             int(float(each_price.value) * float(exchange_rate[lang]))
-                    print(f'当前的语言: {lang}')
+                    print(f'\n当前的语言: {lang}')
                     print(f'当前使用的节点：{node[lang]}')
                     print(f'当前使用的汇率:{exchange_rate[lang]}')
                 elif EXCHANGE_RATE_NODE[0] in content:
@@ -205,8 +204,8 @@ class ReadTranslatedHtm(object):
                     for each_price in price_list:
                         row, col = pasu.get_coordinate(each_price)
                         original_sheet.cell(int(row), int(col)).value = \
-                            int(float(each_price.value) * float(str(exchange_rate).strip()))
-                    print(f'当前的语言: {lang}')
+                            int(float(each_price.value) * float(exchange_rate))
+                    print(f'\n当前的语言: {lang}')
                     print(f'当前使用的节点：{node}')
                     print(f'当前使用的汇率:{exchange_rate}')
                 else:
