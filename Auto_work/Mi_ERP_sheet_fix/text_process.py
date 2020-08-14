@@ -122,7 +122,7 @@ class ReadTranslatedHtm(object):
         return int(float(each_price.value) * float(exchange_rate))
 
     def find_all_txt_file(self) -> list:
-        self.directory = input('输入txt文件路径:')
+        self.directory = input('输入 <翻译好的txt文件> 所在的路径:')
         files = []
         if self.directory == '-1':
             pasu.back_to_main_menu()
@@ -166,7 +166,7 @@ class ReadTranslatedHtm(object):
     def main(self):
         files = self.find_all_txt_file()
         self.get_langs_and_langs_dict(files)
-        oc_file = pasu.index_files(ui_msg='输入表格文件所在路径:')[-1]
+        oc_file = pasu.index_files(ui_msg='输入 <表格文件> 所在的路径:')[-1]
         original_wb = openpyxl.load_workbook(str(oc_file))
         original_sheet = original_wb.get_sheet_by_name('sheet1')
 
