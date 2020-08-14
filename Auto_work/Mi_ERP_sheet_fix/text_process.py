@@ -114,6 +114,13 @@ class ReadTranslatedHtm(object):
         self.langs = []
         self.langs_dict = {}
 
+    @staticmethod
+    def calculate_time_exchange_rate(each_price, exchange_rate):
+        r""" each_price:cell, exchange_rate:int, float, str"""
+        print(f'价格为 {float(each_price.value)}\t 汇率为: {float(exchange_rate)} '
+              f'\n结果为 {int(float(each_price.value) * float(exchange_rate))}')
+        return int(float(each_price.value) * float(exchange_rate))
+
     def find_all_txt_file(self) -> list:
         self.directory = input('输入txt文件路径:')
         files = []
@@ -159,12 +166,17 @@ class ReadTranslatedHtm(object):
     def main(self):
         files = self.find_all_txt_file()
         self.get_langs_and_langs_dict(files)
-        oc_file = pasu.index_files(ui_msg='输入表格文件所在路径')[-1]
-        original_sheet = openpyxl.load_workbook(str(oc_file)).get_sheet_by_name('sheet1')
-        # FIX PRICE PROBLEM
-        node_list = get_content_list(original_sheet, 'recommended_browse_nodes')
-        price_list = get_content_list(original_sheet, 'standard_price')
-        price_list = [each_cell for each_cell in price_list if each_cell.value != '']
+        oc_file = pasu.index_files(ui_msg='输入表格文件所在路径:')[-1]
+        original_wb = openpyxl.load_workbook(str(oc_file))
+        original_sheet = original_wb.get_sheet_by_name('sheet1')
+
+        def get_node_price_list():
+            _new_wb = openpyxl.load_workbook(str(oc_file))
+            _new_sheet = _new_wb.get_sheet_by_name('sheet1')
+            _node_list = get_content_list(_new_sheet, 'recommended_browse_nodes')
+            _price_list = get_content_list(_new_sheet, 'standard_price')
+            _price_list = [each_cell for each_cell in _price_list if each_cell.value != '']
+            return _node_list, _price_list, _new_wb, _new_sheet
 
         for lang, file_list in self.langs_dict.items():
             for each_file in file_list:
@@ -186,25 +198,27 @@ class ReadTranslatedHtm(object):
 
                 if EXCHANGE_RATE_NODE[0] not in content:
                     exchange_rate, node = self.specify_price_node()
+                    node_list, price_list, new_wb, new_sheet = get_node_price_list()
                     for each_node in node_list:
                         row, col = pasu.get_coordinate(each_node)
                         original_sheet.cell(int(row), int(col)).value = node[lang]
                     for each_price in price_list:
                         row, col = pasu.get_coordinate(each_price)
                         original_sheet.cell(int(row), int(col)).value = \
-                            int(float(each_price.value) * float(exchange_rate[lang]))
+                            self.calculate_time_exchange_rate(each_price, exchange_rate)
                     print(f'\n当前的语言: {lang}')
                     print(f'当前使用的节点：{node[lang]}')
                     print(f'当前使用的汇率:{exchange_rate[lang]}')
                 elif EXCHANGE_RATE_NODE[0] in content:
                     exchange_rate, node = str(re.search(re.compile(r'(?<=!!\[).+(?=\]!!)'), content)[0]).split(',')
+                    node_list, price_list, new_wb, new_sheet = get_node_price_list()
                     for each_node in node_list:
                         row, col = pasu.get_coordinate(each_node)
                         original_sheet.cell(int(row), int(col)).value = str(node).strip()
                     for each_price in price_list:
                         row, col = pasu.get_coordinate(each_price)
                         original_sheet.cell(int(row), int(col)).value = \
-                            int(float(each_price.value) * float(exchange_rate))
+                            self.calculate_time_exchange_rate(each_price, exchange_rate)
                     print(f'\n当前的语言: {lang}')
                     print(f'当前使用的节点：{node}')
                     print(f'当前使用的汇率:{exchange_rate}')
