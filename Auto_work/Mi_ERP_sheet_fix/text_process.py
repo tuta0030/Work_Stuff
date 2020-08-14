@@ -100,6 +100,9 @@ class Translate:
 
     def save_all(self):
         self.file_directory = pasu.index_files()[-1]
+        if type(self.file_directory) is list:
+            input('只能输入一个文件路径，请确保只选择了一个文件（回车返回主菜单）')
+            pasu.back_to_main_menu()
         content_dict = self.load_sheet(self.file_directory)
         for key, value in content_dict.items():
             save_this_content = self.get_all_column(self.sheet, value)
