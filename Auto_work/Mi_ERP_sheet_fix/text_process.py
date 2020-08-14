@@ -210,7 +210,7 @@ class ReadTranslatedHtm(object):
                     print(f'当前使用的节点：{node[lang]}')
                     print(f'当前使用的汇率:{exchange_rate[lang]}')
                 elif EXCHANGE_RATE_NODE[0] in content:
-                    exchange_rate, node = str(re.search(re.compile(r'(?<=!!\[).+(?=\]!!)'), content)[0]).split(',')
+                    exchange_rate, node = str(re.search(re.compile(r'(?<=!!\[).+(?=]!!)'), content)[0]).split(',')
                     node_list, price_list, new_wb, new_sheet = get_node_price_list()
                     for each_node in node_list:
                         row, col = pasu.get_coordinate(each_node)
