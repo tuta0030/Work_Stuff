@@ -7,6 +7,7 @@
 
 import pas_utility as pasu
 import os
+import re
 import htm_file_warp
 import openpyxl
 import datetime
@@ -14,7 +15,8 @@ import datetime
 ROW_RANGE_RESTRICTION = 2000
 COLUMN_RANGE_RESTRICTION = 2000
 BR_PATTERN = ('(<(br)>)', '(</(br)>)')
-SEPERATOR = '^^^'
+SEPARATOR = '^^^'
+EXCHANGE_RATE_NODE = ('!![', ']!!')
 
 
 class Translate:
@@ -46,7 +48,7 @@ class Translate:
     @staticmethod
     def add_cor(each_cell) -> str:
         """add coordinate for cell content"""
-        return f'{str(pasu.get_coordinate(each_cell))} {SEPERATOR} ' + str(each_cell.value)
+        return f'{str(pasu.get_coordinate(each_cell))} {SEPARATOR} ' + str(each_cell.value)
 
     def get_all_column(self, sheet, which_content):
         """which_content should be the cell"""
@@ -161,37 +163,52 @@ class ReadTranslatedHtm(object):
         original_wb = openpyxl.load_workbook(str(oc_file))
         original_sheet = original_wb.get_sheet_by_name('sheet1')
 
-        exchange_rate, node = self.specify_price_node()
-
         node_list = get_content_list(original_sheet, 'recommended_browse_nodes')
         price_list = get_content_list(original_sheet, 'standard_price')
         price_list = [each_cell for each_cell in price_list if each_cell.value != '']
 
         for lang, file_list in self.langs_dict.items():
             for each_file in file_list:
-                content_list = open(each_file, encoding='utf-8').read().split('\n')
+                content = open(each_file, encoding='utf-8').read()
+                content_list = content.split('\n')
                 content_list = [each_line for each_line in content_list if each_line != '']
-                content_list = [each_line for each_line in content_list if SEPERATOR in each_line]
+                content_list = [each_line for each_line in content_list if SEPARATOR in each_line]
                 for each_content in content_list:
-                    if len(each_content.split(SEPERATOR)[0]) > 12:
+                    if len(each_content.split(SEPARATOR)[0]) > 12:
                         continue
-                    each_content = str(each_content).split(SEPERATOR)
+                    each_content = str(each_content).split(SEPARATOR)
                     row = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[0])
                     col = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[1])
                     original_sheet.cell(row, col).value = each_content[-1].strip() \
                         .replace(BR_PATTERN[0], '<br>').replace(BR_PATTERN[1], '</br>') \
                         .replace('(<(Br)>)', '<br>').replace('(<(/Br)>)', '</br>')
 
-            print(f'当前使用的节点：{node[lang]}')
-            print(f'当前使用的汇率:{exchange_rate[lang]}')
-
-            for each_node in node_list:
-                row, col = pasu.get_coordinate(each_node)
-                original_sheet.cell(int(row), int(col)).value = node[lang]
-            for each_price in price_list:
-                row, col = pasu.get_coordinate(each_price)
-                original_sheet.cell(int(row), int(col)).value = \
-                    int(float(each_price.value) * float(exchange_rate[lang]))
+                if EXCHANGE_RATE_NODE[0] not in content:
+                    exchange_rate, node = self.specify_price_node()
+                    for each_node in node_list:
+                        row, col = pasu.get_coordinate(each_node)
+                        original_sheet.cell(int(row), int(col)).value = node[lang]
+                    for each_price in price_list:
+                        row, col = pasu.get_coordinate(each_price)
+                        original_sheet.cell(int(row), int(col)).value = \
+                            int(float(each_price.value) * float(exchange_rate[lang]))
+                    print(f'当前使用的节点：{node[lang]}')
+                    print(f'当前使用的汇率:{exchange_rate[lang]}')
+                elif EXCHANGE_RATE_NODE[0] in content:
+                    exchange_rate, node = str(re.search(re.compile(r'(?<=!!\[).+(?=\]!!)'), content)[0]).split(',')
+                    for each_node in node_list:
+                        row, col = pasu.get_coordinate(each_node)
+                        original_sheet.cell(int(row), int(col)).value = str(node).strip()
+                    for each_price in price_list:
+                        row, col = pasu.get_coordinate(each_price)
+                        original_sheet.cell(int(row), int(col)).value = \
+                            int(float(each_price.value) * float(str(exchange_rate).strip()))
+                    print(f'当前使用的节点：{node}')
+                    print(f'当前使用的汇率:{exchange_rate}')
+                else:
+                    class NoExchangeNodeError(Exception):
+                        pass
+                    raise NoExchangeNodeError('No exchange rate and node')
 
             out_file_name = self.directory + '\\' + lang + '_' + str(oc_file).split('\\')[-1]
             print(f'正在处理  {out_file_name}')
