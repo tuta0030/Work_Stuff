@@ -117,8 +117,8 @@ class ReadTranslatedHtm(object):
     @staticmethod
     def calculate_time_exchange_rate(each_price, exchange_rate):
         r""" each_price:cell, exchange_rate:int, float, str"""
-        print(f'价格为 {float(each_price.value)}\t 汇率为: {float(exchange_rate)} '
-              f'\n结果为 {int(float(each_price.value) * float(exchange_rate))}')
+        # print(f'价格为 {float(each_price.value)}\t 汇率为: {float(exchange_rate)} '
+        #       f'\n结果为 {int(float(each_price.value) * float(exchange_rate))}')
         return int(float(each_price.value) * float(exchange_rate))
 
     def find_all_txt_file(self) -> list:
