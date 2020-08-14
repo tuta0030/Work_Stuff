@@ -181,7 +181,9 @@ class ReadTranslatedHtm(object):
                     col = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[1])
                     original_sheet.cell(row, col).value = each_content[-1].strip() \
                         .replace(BR_PATTERN[0], '<br>').replace(BR_PATTERN[1], '</br>') \
-                        .replace('(<(Br)>)', '<br>').replace('(<(/Br)>)', '</br>')
+                        .replace('(<(Br)>)', '<br>').replace('(<(/Br)>)', '</br>') \
+                        .replace('（<（br）>）', '<br>').replace('（<（/br）>）', '</br>') \
+                        .replace('（<（Br）>）', '<br>').replace('（<（/Br）>）', '</br>')
 
                 if EXCHANGE_RATE_NODE[0] not in content:
                     exchange_rate, node = self.specify_price_node()
@@ -192,6 +194,7 @@ class ReadTranslatedHtm(object):
                         row, col = pasu.get_coordinate(each_price)
                         original_sheet.cell(int(row), int(col)).value = \
                             int(float(each_price.value) * float(exchange_rate[lang]))
+                    print(f'当前的语言: {lang}')
                     print(f'当前使用的节点：{node[lang]}')
                     print(f'当前使用的汇率:{exchange_rate[lang]}')
                 elif EXCHANGE_RATE_NODE[0] in content:
@@ -203,6 +206,7 @@ class ReadTranslatedHtm(object):
                         row, col = pasu.get_coordinate(each_price)
                         original_sheet.cell(int(row), int(col)).value = \
                             int(float(each_price.value) * float(str(exchange_rate).strip()))
+                    print(f'当前的语言: {lang}')
                     print(f'当前使用的节点：{node}')
                     print(f'当前使用的汇率:{exchange_rate}')
                 else:
