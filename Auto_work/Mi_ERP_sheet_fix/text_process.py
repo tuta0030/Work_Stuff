@@ -14,7 +14,7 @@ import datetime
 
 ROW_RANGE_RESTRICTION = 2000
 COLUMN_RANGE_RESTRICTION = 2000
-BR_PATTERN = '(<(br)>)'
+BR_PATTERN = '$$$$$'
 SEPARATOR = '^^^'
 EXCHANGE_RATE_NODE = ('!![', ']!!')
 
@@ -75,7 +75,7 @@ class Translate:
                                                        content_coordinate[0],
                                                        content_coordinate[1])
         content_list = \
-            [self.add_cor(each_cell).replace('<br>', BR_PATTERN[0]).replace('</br>', BR_PATTERN[1])
+            [self.add_cor(each_cell).replace('<br>', BR_PATTERN)
              for each_cell in content_list]
         return self.htm_warp(content_list)
 
@@ -193,11 +193,7 @@ class ReadTranslatedHtm(object):
                     each_content = str(each_content).split(SEPARATOR)
                     row = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[0])
                     col = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[1])
-                    original_sheet.cell(row, col).value = each_content[-1].strip() \
-                        .replace(BR_PATTERN, ' <br> ') \
-                        .replace('(<(Br)>)', ' <br> ') \
-                        .replace('（<（br）>）', ' <br> ') \
-                        .replace('（<（Br）>）', ' <br> ')
+                    original_sheet.cell(row, col).value = each_content[-1].strip().replace(BR_PATTERN, ' <br> ')
 
                 if EXCHANGE_RATE_NODE[0] not in content:
                     exchange_rate, node = self.specify_price_node()
