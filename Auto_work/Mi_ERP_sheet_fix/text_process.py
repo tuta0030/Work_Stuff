@@ -184,7 +184,8 @@ class ReadTranslatedHtm(object):
                     each_content = str(each_content).split(SEPARATOR)
                     row = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[0])
                     col = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[1])
-                    original_sheet.cell(row, col).value = each_content[-1].strip().replace(BR_PATTERN, ' <br> ')
+                    original_sheet.cell(row, col).value = each_content[-1].strip().replace(BR_PATTERN, ' <br> ')\
+                        .replace('$$ $', ' <br> ').replace('$ $$', ' <br> ')
 
                 if EXCHANGE_RATE_NODE[0] not in content:
                     input(f'文本文件: ({each_file}) 当中没有标明汇率和节点，请检查文件')
