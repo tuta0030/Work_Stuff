@@ -14,7 +14,7 @@ import datetime
 
 ROW_RANGE_RESTRICTION = 2000
 COLUMN_RANGE_RESTRICTION = 2000
-BR_PATTERN = '$$$$$'
+BR_PATTERN = '$$$'
 SEPARATOR = '^^^'
 EXCHANGE_RATE_NODE = ('!![', ']!!')
 
@@ -146,15 +146,6 @@ class ReadTranslatedHtm(object):
         langs = list(set(langs))
         self.langs = langs
 
-    def specify_price_node(self) -> tuple:
-        exchange_rate = {}
-        node = {}
-        print(f'当前拥有的语言：{self.langs}')
-        for each_lang in self.langs:
-            exchange_rate[each_lang] = input(f'输入 {each_lang} 的汇率:')
-            node[each_lang] = input(f'输入 {each_lang} 的节点:')
-        return exchange_rate, node
-
     def get_langs_dict(self, files: list):
         for each_lang in self.langs:
             self.langs_dict[each_lang] = []
@@ -196,18 +187,8 @@ class ReadTranslatedHtm(object):
                     original_sheet.cell(row, col).value = each_content[-1].strip().replace(BR_PATTERN, ' <br> ')
 
                 if EXCHANGE_RATE_NODE[0] not in content:
-                    exchange_rate, node = self.specify_price_node()
-                    node_list, price_list, new_wb, new_sheet = get_node_price_list()
-                    for each_node in node_list:
-                        row, col = pasu.get_coordinate(each_node)
-                        original_sheet.cell(int(row), int(col)).value = node[lang]
-                    for each_price in price_list:
-                        row, col = pasu.get_coordinate(each_price)
-                        original_sheet.cell(int(row), int(col)).value = \
-                            self.calculate_time_exchange_rate(each_price, exchange_rate)
-                    print(f'\n当前的语言: {lang}')
-                    print(f'当前使用的节点：{node[lang]}')
-                    print(f'当前使用的汇率:{exchange_rate[lang]}')
+                    input(f'文本文件: ({each_file}) 当中没有标明汇率和节点，请检查文件')
+                    pasu.back_to_main_menu()
                 elif EXCHANGE_RATE_NODE[0] in content:
                     exchange_rate, node = str(re.search(re.compile(r'(?<=!!\[).+(?=]!!)'), content)[0]).split(',')
                     node_list, price_list, new_wb, new_sheet = get_node_price_list()
