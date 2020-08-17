@@ -179,7 +179,7 @@ class ReadTranslatedHtm(object):
                 content_list = [each_line for each_line in content_list if each_line != '']
                 content_list = [each_line for each_line in content_list if SEPARATOR in each_line]
                 for each_content in content_list:
-                    if len(each_content.split(SEPARATOR)[0]) > 12:
+                    if len(each_content.split(SEPARATOR)[0]) > 9:
                         continue
                     each_content = str(each_content).split(SEPARATOR)
                     row = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[0])
