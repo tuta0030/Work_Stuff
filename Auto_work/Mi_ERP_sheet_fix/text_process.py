@@ -14,7 +14,7 @@ import datetime
 
 ROW_RANGE_RESTRICTION = 2000
 COLUMN_RANGE_RESTRICTION = 2000
-BR_PATTERN = ('(<(br)>)', '(</(br)>)')
+BR_PATTERN = '(<(br)>)'
 SEPARATOR = '^^^'
 EXCHANGE_RATE_NODE = ('!![', ']!!')
 
@@ -191,10 +191,10 @@ class ReadTranslatedHtm(object):
                     row = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[0])
                     col = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[1])
                     original_sheet.cell(row, col).value = each_content[-1].strip() \
-                        .replace(BR_PATTERN[0], '<br>').replace(BR_PATTERN[1], '</br>') \
-                        .replace('(<(Br)>)', '<br>').replace('(<(/Br)>)', '</br>') \
-                        .replace('（<（br）>）', '<br>').replace('（<（/br）>）', '</br>') \
-                        .replace('（<（Br）>）', '<br>').replace('（<（/Br）>）', '</br>')
+                        .replace(BR_PATTERN, ' <br> ') \
+                        .replace('(<(Br)>)', ' <br> ') \
+                        .replace('（<（br）>）', ' <br> ') \
+                        .replace('（<（Br）>）', ' <br> ')
 
                 if EXCHANGE_RATE_NODE[0] not in content:
                     exchange_rate, node = self.specify_price_node()
