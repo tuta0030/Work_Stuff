@@ -188,8 +188,8 @@ class ReadTranslatedHtm(object):
                         .replace('$$ $', ' <br> ').replace('$ $$', ' <br> ')
 
                 if EXCHANGE_RATE_NODE[0] not in content:
-                    input(f'文本文件: ({each_file}) 当中没有标明汇率和节点，请检查文件')
-                    pasu.back_to_main_menu()
+                    input(f'文本文件: ({each_file}) 当中没有标明汇率和节点，请检查文件（回车继续）')
+                    continue
                 elif EXCHANGE_RATE_NODE[0] in content:
                     exchange_rate, node = str(re.search(re.compile(r'(?<=!!\[).+(?=]!!)'), content)[0]).split(',')
                     node_list, price_list, new_wb, new_sheet = get_node_price_list()
