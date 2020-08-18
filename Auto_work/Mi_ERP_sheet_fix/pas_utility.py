@@ -269,7 +269,7 @@ def index_files(**kwargs) -> tuple:
     for index, file in files.items():
         print(index, end='')
         print('\t' + file.split('\\')[-1])
-    ui = str(input('请选择文件：')).strip()
+    ui = str(input(kwargs.get('which_file_msg', '请选择文件：'))).strip()
     which_file = ''
     for selection in files.keys():
         if len(ui.split(' ')) > 1:
@@ -287,7 +287,7 @@ def back_to_main_menu(**kwargs):
             enter_quit: 按回车返回
     """
     if kwargs.get('enter_quit', False):
-        input('输入回车返回主菜单')
+        input('\n输入回车返回主菜单')
     os.system('cls')
     main_menu.main_menu()
     return 0

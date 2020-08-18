@@ -17,6 +17,18 @@ COLUMN_RANGE_RESTRICTION = 2000
 BR_PATTERN = '$$$'
 SEPARATOR = '^^^'
 EXCHANGE_RATE_NODE = ('!![', ']!!')
+EXCHANGE_RATE_NODE_TEMPLATE = {
+    'JP': r'!![139.21, 89292051]!!',
+    'FR': r'!![1.11, 205399031]!!',
+    'DE': r'!![1.11, 3884368031]!!',
+    'ES': r'!![1.11, 4204459031]!!',
+    'NL': r'!![1.11, 16454251031]!!',
+    'MX': r'!![28.89, 9886299011]!!',
+    'CA': r'!![1.73, 3130306011]!!',
+    'US': r'!![1.31, ]!!',
+    'SA': r'!![1.79, 12463334031]!!',
+    'IT': r'!![1.11, 1904589031]!!',
+                               }
 
 
 class Translate:
@@ -160,7 +172,7 @@ class ReadTranslatedHtm(object):
     def main(self):
         files = self.find_all_txt_file()
         self.get_langs_and_langs_dict(files)
-        oc_file = pasu.index_files(ui_msg='输入 <表格文件> 所在的路径:')[-1]
+        oc_file = pasu.index_files(ui_msg='输入 <表格文件> 所在的路径:', which_file_msg='请选择原始表格文件:')[-1]
         original_wb = openpyxl.load_workbook(str(oc_file))
         original_sheet = original_wb.get_sheet_by_name('sheet1')
 
@@ -172,9 +184,18 @@ class ReadTranslatedHtm(object):
             _price_list = [each_cell for each_cell in _price_list if each_cell.value != '']
             return _node_list, _price_list, _new_wb, _new_sheet
 
+        is_update_temp = input('\n是否已在 EXCHANGE_RATE_NODE_TEMPLATE 中更新今天的汇率:')
         for lang, file_list in self.langs_dict.items():
-
             for each_file in file_list:
+                if EXCHANGE_RATE_NODE_TEMPLATE is not None:
+                    if is_update_temp == 'y':
+                        for lang_excr_node, excr_node in EXCHANGE_RATE_NODE_TEMPLATE.items():
+                            if lang_excr_node in each_file and excr_node is not '!![]!!':
+                                line_prepender(each_file, excr_node)
+                    else:
+                        input('\n没有确认更新汇率，返回主菜单...')
+                        pasu.back_to_main_menu()
+
                 content = open(each_file, encoding='utf-8').read()
                 content_list = content.split('\n')
                 content_list = [each_line for each_line in content_list if each_line != '']
@@ -193,7 +214,7 @@ class ReadTranslatedHtm(object):
                         continue
 
                 if EXCHANGE_RATE_NODE[0] not in content:
-                    input(f'文本文件: ({each_file}) 当中没有标明汇率和节点，请检查文件（回车继续）')
+                    input(f'\n文本文件: ({each_file}) 当中没有标明汇率和节点，请检查文件（回车继续）')
                     continue
                 elif EXCHANGE_RATE_NODE[0] in content:
                     exchange_rate, node = str(re.search(re.compile(r'(?<=!!\[).+(?=]!!)'), content)[0]).split(',')
@@ -232,6 +253,14 @@ def find_cell(sheet, cell_name: str):
         for _c in range(1, COLUMN_RANGE_RESTRICTION):
             if sheet.cell(_r, _c).value == cell_name:
                 return sheet.cell(_r, _c)
+
+
+def line_prepender(filename, line):
+    with open(filename, 'r+', encoding='utf-8') as f:
+        content = f.read()
+        if line not in content:
+            f.seek(0, 0)
+            f.writelines(line.rstrip('\r\n') + '\n' + content)
 
 
 def main():
