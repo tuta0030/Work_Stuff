@@ -30,6 +30,8 @@ EXCHANGE_RATE_NODE_TEMPLATE = {
     'IT': r'!![1.11, 1904589031]!!',
                                }
 
+excr_node = dict
+
 
 class Translate:
 
@@ -184,17 +186,16 @@ class ReadTranslatedHtm(object):
             _price_list = [each_cell for each_cell in _price_list if each_cell.value != '']
             return _node_list, _price_list, _new_wb, _new_sheet
 
-        is_update_temp = input('\n是否已在 EXCHANGE_RATE_NODE_TEMPLATE 中更新今天的汇率:')
+        if how_many_hours_passed(get_last_time) > 24:
+            for lang, file_list in self.langs_dict.items():
+                asking_for_excr_node_input(str(lang))
+
         for lang, file_list in self.langs_dict.items():
             for each_file in file_list:
                 if EXCHANGE_RATE_NODE_TEMPLATE is not None:
-                    if is_update_temp == 'y':
-                        for lang_excr_node, excr_node in EXCHANGE_RATE_NODE_TEMPLATE.items():
-                            if lang_excr_node in each_file and excr_node is not '!![]!!':
-                                line_prepender(each_file, excr_node)
-                    else:
-                        input('\n没有确认更新汇率，返回主菜单...')
-                        pasu.back_to_main_menu()
+                    for lang_excr_node, excr_node in EXCHANGE_RATE_NODE_TEMPLATE.items():
+                        if lang_excr_node in each_file.split('\\')[-1] and excr_node is not '!![]!!':
+                            line_prepender(each_file, excr_node)
 
                 content = open(each_file, encoding='utf-8').read()
                 content_list = content.split('\n')
@@ -265,6 +266,22 @@ def line_prepender(filename, line):
             f.writelines(line.rstrip('\r\n') + '\n' + content)
 
 
+def get_last_time():
+    if excr_node is None:
+        return datetime.datetime(2000, 1, 1)
+    else:
+        return excr_node['last_time']
+
+
+def how_many_hours_passed(last_time):
+    result = datetime.timedelta.total_seconds(datetime.datetime.now() - last_time)
+    return result/3600
+
+
+def asking_for_excr_node_input(lang: str):
+    excr_node[lang] = EXCHANGE_RATE_NODE[0] + str(input(f'输入{lang}的汇率和节点（逗号隔开）:')) + EXCHANGE_RATE_NODE[1]
+
+
 def main():
     translate = Translate()
     readtranslate = ReadTranslatedHtm()
@@ -272,3 +289,7 @@ def main():
              '通过表格保存htm文件': translate.save_all,
              '通过txt生成新的表格文件': readtranslate.main}
     pasu.make_menu(_menu)
+
+
+if __name__ == '__main__':
+    how_many_hours_passed()
