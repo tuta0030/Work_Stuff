@@ -175,12 +175,12 @@ class ReadTranslatedHtm(object):
         for lang, file_list in self.langs_dict.items():
 
             for each_file in file_list:
-                try:
-                    content = open(each_file, encoding='utf-8').read()
-                    content_list = content.split('\n')
-                    content_list = [each_line for each_line in content_list if each_line != '']
-                    content_list = [each_line for each_line in content_list if SEPARATOR in each_line]
-                    for each_content in content_list:
+                content = open(each_file, encoding='utf-8').read()
+                content_list = content.split('\n')
+                content_list = [each_line for each_line in content_list if each_line != '']
+                content_list = [each_line for each_line in content_list if SEPARATOR in each_line]
+                for each_content in content_list:
+                    try:
                         if len(each_content.split(SEPARATOR)[0]) > 9:
                             continue
                         each_content = str(each_content).split(SEPARATOR)
@@ -188,33 +188,34 @@ class ReadTranslatedHtm(object):
                         col = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[1])
                         original_sheet.cell(row, col).value = each_content[-1].strip().replace(BR_PATTERN, ' <br> ')\
                             .replace('$$ $', ' <br> ').replace('$ $$', ' <br> ')
-
-                    if EXCHANGE_RATE_NODE[0] not in content:
-                        input(f'文本文件: ({each_file}) 当中没有标明汇率和节点，请检查文件（回车继续）')
+                    except Exception as e:
+                        print(f'\n{each_file} 中 {each_content} 发生了错误 {e}')
                         continue
-                    elif EXCHANGE_RATE_NODE[0] in content:
-                        exchange_rate, node = str(re.search(re.compile(r'(?<=!!\[).+(?=]!!)'), content)[0]).split(',')
-                        node_list, price_list, new_wb, new_sheet = get_node_price_list()
-                        for each_node in node_list:
-                            row, col = pasu.get_coordinate(each_node)
-                            original_sheet.cell(int(row), int(col)).value = str(node).strip()
-                        for each_price in price_list:
-                            row, col = pasu.get_coordinate(each_price)
-                            original_sheet.cell(int(row), int(col)).value = \
-                                self.calculate_time_exchange_rate(each_price, exchange_rate)
-                        print(f'\n当前的语言: {lang}')
-                        print(f'当前使用的节点：{node}')
-                        print(f'当前使用的汇率:{exchange_rate}')
-                    else:
-                        class NoExchangeNodeError(Exception):
-                            pass
-                        raise NoExchangeNodeError('No exchange rate and node')
 
-                    out_file_name = self.directory + '\\' + lang + '_' + str(oc_file).split('\\')[-1]
-                    print(f'正在处理  {out_file_name}')
-                    original_wb.save(out_file_name)
-                except Exception as e:
-                    print(f'\n{each_file} 发生了错误 {e}')
+                if EXCHANGE_RATE_NODE[0] not in content:
+                    input(f'文本文件: ({each_file}) 当中没有标明汇率和节点，请检查文件（回车继续）')
+                    continue
+                elif EXCHANGE_RATE_NODE[0] in content:
+                    exchange_rate, node = str(re.search(re.compile(r'(?<=!!\[).+(?=]!!)'), content)[0]).split(',')
+                    node_list, price_list, new_wb, new_sheet = get_node_price_list()
+                    for each_node in node_list:
+                        row, col = pasu.get_coordinate(each_node)
+                        original_sheet.cell(int(row), int(col)).value = str(node).strip()
+                    for each_price in price_list:
+                        row, col = pasu.get_coordinate(each_price)
+                        original_sheet.cell(int(row), int(col)).value = \
+                            self.calculate_time_exchange_rate(each_price, exchange_rate)
+                    print(f'\n当前的语言: {lang}')
+                    print(f'当前使用的节点：{node}')
+                    print(f'当前使用的汇率:{exchange_rate}')
+                else:
+                    class NoExchangeNodeError(Exception):
+                        pass
+                    raise NoExchangeNodeError('No exchange rate and node')
+
+                out_file_name = self.directory + '\\' + lang + '_' + str(oc_file).split('\\')[-1]
+                print(f'正在处理  {out_file_name}')
+                original_wb.save(out_file_name)
 
         pasu.back_to_main_menu(enter_quit=True)
 
