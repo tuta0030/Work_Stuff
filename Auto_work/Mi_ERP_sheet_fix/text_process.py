@@ -259,6 +259,8 @@ def line_prepender(filename, line):
     with open(filename, 'r+', encoding='utf-8') as f:
         content = f.read()
         if line not in content:
+            if '!![' in content:
+                content = content.replace(EXCHANGE_RATE_NODE[0], '').replace(EXCHANGE_RATE_NODE[1], '')
             f.seek(0, 0)
             f.writelines(line.rstrip('\r\n') + '\n' + content)
 
