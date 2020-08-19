@@ -110,7 +110,8 @@ class Translate:
         pasu.back_to_main_menu()
 
 
-class ReadTranslatedHtm(object):
+# 从文本文件生成表格文件
+class ReadTranslatedTxt(object):
 
     def __init__(self):
         self.directory = ''
@@ -164,6 +165,7 @@ class ReadTranslatedHtm(object):
         original_wb = openpyxl.load_workbook(str(oc_file))
         original_sheet = original_wb.get_sheet_by_name('sheet1')
 
+        # 获取价格和节点的成员函数
         def get_node_price_list():
             _new_wb = openpyxl.load_workbook(str(oc_file))
             _new_sheet = _new_wb.get_sheet_by_name('sheet1')
@@ -182,6 +184,7 @@ class ReadTranslatedHtm(object):
             with open('excr_node.py', 'w', encoding='utf-8') as t:
                 t.write('excr_node = '+str(excr_node))
 
+        # 处理文本文件
         for lang, file_list in self.langs_dict.items():
             import excr_node
             for each_file in file_list:
@@ -235,6 +238,7 @@ class ReadTranslatedHtm(object):
         pasu.back_to_main_menu(enter_quit=True)
 
 
+# 全局函数
 def get_content_list(sheet, cell_name: str) -> list:
     cell = find_cell(sheet, cell_name)
     cell_coordinate = pasu.get_coordinate(cell)
@@ -282,9 +286,10 @@ def asking_for_excr_node_input(lang: str, excr_node: dict):
     excr_node[lang] = EXCHANGE_RATE_NODE[0] + str(input(f'输入{lang}的汇率和节点（逗号隔开）:')) + EXCHANGE_RATE_NODE[1]
 
 
+# 文本处理模块主函数
 def main():
     translate = Translate()
-    readtranslate = ReadTranslatedHtm()
+    readtranslate = ReadTranslatedTxt()
     _menu = {'返回主菜单': pasu.back_to_main_menu,
              '通过表格保存htm文件': translate.save_all,
              '通过txt生成新的表格文件': readtranslate.main}
