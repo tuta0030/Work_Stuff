@@ -176,15 +176,19 @@ class ReadTranslatedTxt(object):
             _price_list = [each_cell for each_cell in _price_list if each_cell.value != '']
             return _node_list, _price_list, _new_wb, _new_sheet
 
-        if how_many_hours_passed(get_time_stamp()) > 24:
+        if check_if_the_same_day(get_time_stamp()):
+            excr_node = {}
+            excr_node_result = asking_for_excr_node_input(EXCR_NODE_TEMP)
+            excr_node_result = excr_node_result.split('\n')
+            excr_node_result = [each_line for each_line in excr_node_result if each_line != '' or each_line != ':']
+            for each_line in excr_node_result:
+                excr_node[each_line.split(':')[0].strip()] = \
+                    EXCHANGE_RATE_NODE[0]+str(each_line.split(':')[-1].strip())+EXCHANGE_RATE_NODE[1]
+            with open('excr_node.py', 'w', encoding='utf-8') as t:
+                t.write('excr_node = '+str(excr_node))
             with open('_time_stamp_for_excr_node.py', 'w', encoding='utf-8') as t:
                 t.write('time_stamp = ' +
                         f'"{datetime.datetime.strftime(datetime.datetime.now(), "%Y, %m, %d, %I, %M, %S")}"')
-            excr_node = {}
-            for lang, content in EXCR_NODE_TEMP.items():
-                asking_for_excr_node_input(str(lang), excr_node)
-            with open('excr_node.py', 'w', encoding='utf-8') as t:
-                t.write('excr_node = '+str(excr_node))
 
         # 处理文本文件
         for lang, file_list in self.langs_dict.items():
@@ -216,6 +220,10 @@ class ReadTranslatedTxt(object):
                     input(f'\n文本文件: ({each_file}) 当中没有标明汇率和节点，请检查文件（回车继续）')
                     continue
                 elif EXCHANGE_RATE_NODE[0] in content:
+                    search_result = re.search(re.compile(r'(?<=!!\[).+(?=]!!)'), content)
+                    if str(search_result[0]) is None:
+                        print(f'当前文件 {each_file} 中找到空白汇率节点 {search_result} 请删除之后重试')
+                        continue
                     exchange_rate, node = str(re.search(re.compile(r'(?<=!!\[).+(?=]!!)'), content)[0]).split(',')
                     node_list, price_list, new_wb, new_sheet = get_node_price_list()
                     for each_node in node_list:
@@ -255,12 +263,23 @@ def find_cell(sheet, cell_name: str):
                 return sheet.cell(_r, _c)
 
 
+def check_if_the_same_day(_time_stamp: datetime.datetime):
+    if _time_stamp.day == datetime.datetime.now().day and \
+       _time_stamp.year == datetime.datetime.now().year and \
+       _time_stamp.month == datetime.datetime.now().month:
+        return False
+    elif (datetime.datetime.now().day - _time_stamp.day) > 1:
+        return True
+    else:
+        return True
+
+
 def line_prepender(filename, line):
     with open(filename, 'r+', encoding='utf-8') as f:
         content = f.read()
         if line not in content:
             if '!![' in content:
-                content = content.replace(EXCHANGE_RATE_NODE[0], '').replace(EXCHANGE_RATE_NODE[1], '')
+                content = re.sub(re.compile(r'!!\[.*]!!'), ' ', content)
             f.seek(0, 0)
             f.writelines(line.rstrip('\r\n') + '\n' + content)
 
@@ -279,13 +298,19 @@ def get_time_stamp() -> datetime.datetime:
         return datetime.datetime(2000, 1, 1)
 
 
-def how_many_hours_passed(last_time: datetime.datetime):
-    result = datetime.timedelta.total_seconds(datetime.datetime.now() - last_time)
-    return result/3600
-
-
-def asking_for_excr_node_input(lang: str, excr_node: dict):
-    excr_node[lang] = EXCHANGE_RATE_NODE[0] + str(input(f'输入{lang}的汇率和节点（逗号隔开）:')) + EXCHANGE_RATE_NODE[1]
+def asking_for_excr_node_input(_excr_node_temp: dict) -> str:
+    with open('ExchangeRate_Node.txt', 'w', encoding='utf-8') as f:
+        for key, value in _excr_node_temp.items():
+            f.write(f'{key}:{value}\n')
+    os.startfile('ExchangeRate_Node.txt')
+    is_finished = input('是否完成输入(Y/N):')
+    if is_finished == 'y':
+        return open('ExchangeRate_Node.txt', 'r', encoding='utf-8').read()
+    else:
+        print('未完成输入，尝试重新输入...')
+        file = open('ExchangeRate_Node.txt', 'r', encoding='utf-8')
+        file.close()
+        asking_for_excr_node_input(_excr_node_temp)
 
 
 # 文本处理模块主函数
@@ -299,4 +324,4 @@ def main():
 
 
 if __name__ == '__main__':
-    print(str({'a': 'apple', 'b': 'banana'}))
+    check_if_the_same_day(get_time_stamp())
