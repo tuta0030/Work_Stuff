@@ -30,8 +30,6 @@ EXCHANGE_RATE_NODE_TEMPLATE = {
     'IT': r'!![1.11, 1904589031]!!',
                                }
 
-excr_node = dict
-
 
 class Translate:
 
@@ -186,16 +184,24 @@ class ReadTranslatedHtm(object):
             _price_list = [each_cell for each_cell in _price_list if each_cell.value != '']
             return _node_list, _price_list, _new_wb, _new_sheet
 
-        if how_many_hours_passed(get_last_time) > 24:
+        if how_many_hours_passed(get_time_stamp()) > 24:
+            with open('_time_stamp_for_excr_node.py', 'w', encoding='utf-8') as t:
+                t.write('import datetime')
+                t.write('\n')
+                t.write('time_stamp = ' +
+                        f'"{datetime.datetime.strftime(datetime.datetime.now(), "%Y, %m, %d, %I, %M, %S")}"')
+            excr_node = {}
             for lang, file_list in self.langs_dict.items():
-                asking_for_excr_node_input(str(lang))
+                asking_for_excr_node_input(str(lang), excr_node)
+            with open('excr_node.py', 'w', encoding='utf-8') as t:
+                t.write('excr_node = '+str(excr_node))
 
         for lang, file_list in self.langs_dict.items():
             for each_file in file_list:
                 if EXCHANGE_RATE_NODE_TEMPLATE is not None:
-                    for lang_excr_node, excr_node in EXCHANGE_RATE_NODE_TEMPLATE.items():
-                        if lang_excr_node in each_file.split('\\')[-1] and excr_node is not '!![]!!':
-                            line_prepender(each_file, excr_node)
+                    for lang_excr_node, _excr_node in EXCHANGE_RATE_NODE_TEMPLATE.items():
+                        if lang_excr_node in each_file.split('\\')[-1] and _excr_node is not '!![]!!':
+                            line_prepender(each_file, _excr_node)
 
                 content = open(each_file, encoding='utf-8').read()
                 content_list = content.split('\n')
@@ -266,19 +272,26 @@ def line_prepender(filename, line):
             f.writelines(line.rstrip('\r\n') + '\n' + content)
 
 
-def get_last_time():
-    if excr_node is None:
-        return datetime.datetime(2000, 1, 1)
+def get_time_stamp() -> datetime.datetime:
+    if os.path.isfile('_time_stamp_for_excr_node.py'):
+        import _time_stamp_for_excr_node
+        try:
+            _time_stamp = _time_stamp_for_excr_node.time_stamp.split(',')
+            _time_stamp = [int(each_part) for each_part in _time_stamp]
+            return datetime.datetime(*_time_stamp)
+        except Exception as e:
+            print(f'\n读取时间戳文件失败 {e}')
+            return datetime.datetime(2000, 1, 1)
     else:
-        return excr_node['last_time']
+        return datetime.datetime(2000, 1, 1)
 
 
-def how_many_hours_passed(last_time):
+def how_many_hours_passed(last_time: datetime.datetime):
     result = datetime.timedelta.total_seconds(datetime.datetime.now() - last_time)
     return result/3600
 
 
-def asking_for_excr_node_input(lang: str):
+def asking_for_excr_node_input(lang: str, excr_node: dict):
     excr_node[lang] = EXCHANGE_RATE_NODE[0] + str(input(f'输入{lang}的汇率和节点（逗号隔开）:')) + EXCHANGE_RATE_NODE[1]
 
 
@@ -292,4 +305,4 @@ def main():
 
 
 if __name__ == '__main__':
-    how_many_hours_passed()
+    print(str({'a': 'apple', 'b': 'banana'}))
