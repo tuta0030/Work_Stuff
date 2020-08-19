@@ -17,6 +17,8 @@ COLUMN_RANGE_RESTRICTION = 2000
 BR_PATTERN = '$$$'
 SEPARATOR = '^^^'
 EXCHANGE_RATE_NODE = ('!![', ']!!')
+EXCR_NODE_TEMP = {'ES': '', 'JP': '', 'IT': '', 'US': '', 'FR': '',
+                  'DE': '', 'NL': '', 'SA': '', 'AE': '', 'CA': '', 'MX': ''}
 
 
 class Translate:
@@ -179,7 +181,7 @@ class ReadTranslatedTxt(object):
                 t.write('time_stamp = ' +
                         f'"{datetime.datetime.strftime(datetime.datetime.now(), "%Y, %m, %d, %I, %M, %S")}"')
             excr_node = {}
-            for lang, file_list in self.langs_dict.items():
+            for lang, content in EXCR_NODE_TEMP.items():
                 asking_for_excr_node_input(str(lang), excr_node)
             with open('excr_node.py', 'w', encoding='utf-8') as t:
                 t.write('excr_node = '+str(excr_node))
