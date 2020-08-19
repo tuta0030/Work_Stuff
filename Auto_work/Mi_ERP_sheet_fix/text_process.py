@@ -17,18 +17,6 @@ COLUMN_RANGE_RESTRICTION = 2000
 BR_PATTERN = '$$$'
 SEPARATOR = '^^^'
 EXCHANGE_RATE_NODE = ('!![', ']!!')
-EXCHANGE_RATE_NODE_TEMPLATE = {
-    'JP': r'!![139.21, 89292051]!!',
-    'FR': r'!![1.11, 205399031]!!',
-    'DE': r'!![1.11, 3884368031]!!',
-    'ES': r'!![1.11, 4204459031]!!',
-    'NL': r'!![1.11, 16454251031]!!',
-    'MX': r'!![28.89, 9886299011]!!',
-    'CA': r'!![1.73, 3130306011]!!',
-    'US': r'!![1.31, ]!!',
-    'SA': r'!![1.79, 12463334031]!!',
-    'IT': r'!![1.11, 1904589031]!!',
-                               }
 
 
 class Translate:
@@ -186,8 +174,6 @@ class ReadTranslatedHtm(object):
 
         if how_many_hours_passed(get_time_stamp()) > 24:
             with open('_time_stamp_for_excr_node.py', 'w', encoding='utf-8') as t:
-                t.write('import datetime')
-                t.write('\n')
                 t.write('time_stamp = ' +
                         f'"{datetime.datetime.strftime(datetime.datetime.now(), "%Y, %m, %d, %I, %M, %S")}"')
             excr_node = {}
@@ -197,9 +183,10 @@ class ReadTranslatedHtm(object):
                 t.write('excr_node = '+str(excr_node))
 
         for lang, file_list in self.langs_dict.items():
+            import excr_node
             for each_file in file_list:
-                if EXCHANGE_RATE_NODE_TEMPLATE is not None:
-                    for lang_excr_node, _excr_node in EXCHANGE_RATE_NODE_TEMPLATE.items():
+                if excr_node.excr_node is not None:
+                    for lang_excr_node, _excr_node in excr_node.excr_node.items():
                         if lang_excr_node in each_file.split('\\')[-1] and _excr_node is not '!![]!!':
                             line_prepender(each_file, _excr_node)
 

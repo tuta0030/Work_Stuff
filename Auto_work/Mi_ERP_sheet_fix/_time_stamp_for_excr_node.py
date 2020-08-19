@@ -1,2 +1,1 @@
-import datetime
-time_stamp = "2020, 08, 19, 11, 21, 25"
+time_stamp = "2000, 08, 19, 11, 21, 25"

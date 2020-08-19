@@ -1,1 +1,1 @@
-excr_node = {'FENGRUDING_MX': '!![1.11, 123456]!!', 'FENGRUDING_SA': '!![1.11, 123456]!!', 'FENGRUDING_FR': '!![1.11, 123456]!!', 'FENGRUDING_JP': '!![1.11, 123456]!!', 'FENGRUDING_CA': '!![1.11, 123456]!!', 'FENGRUDING_IT': '!![1.11, 123456]!!', 'FENGRUDING_US': '!![1.11, 123456]!!', 'FENGRUDING_ES': '!![1.11, 123456]!!', 'FENGRUDING_DE': '!![1.11, 123456]!!'}
+excr_node = {}
