@@ -109,7 +109,7 @@ class Translate:
         content_dict = self.load_sheet(self.file_directory)
         for key, value in content_dict.items():
             save_this_content = self.get_all_column(self.sheet, value)
-            self.save_as_html(f'所有内容_{datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")}', save_this_content)
+            self.save_as_html(f'所有内容_{datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")}', save_this_content)
         pasu.back_to_main_menu()
 
 
