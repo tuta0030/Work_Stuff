@@ -11,6 +11,7 @@ import re
 import htm_file_warp
 import openpyxl
 import datetime
+import traceback
 
 ROW_RANGE_RESTRICTION = 2000
 COLUMN_RANGE_RESTRICTION = 2000
@@ -193,10 +194,11 @@ class ReadTranslatedTxt(object):
         # 处理文本文件
         for lang, file_list in self.langs_dict.items():
             import excr_node
+            template = {key: value for key, value in excr_node.excr_node.items() if key != ''}
             for each_file in file_list:
                 if excr_node.excr_node is not None:
-                    for lang_excr_node, _excr_node in excr_node.excr_node.items():
-                        if lang_excr_node in each_file.split('\\')[-1] and _excr_node is not '!![]!!':
+                    for lang_excr_node, _excr_node in template.items():
+                        if lang_excr_node in each_file.split('\\')[-1]:
                             line_prepender(each_file, _excr_node)
 
                 content = open(each_file, encoding='utf-8').read()
@@ -213,7 +215,7 @@ class ReadTranslatedTxt(object):
                         original_sheet.cell(row, col).value = each_content[-1].strip().replace(BR_PATTERN, ' <br> ')\
                             .replace('$$ $', ' <br> ').replace('$ $$', ' <br> ')
                     except Exception as e:
-                        print(f'\n{each_file} 中 {each_content} 发生了错误 {e}')
+                        print(f'{each_file} 中的内容： {each_content} 发生了错误 {e}')
                         continue
 
                 if EXCHANGE_RATE_NODE[0] not in content:
@@ -221,8 +223,8 @@ class ReadTranslatedTxt(object):
                     continue
                 elif EXCHANGE_RATE_NODE[0] in content:
                     search_result = re.search(re.compile(r'(?<=!!\[).+(?=]!!)'), content)
-                    if str(search_result[0]) is None:
-                        print(f'当前文件 {each_file} 中找到空白汇率节点 {search_result} 请删除之后重试')
+                    # print(f'\n{each_file} 找到的!![]!! {search_result[0]}')
+                    if search_result is None:
                         continue
                     exchange_rate, node = str(re.search(re.compile(r'(?<=!!\[).+(?=]!!)'), content)[0]).split(',')
                     node_list, price_list, new_wb, new_sheet = get_node_price_list()
@@ -275,7 +277,7 @@ def check_if_the_same_day(_time_stamp: datetime.datetime):
 
 
 def line_prepender(filename, line):
-    with open(filename, 'r+', encoding='utf-8') as f:
+    with open(filename, 'r+', encoding='utf-8', errors='ignore') as f:
         content = f.read()
         if line not in content:
             if '!![' in content:
@@ -304,7 +306,7 @@ def asking_for_excr_node_input(_excr_node_temp: dict) -> str:
             f.write(f'{key}:{value}\n')
     os.startfile('ExchangeRate_Node.txt')
     is_finished = input('是否完成输入(Y/N):')
-    if is_finished == 'y':
+    if (is_finished == 'y') and (open('ExchangeRate_Node.txt', 'r', encoding='utf-8').read() is not None):
         return open('ExchangeRate_Node.txt', 'r', encoding='utf-8').read()
     else:
         print('未完成输入，尝试重新输入...')
