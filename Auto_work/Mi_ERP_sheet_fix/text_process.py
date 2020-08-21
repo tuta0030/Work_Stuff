@@ -215,7 +215,7 @@ class ReadTranslatedTxt(object):
                         original_sheet.cell(row, col).value = each_content[-1].strip().replace(BR_PATTERN, ' <br> ')\
                             .replace('$$ $', ' <br> ').replace('$ $$', ' <br> ')
                     except Exception as e:
-                        print(f'{each_file} 中的内容： {each_content} 发生了错误 {e}')
+                        print(f'\n{each_file} 中的内容： {each_content} 发生了错误 {e}')
                         continue
 
                 if EXCHANGE_RATE_NODE[0] not in content:
