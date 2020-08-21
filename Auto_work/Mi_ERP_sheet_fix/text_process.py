@@ -304,7 +304,7 @@ def asking_for_excr_node_input(_excr_node_temp: dict) -> str:
     with open('ExchangeRate_Node.txt', 'w', encoding='utf-8') as f:
         from excr_node import excr_node
         for key, value in excr_node.items():
-            f.write(f'{key}: {value}\n')
+            f.write(f'{key}: {value.replace("!![", "").replace("]!!", "")}\n')
     os.startfile('ExchangeRate_Node.txt')
     is_finished = input('是否完成输入(Y/N):')
     if (is_finished == 'y') and (open('ExchangeRate_Node.txt', 'r', encoding='utf-8').read() is not None):
