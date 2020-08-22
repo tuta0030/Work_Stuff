@@ -11,7 +11,6 @@ import re
 import htm_file_warp
 import openpyxl
 import datetime
-import traceback
 
 ROW_RANGE_RESTRICTION = 2000
 COLUMN_RANGE_RESTRICTION = 2000
@@ -179,7 +178,7 @@ class ReadTranslatedTxt(object):
 
         if check_if_the_same_day(get_time_stamp()):
             excr_node = {}
-            excr_node_result = asking_for_excr_node_input(EXCR_NODE_TEMP)
+            excr_node_result = asking_for_excr_node_input()
             excr_node_result = excr_node_result.split('\n')
             excr_node_result = [each_line for each_line in excr_node_result if each_line != '' or each_line != ':']
             for each_line in excr_node_result:
@@ -300,7 +299,7 @@ def get_time_stamp() -> datetime.datetime:
         return datetime.datetime(2000, 1, 1)
 
 
-def asking_for_excr_node_input(_excr_node_temp: dict) -> str:
+def asking_for_excr_node_input() -> str:
     with open('ExchangeRate_Node.txt', 'w', encoding='utf-8') as f:
         from excr_node import excr_node
         for key, value in excr_node.items():
@@ -313,7 +312,7 @@ def asking_for_excr_node_input(_excr_node_temp: dict) -> str:
         print('未完成输入，尝试重新输入...')
         file = open('ExchangeRate_Node.txt', 'r', encoding='utf-8')
         file.close()
-        asking_for_excr_node_input(_excr_node_temp)
+        asking_for_excr_node_input()
 
 
 # 文本处理模块主函数
