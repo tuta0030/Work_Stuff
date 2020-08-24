@@ -175,7 +175,7 @@ def process_price(sheet, coordinate: tuple, exchange_rate: float, lowest_price: 
             for col in range(1, COL_MAX):
                 sheet.cell(coordinate_to_tuple(str(item).split('.')[-1][:-1])[0], col).value = None
         elif int(float(price[index].value)) < 45:
-            print(f"表格中{price[index]}的价格低于40，更改为45，如果需要别的数值请在表格中自行更改")
+            print(f"表格中{price[index]}的价格为{price[index].value}低于40，更改为45，如果需要别的数值请在表格中自行更改")
             price[index].value = str(int(45 * exchange_rate))
         else:
             price[index].value = str(int(int(str(item.value).split('.')[0]) * exchange_rate) - 1)
