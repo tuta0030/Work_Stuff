@@ -42,15 +42,16 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
                                                      item_name_coordinate[0],
                                                      item_name_coordinate[1])
         self.all_titles = [each_title.value for each_title in title_list]
-        if pasu.cjk_detect(''.join(self.all_titles)) is not None:
-            part_number_coordinate = pasu.get_coordinate(self.part_number_cell)
-            model_coordinate = pasu.get_coordinate(self.model_cell)
-            pasu.process_info(self.sheet, part_number_coordinate,
-                              ''.join(random.sample(ALPHABET, 2)) + '-' + str(random.randint(100, 999)))
-            pasu.process_info(self.sheet, model_coordinate,
-                              ''.join(random.sample(ALPHABET, 1)) + str(random.randint(10, 99)))
         for index, title in enumerate(title_list):
             title_list[index].value = pasu.process_item_name(title.value, brand)
+
+    def process_part_number(self):
+        part_number_coordinate = pasu.get_coordinate(self.part_number_cell)
+        model_coordinate = pasu.get_coordinate(self.model_cell)
+        pasu.process_info(self.sheet, part_number_coordinate,
+                          ''.join(random.sample(ALPHABET, 2)) + '-' + str(random.randint(100, 999)))
+        pasu.process_info(self.sheet, model_coordinate,
+                          ''.join(random.sample(ALPHABET, 1)) + str(random.randint(10, 99)))
 
     def process_description(self):
         description_coordinate = pasu.get_coordinate(self.description)
@@ -111,6 +112,7 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         self.process_keywords(str(input("关键词(-1跳过)：")))
         self.process_description()
         self.process_ship_time()
+        self.process_part_number()
         for row in range(1, 4):
             for col in range(1, 1000):
                 self.sheet.cell(row, col).value = None
@@ -140,6 +142,7 @@ class ProcessWithSameParameter(ProcessAmazonSheet):
         self.process_keywords(self._same_parameter['key_word'])
         self.process_ship_time()
         self.process_description()
+        self.process_part_number()
         for row in range(1, 4):
             for col in range(1, 1000):
                 self.sheet.cell(row, col).value = None
