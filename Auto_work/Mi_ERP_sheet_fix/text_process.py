@@ -17,8 +17,7 @@ COLUMN_RANGE_RESTRICTION = 2000
 BR_PATTERN = '$$$'
 SEPARATOR = '^^^'
 EXCHANGE_RATE_NODE = ('!![', ']!!')
-EXCR_NODE_TEMP = {'ES': '', 'JP': '', 'IT': '', 'US': '', 'FR': '',
-                  'DE': '', 'NL': '', 'SA': '', 'AE': '', 'CA': '', 'MX': ''}
+EXCR_TXT_DESC = '在下面的对应的国家内填入汇率和节点，用英文字符的逗号隔开\n'
 
 
 class Translate:
@@ -195,6 +194,8 @@ class ReadTranslatedTxt(object):
             import excr_node
             template = {key: value for key, value in excr_node.excr_node.items() if key != ''}
             for each_file in file_list:
+                out_file_name = self.directory + '\\' + lang + '_' + str(oc_file).split('\\')[-1]
+                print(f'正在处理  {out_file_name}')
                 if excr_node.excr_node is not None:
                     for lang_excr_node, _excr_node in template.items():
                         if lang_excr_node in each_file.split('\\')[-1]:
@@ -214,7 +215,7 @@ class ReadTranslatedTxt(object):
                         original_sheet.cell(row, col).value = each_content[-1].strip().replace(BR_PATTERN, ' <br> ')\
                             .replace('$$ $', ' <br> ').replace('$ $$', ' <br> ')
                     except Exception as e:
-                        print(f'\n{each_file} 中的内容： {each_content} 发生了错误 {e}')
+                        print(f'{each_file} 中的内容： {each_content} 发生了错误 {e}')
                         continue
 
                 if EXCHANGE_RATE_NODE[0] not in content:
@@ -222,7 +223,6 @@ class ReadTranslatedTxt(object):
                     continue
                 elif EXCHANGE_RATE_NODE[0] in content:
                     search_result = re.search(re.compile(r'(?<=!!\[).+(?=]!!)'), content)
-                    # print(f'\n{each_file} 找到的!![]!! {search_result[0]}')
                     if search_result is None:
                         continue
                     exchange_rate, node = str(re.search(re.compile(r'(?<=!!\[).+(?=]!!)'), content)[0]).split(',')
@@ -241,11 +241,7 @@ class ReadTranslatedTxt(object):
                     class NoExchangeNodeError(Exception):
                         pass
                     raise NoExchangeNodeError('No exchange rate and node')
-
-                out_file_name = self.directory + '\\' + lang + '_' + str(oc_file).split('\\')[-1]
-                print(f'正在处理  {out_file_name}')
                 original_wb.save(out_file_name)
-
         pasu.back_to_main_menu(enter_quit=True)
 
 
@@ -301,13 +297,14 @@ def get_time_stamp() -> datetime.datetime:
 
 def asking_for_excr_node_input() -> str:
     with open('ExchangeRate_Node.txt', 'w', encoding='utf-8') as f:
+        f.write(EXCR_TXT_DESC)
         from excr_node import excr_node
         for key, value in excr_node.items():
             f.write(f'{key}: {value.replace("!![", "").replace("]!!", "")}\n')
     os.startfile('ExchangeRate_Node.txt')
     is_finished = input('是否完成输入(Y/N):')
     if (is_finished == 'y') and (open('ExchangeRate_Node.txt', 'r', encoding='utf-8').read() is not None):
-        return open('ExchangeRate_Node.txt', 'r', encoding='utf-8').read()
+        return open('ExchangeRate_Node.txt', 'r', encoding='utf-8').read().replace(EXCR_TXT_DESC, '').strip()
     else:
         print('未完成输入，尝试重新输入...')
         file = open('ExchangeRate_Node.txt', 'r', encoding='utf-8')
