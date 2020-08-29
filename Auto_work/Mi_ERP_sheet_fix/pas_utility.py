@@ -318,7 +318,7 @@ def multiple_file_process(process_class, class_parameter: dict, **pas_args):
     folder, which_file = index_files()
     if type(which_file) is list:
         for each_file in which_file:
-            print('开始处理表格：' + each_file.split("\\")[-1])
+            print('\n开始处理表格：' + each_file.split("\\")[-1])
             pas = process_class(each_file, class_parameter)
             pas_args['method_para'] = pas_args.get('method_para', None)
             if pas_args['method_para'] is None:
