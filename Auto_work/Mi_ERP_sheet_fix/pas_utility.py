@@ -164,7 +164,17 @@ def process_bulletpoints(sheet, bullet_point_coordinate: tuple):
                 bullet_points_dict[each_column][index].value = STANDARD_MESSAGE
 
 
-def process_price(sheet, coordinate: tuple, exchange_rate: float, lowest_price: int):
+def process_price(sheet, coordinate: tuple, exchange_rate: float, lowest_price: int, current_file: str):
+    def update_price(input_price: int) -> int:
+        import excr_node
+        excr_node.excr_node = \
+            {each_key: each_value for each_key, each_value in excr_node.excr_node.items() if each_key != ''}
+        for key, value in excr_node.excr_node.items():
+            if key in current_file:
+                return int(input_price*float(value.split(',')[0].replace('!![', '').strip()))
+            else:
+                return input_price
+
     price = get_column_until_none_cell(sheet, coordinate[0], coordinate[1])
     for index, item in enumerate(price):
         if price[index].value == '':
@@ -174,9 +184,10 @@ def process_price(sheet, coordinate: tuple, exchange_rate: float, lowest_price: 
             print(f"表格中{price[index]}的价格过低，正在删除")
             for col in range(1, COL_MAX):
                 sheet.cell(coordinate_to_tuple(str(item).split('.')[-1][:-1])[0], col).value = None
-        elif int(float(price[index].value)) < 45:
-            print(f"表格中{price[index]}的价格为{price[index].value}低于45，更改为45，如果需要别的数值请在表格中自行更改")
-            price[index].value = str(int(45 * exchange_rate))
+        elif int(float(price[index].value)) < update_price(45):
+            print(f"表格中{price[index]}的价格为{price[index].value}低于{update_price(45)}，更改为{update_price(45)}，"
+                  f"如果需要别的数值请在表格中自行更改")
+            price[index].value = str(int(update_price(45) * exchange_rate))
         else:
             price[index].value = str(int(int(str(item.value).split('.')[0]) * exchange_rate) - 1)
 

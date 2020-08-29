@@ -63,7 +63,7 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 
     def process_price(self, exchange_rate: float, lowest_price: int):
         price_coordinate = pasu.get_coordinate(self.price_cell)
-        pasu.process_price(self.sheet, price_coordinate, exchange_rate, lowest_price)
+        pasu.process_price(self.sheet, price_coordinate, exchange_rate, lowest_price, self.current_file)
 
     def process_node(self, node):
         node_coordinate = pasu.get_coordinate(self.node_cell)
