@@ -101,19 +101,6 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         keywords_coordinate = coordinate_to_tuple(str(self.item_type_cell).split('.')[-1][:-1])
         pasu.process_info(self.sheet, keywords_coordinate, keywords)
 
-    def process_sheet(self):
-        self.process_title(str(input("请输入不需要首字母大写的品牌名(回车跳过)：")))
-        self.process_bulletpoints()
-        self.process_price(int(input("输入最低价格:")))
-        self.process_node(str(input("分类节点(-1跳过)：")))
-        self.process_keywords(str(input("关键词(-1跳过)：")))
-        self.process_description()
-        self.process_ship_time()
-        self.process_part_number()
-        for row in range(1, 4):
-            for col in range(1, 1000):
-                self.sheet.cell(row, col).value = None
-
     def save_sheet(self, path: str, original_file: str) -> None:
         file_name = original_file.split('\\')[-1]
         _out_put_file_name = path + '\\_输出文件_' + file_name.replace('.xlsx', '') + '.xlsx'
