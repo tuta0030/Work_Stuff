@@ -11,6 +11,7 @@ class LoadAmazonSheet(object):
     def __init__(self, sheet_path: str):
         self.wb = openpyxl.load_workbook(sheet_path)
         self.sheet = self.wb['sheet1']
+        self.current_file = sheet_path
 
         def find_cell(sheet, cell_name: str):
             for _r in range(1, ROW_RANGE_RESTRICTION):

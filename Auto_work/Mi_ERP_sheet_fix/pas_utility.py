@@ -71,7 +71,7 @@ def get_column_until_none_cell(sheet, row_start: int, column_const: int) -> list
     return cell_list
 
 
-def _process_title(item_name: str, brand: str) -> str:
+def _process_title(item_name: str) -> str:
     item_name = item_name[:200]
     if cjk_detect(item_name) is not None:
         return item_name
@@ -88,7 +88,7 @@ def _process_title(item_name: str, brand: str) -> str:
                      or (']' in each_word) and ('[' not in each_word)
                      else each_word for each_word in new_item_name]
     new_item_name = [str(each_word).capitalize() for each_word in new_item_name]
-    new_item_name = ' '.join(new_item_name).replace(brand.capitalize(), brand).replace('  ', ' ')
+    new_item_name = ' '.join(new_item_name).replace('  ', ' ')
     if new_item_name.endswith(',') \
             or new_item_name.endswith('*') \
             or new_item_name.endswith(' ') \
@@ -139,8 +139,8 @@ def cap_title(title: str, brand: str) -> str:
     return title
 
 
-def process_item_name(item_name: str, brand: str) -> str:
-    item_name = _process_title(item_name, brand)
+def process_item_name(item_name: str) -> str:
+    item_name = _process_title(item_name)
     return item_name
 
 
@@ -164,21 +164,37 @@ def process_bulletpoints(sheet, bullet_point_coordinate: tuple):
                 bullet_points_dict[each_column][index].value = STANDARD_MESSAGE
 
 
-def process_price(sheet, coordinate: tuple, exchange_rate: float, lowest_price: int):
+def process_price(sheet, coordinate: tuple, lowest_price: int, current_file: str):
+    def update_price(input_price: int, price_loop_index: int) -> int:
+        import excr_node
+        excr_node.excr_node = \
+            {each_key: each_value for each_key, each_value in excr_node.excr_node.items() if each_key != ''}
+        for key, value in excr_node.excr_node.items():
+            if key in current_file:
+                if price_loop_index == 0:
+                    print(f'当前文件 ({current_file})使用的汇率为：{float(value.split(",")[0].replace("!![", "").strip())}')
+                price_loop_index += 1
+                return int(input_price*float(value.split(',')[0].replace('!![', '').strip()))
+
     price = get_column_until_none_cell(sheet, coordinate[0], coordinate[1])
-    for index, item in enumerate(price):
-        if price[index].value == '':
-            continue
-        elif int(float(price[index].value)) < lowest_price and price[index].value != '':
+    price = [x for x in price if x.value != '']
+
+    _price_loop_index = 0
+    for item in price:
+        updated_price = update_price(lowest_price, _price_loop_index)
+        _price_loop_index += 1
+        if int(float(item.value)) < 1:
             # 删除低于最低价格的行
-            print(f"表格中{price[index]}的价格过低，正在删除")
+            print(f"表格中{item}的价格过低于1，正在删除")
             for col in range(1, COL_MAX):
                 sheet.cell(coordinate_to_tuple(str(item).split('.')[-1][:-1])[0], col).value = None
-        elif int(float(price[index].value)) < 45:
-            print(f"表格中{price[index]}的价格为{price[index].value}低于45，更改为45，如果需要别的数值请在表格中自行更改")
-            price[index].value = str(int(45 * exchange_rate))
+        elif (updated_price is not None) and (int(float(item.value)) < updated_price):
+            print(f"文件({current_file})的表格中{item}的价格为{item.value}低于{updated_price}，"
+                  f"更改为{updated_price}，"
+                  f"如果需要别的数值请在表格中自行更改")
+            item.value = str(int(updated_price))
         else:
-            price[index].value = str(int(int(str(item.value).split('.')[0]) * exchange_rate) - 1)
+            item.value = str(int(int(str(item.value).split('.')[0])) - 1)
 
 
 def make_menu(functions: dict) -> None:

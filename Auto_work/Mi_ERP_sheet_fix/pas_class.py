@@ -36,21 +36,22 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         for index, title in enumerate(title_list):
             title_list[index].value = pasu.cap_title(title.value, brand)
 
-    def process_title(self, brand: str):
+    def process_title(self):
         item_name_coordinate = pasu.get_coordinate(self.item_name_cell)
         title_list = pasu.get_column_until_none_cell(self.sheet,
                                                      item_name_coordinate[0],
                                                      item_name_coordinate[1])
         self.all_titles = [each_title.value for each_title in title_list]
-        if pasu.cjk_detect(''.join(self.all_titles)) is not None:
-            part_number_coordinate = pasu.get_coordinate(self.part_number_cell)
-            model_coordinate = pasu.get_coordinate(self.model_cell)
-            pasu.process_info(self.sheet, part_number_coordinate,
-                              ''.join(random.sample(ALPHABET, 2)) + '-' + str(random.randint(100, 999)))
-            pasu.process_info(self.sheet, model_coordinate,
-                              ''.join(random.sample(ALPHABET, 1)) + str(random.randint(10, 99)))
         for index, title in enumerate(title_list):
-            title_list[index].value = pasu.process_item_name(title.value, brand)
+            title_list[index].value = pasu.process_item_name(title.value)
+
+    def process_part_number(self):
+        part_number_coordinate = pasu.get_coordinate(self.part_number_cell)
+        model_coordinate = pasu.get_coordinate(self.model_cell)
+        pasu.process_info(self.sheet, part_number_coordinate,
+                          ''.join(random.sample(ALPHABET, 2)) + '-' + str(random.randint(100, 999)))
+        pasu.process_info(self.sheet, model_coordinate,
+                          ''.join(random.sample(ALPHABET, 1)) + str(random.randint(10, 99)))
 
     def process_description(self):
         description_coordinate = pasu.get_coordinate(self.description)
@@ -60,9 +61,9 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         bullet_point_coordinate = pasu.get_coordinate(self.bullet_point_cell)
         pasu.process_bulletpoints(self.sheet, bullet_point_coordinate)
 
-    def process_price(self, exchange_rate: float, lowest_price: int):
+    def process_price(self, lowest_price: int):
         price_coordinate = pasu.get_coordinate(self.price_cell)
-        pasu.process_price(self.sheet, price_coordinate, exchange_rate, lowest_price)
+        pasu.process_price(self.sheet, price_coordinate, lowest_price, self.current_file)
 
     def process_node(self, node):
         node_coordinate = pasu.get_coordinate(self.node_cell)
@@ -100,17 +101,15 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         keywords_coordinate = coordinate_to_tuple(str(self.item_type_cell).split('.')[-1][:-1])
         pasu.process_info(self.sheet, keywords_coordinate, keywords)
 
-    def only_price(self, exchange_rate: float, lowest_price: int):
-        self.process_price(exchange_rate, lowest_price)
-
     def process_sheet(self):
         self.process_title(str(input("请输入不需要首字母大写的品牌名(回车跳过)：")))
         self.process_bulletpoints()
-        self.process_price(float(input("输入汇率：")), int(input("输入最低价格:")))
+        self.process_price(int(input("输入最低价格:")))
         self.process_node(str(input("分类节点(-1跳过)：")))
         self.process_keywords(str(input("关键词(-1跳过)：")))
         self.process_description()
         self.process_ship_time()
+        self.process_part_number()
         for row in range(1, 4):
             for col in range(1, 1000):
                 self.sheet.cell(row, col).value = None
@@ -133,13 +132,14 @@ class ProcessWithSameParameter(ProcessAmazonSheet):
         self._same_parameter = _same_parameter
 
     def process_sheet(self):
-        self.process_title(self._same_parameter['title'])
+        self.process_title()
         self.process_bulletpoints()
-        self.process_price(self._same_parameter['price'], self._same_parameter['lowest_pice'])
+        self.process_price(self._same_parameter['lowest_pice'])
         self.process_node(self._same_parameter['node'])
         self.process_keywords(self._same_parameter['key_word'])
         self.process_ship_time()
         self.process_description()
+        self.process_part_number()
         for row in range(1, 4):
             for col in range(1, 1000):
                 self.sheet.cell(row, col).value = None
