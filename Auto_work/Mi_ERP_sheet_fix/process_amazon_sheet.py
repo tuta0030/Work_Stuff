@@ -7,8 +7,7 @@ import output_usable_sheet_head as opsh
 # 统一处理选择的表格文件（全部）
 def pas_same_para():
     print("输入统一的参数：")
-    _parameter = {"title": str(input("请输入不需要首字母大写的品牌名(回车跳过)：")),
-                  'node': str(input("分类节点(-1跳过)：")),
+    _parameter = {'node': str(input("分类节点(-1跳过)：")),
                   'key_word': str(input("关键词(-1跳过)：")),
                   'lowest_pice': int(input("输入最低价格："))
                   }

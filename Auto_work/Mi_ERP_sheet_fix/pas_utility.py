@@ -71,7 +71,7 @@ def get_column_until_none_cell(sheet, row_start: int, column_const: int) -> list
     return cell_list
 
 
-def _process_title(item_name: str, brand: str) -> str:
+def _process_title(item_name: str) -> str:
     item_name = item_name[:200]
     if cjk_detect(item_name) is not None:
         return item_name
@@ -88,7 +88,7 @@ def _process_title(item_name: str, brand: str) -> str:
                      or (']' in each_word) and ('[' not in each_word)
                      else each_word for each_word in new_item_name]
     new_item_name = [str(each_word).capitalize() for each_word in new_item_name]
-    new_item_name = ' '.join(new_item_name).replace(brand.capitalize(), brand).replace('  ', ' ')
+    new_item_name = ' '.join(new_item_name).replace('  ', ' ')
     if new_item_name.endswith(',') \
             or new_item_name.endswith('*') \
             or new_item_name.endswith(' ') \
@@ -139,8 +139,8 @@ def cap_title(title: str, brand: str) -> str:
     return title
 
 
-def process_item_name(item_name: str, brand: str) -> str:
-    item_name = _process_title(item_name, brand)
+def process_item_name(item_name: str) -> str:
+    item_name = _process_title(item_name)
     return item_name
 
 

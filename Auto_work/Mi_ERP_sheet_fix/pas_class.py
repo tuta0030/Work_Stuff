@@ -36,14 +36,14 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         for index, title in enumerate(title_list):
             title_list[index].value = pasu.cap_title(title.value, brand)
 
-    def process_title(self, brand: str):
+    def process_title(self):
         item_name_coordinate = pasu.get_coordinate(self.item_name_cell)
         title_list = pasu.get_column_until_none_cell(self.sheet,
                                                      item_name_coordinate[0],
                                                      item_name_coordinate[1])
         self.all_titles = [each_title.value for each_title in title_list]
         for index, title in enumerate(title_list):
-            title_list[index].value = pasu.process_item_name(title.value, brand)
+            title_list[index].value = pasu.process_item_name(title.value)
 
     def process_part_number(self):
         part_number_coordinate = pasu.get_coordinate(self.part_number_cell)
@@ -132,7 +132,7 @@ class ProcessWithSameParameter(ProcessAmazonSheet):
         self._same_parameter = _same_parameter
 
     def process_sheet(self):
-        self.process_title(self._same_parameter['title'])
+        self.process_title()
         self.process_bulletpoints()
         self.process_price(self._same_parameter['lowest_pice'])
         self.process_node(self._same_parameter['node'])
