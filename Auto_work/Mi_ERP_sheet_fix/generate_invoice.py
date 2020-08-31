@@ -6,6 +6,7 @@ import invoice_parse_page
 import selector_path
 from order_info import info
 import pas_utility as pasu
+import pyperclip
 
 
 def addToClipBoard():
@@ -28,12 +29,17 @@ class Invoice(object):
         self.sheet_info = {}
 
     def get_html_etree(self):
+        with open(self.HTML_etree, 'w', encoding='utf-8') as f:
+            f.write(pyperclip.paste())
         src = open(self.HTML_etree, 'r', encoding='utf-8').read()
         html = etree.HTML(src, etree.HTMLParser())
         return html
 
     def set_PINO(self, sheet):
         self.info['PINO'] = sheet['E5'].value = str(random.randint(10000000, 99999999))
+        if not os.path.isfile(self.PINO_num_path):
+            with open(self.PINO_num_path, 'w', encoding='utf-8') as f:
+                f.write('')
         with open(self.PINO_num_path, 'r', encoding='utf-8') as n:
             nums = n.read()
             for self.info['PINO'] in nums:
@@ -86,9 +92,3 @@ def main():
 if __name__ == '__main__':
     i = Invoice()
     i.main()
-
-
-
-
-
-
