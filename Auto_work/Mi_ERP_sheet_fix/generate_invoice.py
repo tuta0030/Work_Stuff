@@ -29,6 +29,9 @@ class Invoice(object):
         self.sheet_info = {}
 
     def get_html_etree(self):
+        if '<html' not in pyperclip.paste():
+            print('没有在剪贴板中找到html标签，请确保复制了整个html页面的文本')
+            pasu.back_to_main_menu(enter_quit=True)
         with open(self.HTML_etree, 'w', encoding='utf-8') as f:
             f.write(pyperclip.paste())
         src = open(self.HTML_etree, 'r', encoding='utf-8').read()
