@@ -104,8 +104,8 @@ def process_info(sheet, info_coordinate: tuple, info):
         pass
     else:
         info_list = get_column_until_none_cell(sheet, info_coordinate[0], info_coordinate[1])
-        for index, item in enumerate(info_list):
-            info_list[index].value = info
+        for item in info_list:
+            item.value = info
 
 
 def high_frequent_words(key_words_list: list):

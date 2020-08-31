@@ -28,14 +28,6 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
             print(pasu.NO_FILE)
             raise _e
 
-    def cap_title(self, brand: str):
-        item_name_coordinate = pasu.get_coordinate(self.item_name_cell)
-        title_list = pasu.get_column_until_none_cell(self.sheet,
-                                                     item_name_coordinate[0],
-                                                     item_name_coordinate[1])
-        for index, title in enumerate(title_list):
-            title_list[index].value = pasu.cap_title(title.value, brand)
-
     def process_title(self):
         item_name_coordinate = pasu.get_coordinate(self.item_name_cell)
         title_list = pasu.get_column_until_none_cell(self.sheet,
@@ -47,11 +39,13 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 
     def process_part_number(self):
         part_number_coordinate = pasu.get_coordinate(self.part_number_cell)
+        part_number = ''.join(random.sample(ALPHABET, 2)) + '-' + str(random.randint(100, 999))
+        pasu.process_info(self.sheet, part_number_coordinate, part_number)
+
+    def process_model_number(self):
         model_coordinate = pasu.get_coordinate(self.model_cell)
-        pasu.process_info(self.sheet, part_number_coordinate,
-                          ''.join(random.sample(ALPHABET, 2)) + '-' + str(random.randint(100, 999)))
-        pasu.process_info(self.sheet, model_coordinate,
-                          ''.join(random.sample(ALPHABET, 1)) + str(random.randint(10, 99)))
+        model_number = ''.join(random.sample(ALPHABET, 1)) + str(random.randint(10, 99))
+        pasu.process_info(self.sheet, model_coordinate, model_number)
 
     def process_description(self):
         description_coordinate = pasu.get_coordinate(self.description)
@@ -124,9 +118,10 @@ class ProcessWithSameParameter(ProcessAmazonSheet):
         self.process_price(self._same_parameter['lowest_pice'])
         self.process_node(self._same_parameter['node'])
         self.process_keywords(self._same_parameter['key_word'])
+        self.process_model_number()
+        self.process_part_number()
         self.process_ship_time()
         self.process_description()
-        self.process_part_number()
         for row in range(1, 4):
             for col in range(1, 1000):
                 self.sheet.cell(row, col).value = None
