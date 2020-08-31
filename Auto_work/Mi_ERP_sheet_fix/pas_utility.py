@@ -60,7 +60,7 @@ def validate_product() -> str:
         return open(os.curdir + '\\product_type.txt', 'r', encoding='utf-8').read()
 
 
-def get_column_until_none_cell(sheet, row_start: int, column_const: int) -> list:
+def get_column_except_none_cell(sheet, row_start: int, column_const: int) -> list:
     cell_list = []
     for i in range(row_start + 1, ROW_RESTRICTION):
         if sheet.cell(i, column_const).value is not None:
@@ -98,12 +98,16 @@ def _process_title(item_name: str) -> str:
     return new_item_name
 
 
-def process_info(sheet, info_coordinate: tuple, info):
+def process_info(sheet, info_coordinate: tuple, info, **kwargs):
     """将传入的坐标表格的值全部修改为传入的INFO"""
     if info == str(-1):
         pass
     else:
-        info_list = get_column_until_none_cell(sheet, info_coordinate[0], info_coordinate[1])
+        column_offset = kwargs.get('column_offset', None)
+        info_list = get_column_except_none_cell(sheet, info_coordinate[0], info_coordinate[1])
+        if column_offset is not None:
+            info_list = [sheet.cell(get_coordinate(each_cell)[0],
+                                    get_coordinate(each_cell)[1]+column_offset) for each_cell in info_list]
         for item in info_list:
             item.value = info
 
@@ -125,7 +129,7 @@ def high_frequent_words(key_words_list: list):
 
 
 def process_description(sheet, desc_coordinate: tuple):
-    info_list = get_column_until_none_cell(sheet, desc_coordinate[0], desc_coordinate[1])
+    info_list = get_column_except_none_cell(sheet, desc_coordinate[0], desc_coordinate[1])
     for index, item in enumerate(info_list):
         if len(item.value) > 1500:
             info_list[index].value = ' '.join(str(item.value)[:-(len(item.value) - 1499)].split(' ')[:-1])
@@ -145,16 +149,16 @@ def process_item_name(item_name: str) -> str:
 
 
 def process_bulletpoints(sheet, bullet_point_coordinate: tuple):
-    bullet_points_dict = {'first_column': get_column_until_none_cell(sheet, bullet_point_coordinate[0],
-                                                                     bullet_point_coordinate[1] + 0),
-                          'second_column': get_column_until_none_cell(sheet, bullet_point_coordinate[0],
-                                                                      bullet_point_coordinate[1] + 1),
-                          'third_column': get_column_until_none_cell(sheet, bullet_point_coordinate[0],
-                                                                     bullet_point_coordinate[1] + 2),
-                          'fourth_column': get_column_until_none_cell(sheet, bullet_point_coordinate[0],
-                                                                      bullet_point_coordinate[1] + 3),
-                          'fifth_column': get_column_until_none_cell(sheet, bullet_point_coordinate[0],
-                                                                     bullet_point_coordinate[1] + 4)
+    bullet_points_dict = {'first_column': get_column_except_none_cell(sheet, bullet_point_coordinate[0],
+                                                                      bullet_point_coordinate[1] + 0),
+                          'second_column': get_column_except_none_cell(sheet, bullet_point_coordinate[0],
+                                                                       bullet_point_coordinate[1] + 1),
+                          'third_column': get_column_except_none_cell(sheet, bullet_point_coordinate[0],
+                                                                      bullet_point_coordinate[1] + 2),
+                          'fourth_column': get_column_except_none_cell(sheet, bullet_point_coordinate[0],
+                                                                       bullet_point_coordinate[1] + 3),
+                          'fifth_column': get_column_except_none_cell(sheet, bullet_point_coordinate[0],
+                                                                      bullet_point_coordinate[1] + 4)
                           }
     for each_column in bullet_points_dict.keys():
         for index, each_line in enumerate(bullet_points_dict[each_column]):
@@ -176,7 +180,7 @@ def process_price(sheet, coordinate: tuple, lowest_price: int, current_file: str
                 price_loop_index += 1
                 return int(input_price*float(value.split(',')[0].replace('!![', '').strip()))
 
-    price = get_column_until_none_cell(sheet, coordinate[0], coordinate[1])
+    price = get_column_except_none_cell(sheet, coordinate[0], coordinate[1])
     price = [x for x in price if x.value != '']
 
     _price_loop_index = 0

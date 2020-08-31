@@ -55,16 +55,16 @@ class Translate:
         """which_content should be the cell"""
         content_coordinate = pasu.get_coordinate(which_content)
         if which_content.value == 'bullet_point1':
-            bullet_points_dict = {'first_column': pasu.get_column_until_none_cell(sheet, content_coordinate[0],
-                                                                                  content_coordinate[1] + 0),
-                                  'second_column': pasu.get_column_until_none_cell(sheet, content_coordinate[0],
-                                                                                   content_coordinate[1] + 1),
-                                  'third_column': pasu.get_column_until_none_cell(sheet, content_coordinate[0],
-                                                                                  content_coordinate[1] + 2),
-                                  'fourth_column': pasu.get_column_until_none_cell(sheet, content_coordinate[0],
-                                                                                   content_coordinate[1] + 3),
-                                  'fifth_column': pasu.get_column_until_none_cell(sheet, content_coordinate[0],
-                                                                                  content_coordinate[1] + 4)
+            bullet_points_dict = {'first_column': pasu.get_column_except_none_cell(sheet, content_coordinate[0],
+                                                                                   content_coordinate[1] + 0),
+                                  'second_column': pasu.get_column_except_none_cell(sheet, content_coordinate[0],
+                                                                                    content_coordinate[1] + 1),
+                                  'third_column': pasu.get_column_except_none_cell(sheet, content_coordinate[0],
+                                                                                   content_coordinate[1] + 2),
+                                  'fourth_column': pasu.get_column_except_none_cell(sheet, content_coordinate[0],
+                                                                                    content_coordinate[1] + 3),
+                                  'fifth_column': pasu.get_column_except_none_cell(sheet, content_coordinate[0],
+                                                                                   content_coordinate[1] + 4)
                                   }
             full_bp_list = []
             for key, value in bullet_points_dict.items():
@@ -72,9 +72,9 @@ class Translate:
                     [self.add_cor(each_cell) for each_cell in value]
                 full_bp_list.append(self.htm_warp(content_list))
             return '\n'.join(full_bp_list)
-        content_list = pasu.get_column_until_none_cell(sheet,
-                                                       content_coordinate[0],
-                                                       content_coordinate[1])
+        content_list = pasu.get_column_except_none_cell(sheet,
+                                                        content_coordinate[0],
+                                                        content_coordinate[1])
         content_list = \
             [self.add_cor(each_cell).replace('<br>', BR_PATTERN)
              for each_cell in content_list]
@@ -249,7 +249,7 @@ class ReadTranslatedTxt(object):
 def get_content_list(sheet, cell_name: str) -> list:
     cell = find_cell(sheet, cell_name)
     cell_coordinate = pasu.get_coordinate(cell)
-    content_list = pasu.get_column_until_none_cell(sheet, cell_coordinate[0], cell_coordinate[1])
+    content_list = pasu.get_column_except_none_cell(sheet, cell_coordinate[0], cell_coordinate[1])
     return content_list
 
 
