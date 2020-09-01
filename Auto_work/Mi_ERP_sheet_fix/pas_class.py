@@ -30,9 +30,9 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
 
     def process_title(self):
         item_name_coordinate = pasu.get_coordinate(self.item_name_cell)
-        title_list = pasu.get_column_until_none_cell(self.sheet,
-                                                     item_name_coordinate[0],
-                                                     item_name_coordinate[1])
+        title_list = pasu.get_column_except_none_cell(self.sheet,
+                                                      item_name_coordinate[0],
+                                                      item_name_coordinate[1])
         self.all_titles = [each_title.value for each_title in title_list]
         for index, title in enumerate(title_list):
             title_list[index].value = pasu.process_item_name(title.value)
@@ -40,12 +40,12 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
     def process_part_number(self):
         part_number_coordinate = pasu.get_coordinate(self.part_number_cell)
         part_number = ''.join(random.sample(ALPHABET, 2)) + '-' + str(random.randint(100, 999))
-        pasu.process_info(self.sheet, part_number_coordinate, part_number)
+        pasu.process_info(self.sheet, part_number_coordinate, part_number, column_offset=-1)
 
     def process_model_number(self):
         model_coordinate = pasu.get_coordinate(self.model_cell)
         model_number = ''.join(random.sample(ALPHABET, 1)) + str(random.randint(10, 99))
-        pasu.process_info(self.sheet, model_coordinate, model_number)
+        pasu.process_info(self.sheet, model_coordinate, model_number, column_offset=-7)
 
     def process_description(self):
         description_coordinate = pasu.get_coordinate(self.description)
@@ -75,9 +75,9 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
         if keywords == SECRET_CODE:
             # 获取所有的标题
             item_name_coordinate = pasu.get_coordinate(self.item_name_cell)
-            title_list = pasu.get_column_until_none_cell(self.sheet,
-                                                         item_name_coordinate[0],
-                                                         item_name_coordinate[1])
+            title_list = pasu.get_column_except_none_cell(self.sheet,
+                                                          item_name_coordinate[0],
+                                                          item_name_coordinate[1])
             self.all_titles = [each_title.value for each_title in title_list]
             # 用标题高频词处理关键字
             processed_keywords = ' '.join(pasu.high_frequent_words(self.all_titles))[:KW_TRIMMER]

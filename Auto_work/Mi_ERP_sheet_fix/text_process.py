@@ -17,7 +17,6 @@ COLUMN_RANGE_RESTRICTION = 2000
 BR_PATTERN = '$$$'
 SEPARATOR = '^^^'
 EXCHANGE_RATE_NODE = ('!![', ']!!')
-EXCR_TXT_DESC = '在下面的对应的国家内填入汇率和节点，用英文字符的逗号隔开\n'
 
 
 class Translate:
@@ -55,16 +54,16 @@ class Translate:
         """which_content should be the cell"""
         content_coordinate = pasu.get_coordinate(which_content)
         if which_content.value == 'bullet_point1':
-            bullet_points_dict = {'first_column': pasu.get_column_until_none_cell(sheet, content_coordinate[0],
-                                                                                  content_coordinate[1] + 0),
-                                  'second_column': pasu.get_column_until_none_cell(sheet, content_coordinate[0],
-                                                                                   content_coordinate[1] + 1),
-                                  'third_column': pasu.get_column_until_none_cell(sheet, content_coordinate[0],
-                                                                                  content_coordinate[1] + 2),
-                                  'fourth_column': pasu.get_column_until_none_cell(sheet, content_coordinate[0],
-                                                                                   content_coordinate[1] + 3),
-                                  'fifth_column': pasu.get_column_until_none_cell(sheet, content_coordinate[0],
-                                                                                  content_coordinate[1] + 4)
+            bullet_points_dict = {'first_column': pasu.get_column_except_none_cell(sheet, content_coordinate[0],
+                                                                                   content_coordinate[1] + 0),
+                                  'second_column': pasu.get_column_except_none_cell(sheet, content_coordinate[0],
+                                                                                    content_coordinate[1] + 1),
+                                  'third_column': pasu.get_column_except_none_cell(sheet, content_coordinate[0],
+                                                                                   content_coordinate[1] + 2),
+                                  'fourth_column': pasu.get_column_except_none_cell(sheet, content_coordinate[0],
+                                                                                    content_coordinate[1] + 3),
+                                  'fifth_column': pasu.get_column_except_none_cell(sheet, content_coordinate[0],
+                                                                                   content_coordinate[1] + 4)
                                   }
             full_bp_list = []
             for key, value in bullet_points_dict.items():
@@ -72,9 +71,9 @@ class Translate:
                     [self.add_cor(each_cell) for each_cell in value]
                 full_bp_list.append(self.htm_warp(content_list))
             return '\n'.join(full_bp_list)
-        content_list = pasu.get_column_until_none_cell(sheet,
-                                                       content_coordinate[0],
-                                                       content_coordinate[1])
+        content_list = pasu.get_column_except_none_cell(sheet,
+                                                        content_coordinate[0],
+                                                        content_coordinate[1])
         content_list = \
             [self.add_cor(each_cell).replace('<br>', BR_PATTERN)
              for each_cell in content_list]
@@ -249,7 +248,7 @@ class ReadTranslatedTxt(object):
 def get_content_list(sheet, cell_name: str) -> list:
     cell = find_cell(sheet, cell_name)
     cell_coordinate = pasu.get_coordinate(cell)
-    content_list = pasu.get_column_until_none_cell(sheet, cell_coordinate[0], cell_coordinate[1])
+    content_list = pasu.get_column_except_none_cell(sheet, cell_coordinate[0], cell_coordinate[1])
     return content_list
 
 
@@ -297,14 +296,13 @@ def get_time_stamp() -> datetime.datetime:
 
 def asking_for_excr_node_input() -> str:
     with open('ExchangeRate_Node.txt', 'w', encoding='utf-8') as f:
-        f.write(EXCR_TXT_DESC)
         from excr_node import excr_node
         for key, value in excr_node.items():
             f.write(f'{key}: {value.replace("!![", "").replace("]!!", "")}\n')
     os.startfile('ExchangeRate_Node.txt')
     is_finished = input('是否完成输入(Y/N):')
     if (is_finished == 'y') and (open('ExchangeRate_Node.txt', 'r', encoding='utf-8').read() is not None):
-        return open('ExchangeRate_Node.txt', 'r', encoding='utf-8').read().replace(EXCR_TXT_DESC, '').strip()
+        return open('ExchangeRate_Node.txt', 'r', encoding='utf-8').read().strip()
     else:
         print('未完成输入，尝试重新输入...')
         file = open('ExchangeRate_Node.txt', 'r', encoding='utf-8')
