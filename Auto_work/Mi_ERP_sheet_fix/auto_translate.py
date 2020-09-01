@@ -6,7 +6,7 @@ import pyautogui
 
 def make_txt_hotkey():
 
-    def on_activate():
+    def past_content_into_utf_txt():
         print('Global hotkey activated!')
         out_path = 'c:\\hotkey_folder'
         if not os.path.isdir(out_path):
@@ -18,7 +18,7 @@ def make_txt_hotkey():
     def for_canonical(f):
         return lambda k: f(listener.canonical(k))
 
-    hotkey = pynput.keyboard.HotKey(pynput.keyboard.HotKey.parse('<ctrl>+<shift>+f'), on_activate)
+    hotkey = pynput.keyboard.HotKey(pynput.keyboard.HotKey.parse('<ctrl>+<shift>+f'), past_content_into_utf_txt)
 
     with pynput.keyboard.Listener(on_press=for_canonical(hotkey.press),
                                   on_release=for_canonical(hotkey.release)) as listener:
@@ -26,11 +26,14 @@ def make_txt_hotkey():
         listener.stop()
 
 
-if __name__ == '__main__':
-    # make_txt_hotkey()
+def check_bottom() -> bool:
     while True:
-        bottom = pyautogui.locateOnScreen(r'C:\Users\Administrator\Desktop\bottom.png')
+        bottom = pyautogui.locateCenterOnScreen(r'web_page_bottom.png')
         if bottom:
-            print('Already bottom')
-            print(bottom)
+            print(f'Find bottom {bottom}')
             break
+    return True
+
+
+if __name__ == '__main__':
+    print(check_bottom())
