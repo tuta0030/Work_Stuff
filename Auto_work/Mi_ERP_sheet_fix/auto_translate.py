@@ -1,6 +1,7 @@
 import pynput
 import pyperclip
 import os
+import pyautogui
 
 
 def make_txt_hotkey():
@@ -26,4 +27,10 @@ def make_txt_hotkey():
 
 
 if __name__ == '__main__':
-    make_txt_hotkey()
+    # make_txt_hotkey()
+    while True:
+        bottom = pyautogui.locateOnScreen(r'C:\Users\Administrator\Desktop\bottom.png')
+        if bottom:
+            print('Already bottom')
+            print(bottom)
+            break
