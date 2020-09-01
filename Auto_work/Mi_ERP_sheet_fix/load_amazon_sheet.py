@@ -56,7 +56,7 @@ class LoadAmazonSheet(object):
         self.part_number_cell = find_cell(self.sheet, 'manufacturer')
 
         # find "model" cell
-        self.model_cell = find_cell(self.sheet, 'model')
+        self.model_cell = find_cell(self.sheet, 'manufacturer')
 
 
 if __name__ == '__main__':
