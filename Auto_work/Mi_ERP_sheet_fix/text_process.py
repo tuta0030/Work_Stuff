@@ -17,7 +17,6 @@ COLUMN_RANGE_RESTRICTION = 2000
 BR_PATTERN = '$$$'
 SEPARATOR = '^^^'
 EXCHANGE_RATE_NODE = ('!![', ']!!')
-EXCR_TXT_DESC = '在下面的对应的国家内填入汇率和节点，用英文字符的逗号隔开\n'
 
 
 class Translate:
@@ -297,14 +296,13 @@ def get_time_stamp() -> datetime.datetime:
 
 def asking_for_excr_node_input() -> str:
     with open('ExchangeRate_Node.txt', 'w', encoding='utf-8') as f:
-        f.write(EXCR_TXT_DESC)
         from excr_node import excr_node
         for key, value in excr_node.items():
             f.write(f'{key}: {value.replace("!![", "").replace("]!!", "")}\n')
     os.startfile('ExchangeRate_Node.txt')
     is_finished = input('是否完成输入(Y/N):')
     if (is_finished == 'y') and (open('ExchangeRate_Node.txt', 'r', encoding='utf-8').read() is not None):
-        return open('ExchangeRate_Node.txt', 'r', encoding='utf-8').read().replace(EXCR_TXT_DESC, '').strip()
+        return open('ExchangeRate_Node.txt', 'r', encoding='utf-8').read().strip()
     else:
         print('未完成输入，尝试重新输入...')
         file = open('ExchangeRate_Node.txt', 'r', encoding='utf-8')
