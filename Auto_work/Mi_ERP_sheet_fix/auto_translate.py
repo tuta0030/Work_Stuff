@@ -36,4 +36,7 @@ def check_bottom() -> bool:
 
 
 if __name__ == '__main__':
-    print(check_bottom())
+    v2ray_purple = pyautogui.locateCenterOnScreen('v2ray_purple.png')
+    pyautogui.moveTo(v2ray_purple)
+    pyautogui.rightClick()
+    pyautogui.moveTo(1376, 911)
