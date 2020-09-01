@@ -25,4 +25,5 @@ def make_txt_hotkey():
         listener.stop()
 
 
-make_txt_hotkey()
+if __name__ == '__main__':
+    make_txt_hotkey()

@@ -11,11 +11,15 @@ import KW_generator
 import make_folder_and_log
 import generate_invoice
 import text_process
+import threading
+import auto_translate
 
 
 def main_menu():
     while True:
         try:
+            hotkey_thread = threading.Thread(target=auto_translate.make_txt_hotkey)
+            hotkey_thread.start()
             pas_utility.intro()
             _menu = {'退出': pas_utility.main_menu_quit,
                      'ERP表格相关': process_amazon_sheet.main_function,
