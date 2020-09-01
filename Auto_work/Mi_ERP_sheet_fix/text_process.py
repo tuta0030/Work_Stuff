@@ -187,6 +187,8 @@ class ReadTranslatedTxt(object):
             with open('_time_stamp_for_excr_node.py', 'w', encoding='utf-8') as t:
                 t.write('time_stamp = ' +
                         f'"{datetime.datetime.strftime(datetime.datetime.now(), "%Y, %m, %d, %I, %M, %S")}"')
+            while True:
+                input('已根据输入的数据更新汇率和节点，请重新启动程序')
 
         # 处理文本文件
         for lang, file_list in self.langs_dict.items():
