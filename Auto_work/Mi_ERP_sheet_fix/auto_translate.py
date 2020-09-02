@@ -31,17 +31,24 @@ def make_txt_hotkey():
     hotkey_thread.start()
 
 
-def check_bottom() -> bool:
-    while True:
+def check_bottom():
+    global _is_bottom
+    _t = threading.current_thread()
+    while getattr(_t, 'do_run', True):
         bottom = pyautogui.locateCenterOnScreen(r'web_page_bottom.png')
         if bottom:
-            print(f'Find bottom {bottom}')
-            break
-    return True
+            _is_bottom = True
+            print(f'Find bottom {bottom} {_is_bottom}')
+    print('Stop the check_bottom thread...')
 
 
 if __name__ == '__main__':
-    v2ray_purple = pyautogui.locateCenterOnScreen('v2ray_purple.png')
-    pyautogui.moveTo(v2ray_purple)
-    pyautogui.rightClick()
-    pyautogui.moveTo(1376, 911)
+    _is_bottom = False
+    t = threading.Thread(target=check_bottom)
+    t.start()
+    while True:
+        pyautogui.scroll(-150)
+        pyautogui.sleep(0.3)
+        if _is_bottom is True:
+            t.do_run = False
+            break
