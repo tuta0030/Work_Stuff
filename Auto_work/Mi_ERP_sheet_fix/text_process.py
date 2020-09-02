@@ -196,7 +196,7 @@ class ReadTranslatedTxt(object):
             template = {key: value for key, value in excr_node.excr_node.items() if key != ''}
             for each_file in file_list:
                 out_file_name = self.directory + '\\' + lang + '_' + str(oc_file).split('\\')[-1]
-                print(f'正在处理  {out_file_name}')
+                print(f'\n正在处理  {out_file_name}')
                 if excr_node.excr_node is not None:
                     for lang_excr_node, _excr_node in template.items():
                         if lang_excr_node in each_file.split('\\')[-1]:
@@ -235,7 +235,7 @@ class ReadTranslatedTxt(object):
                         row, col = pasu.get_coordinate(each_price)
                         original_sheet.cell(int(row), int(col)).value = \
                             self.calculate_time_exchange_rate(each_price, exchange_rate)
-                    print(f'\n当前的语言: {lang}')
+                    print(f'当前的语言: {lang}')
                     print(f'当前使用的节点：{node}')
                     print(f'当前使用的汇率:{exchange_rate}')
                 else:
