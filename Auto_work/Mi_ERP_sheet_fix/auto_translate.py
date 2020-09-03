@@ -45,6 +45,7 @@ def check_bottom():
 
 
 if __name__ == '__main__':
+    js_auto_scroll = """setInterval(function(){window.scrollBy(0,50);},100);"""
     _is_bottom = False
 
     def select_all():
