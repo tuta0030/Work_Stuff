@@ -111,5 +111,5 @@ if __name__ == '__main__':
         pyautogui.scroll(-100)
         pyautogui.sleep(0.5)
         if _is_bottom:
-            file_name = get_folder_name() + 'DE'
-            save_with_file_name(file_name)
+            _file_name = get_folder_name() + 'DE'
+            save_with_file_name(_file_name)
