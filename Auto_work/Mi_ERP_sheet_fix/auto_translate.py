@@ -61,7 +61,7 @@ if __name__ == '__main__':
             f.write(pyperclip.paste())
         os.startfile(out_path)
 
-    def get_address_content() -> str:
+    def get_folder_name() -> str:
         while True:
             t_icon = pyautogui.locateCenterOnScreen('translate_icon.png')
             print(t_icon)
@@ -72,7 +72,7 @@ if __name__ == '__main__':
                 select_all()
                 content = pyperclip.paste()
                 print(content)
-                return content
+                return str(content).split('/')[-2]
 
     def change_translate_language():
         """which_language 需要传入需要定位的语言的png图像"""
@@ -92,4 +92,5 @@ if __name__ == '__main__':
                 pyautogui.sleep(0.5)
                 break
 
-    change_translate_language()
+    # change_translate_language()
+    print(get_folder_name())
