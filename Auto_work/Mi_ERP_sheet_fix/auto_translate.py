@@ -74,11 +74,11 @@ if __name__ == '__main__':
                 print(content)
                 return str(content).split('/')[-2]
 
-    def change_translate_language():
+    def change_translate_language(target_lang):
         """which_language 需要传入需要定位的语言的png图像"""
         while True:
             t_icon = pyautogui.locateCenterOnScreen('translate_icon.png')
-            print(t_icon)
+            print(f'找到翻译按钮{t_icon}')
             if t_icon:
                 pyautogui.moveTo(t_icon)
                 pyautogui.leftClick()
@@ -90,7 +90,26 @@ if __name__ == '__main__':
                 pyautogui.sleep(0.5)
                 pyautogui.leftClick()
                 pyautogui.sleep(0.5)
-                break
+                while True:
+                    t_lang = pyautogui.locateCenterOnScreen(target_lang)
+                    if t_lang:
+                        pyautogui.moveTo(t_lang)
+                        pyautogui.leftClick()
+                        pyautogui.sleep(0.5)
+                        while True:
+                            t_confirm = pyautogui.locateCenterOnScreen('translate_confirm_button.png')
+                            if t_confirm:
+                                pyautogui.moveTo(t_confirm)
+                                pyautogui.leftClick()
+                                pyautogui.moveRel(0, -40)
+                                pyautogui.leftClick()
+                                return True
 
-    # change_translate_language()
-    print(get_folder_name())
+    if change_translate_language('translate_DE.png'):
+        thread_check_bottom = threading.Thread(target=check_bottom)
+        thread_check_bottom.start()
+        pyautogui.scroll(-100)
+        pyautogui.sleep(0.5)
+        if _is_bottom:
+            file_name = get_folder_name() + 'DE'
+            save_with_file_name(file_name)
