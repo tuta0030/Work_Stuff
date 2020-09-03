@@ -46,8 +46,6 @@ def check_bottom():
 
 if __name__ == '__main__':
     _is_bottom = False
-    t = threading.Thread(target=check_bottom)
-    t.start()
 
     def select_all():
         pyautogui.hotkey('ctrl', 'a')
@@ -62,18 +60,35 @@ if __name__ == '__main__':
             f.write(pyperclip.paste())
         os.startfile(out_path)
 
-    while True:
-        pyautogui.scroll(-150)
-        pyautogui.sleep(0.3)
-        if _is_bottom is True:
-            t.do_run = False
+    def get_address_content() -> str:
+        while True:
             t_icon = pyautogui.locateCenterOnScreen('translate_icon.png')
-            pyautogui.moveTo(t_icon)
-            pyautogui.moveRel(-100, 0)
-            pyautogui.leftClick()
-            select_all()
-            _file_name = str(pyperclip.paste()).split('/')[-2]
-            pyautogui.moveRel(0, 300)
-            select_all()
-            save_with_file_name(_file_name)
-            break
+            print(t_icon)
+            if t_icon:
+                pyautogui.moveTo(t_icon)
+                pyautogui.moveRel(-100, 0)
+                pyautogui.leftClick()
+                select_all()
+                content = pyperclip.paste()
+                print(content)
+                return content
+
+    def change_translate_language():
+        """which_language 需要传入需要定位的语言的png图像"""
+        while True:
+            t_icon = pyautogui.locateCenterOnScreen('translate_icon.png')
+            print(t_icon)
+            if t_icon:
+                pyautogui.moveTo(t_icon)
+                pyautogui.leftClick()
+                pyautogui.moveRel(0, 40)
+                pyautogui.leftClick()
+                pyautogui.sleep(0.5)
+                pyautogui.moveRel(0, 40)
+                pyautogui.leftClick()
+                pyautogui.sleep(0.5)
+                pyautogui.leftClick()
+                pyautogui.sleep(0.5)
+                break
+
+    change_translate_language()
