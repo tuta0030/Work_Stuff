@@ -78,7 +78,6 @@ if __name__ == '__main__':
                 pyautogui.leftClick()
                 select_all()
                 content = pyperclip.paste()
-                print(content)
                 return str(content).split('/')[-2]
 
     def change_translate_language(target_lang):
