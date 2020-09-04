@@ -40,8 +40,8 @@ def check_bottom():
         bottom = pyautogui.locateCenterOnScreen(r'web_page_bottom.png')
         if bottom:
             _is_bottom = True
-            print(f'Find bottom {bottom} {_is_bottom}')
-    print('Stop the check_bottom thread...')
+            print(f'已到页面底部 {bottom} {_is_bottom}')
+    print('停止查找页面底部线程...')
 
 
 if __name__ == '__main__':
@@ -78,7 +78,7 @@ if __name__ == '__main__':
         """which_language 需要传入需要定位的语言的png图像"""
         while True:
             t_icon = pyautogui.locateCenterOnScreen('translate_icon.png')
-            print(f'找到翻译按钮{t_icon}')
+            print(f'找到翻译按钮 {t_icon}')
             if t_icon:
                 pyautogui.moveTo(t_icon)
                 pyautogui.leftClick()
@@ -101,15 +101,22 @@ if __name__ == '__main__':
                             if t_confirm:
                                 pyautogui.moveTo(t_confirm)
                                 pyautogui.leftClick()
-                                pyautogui.moveRel(0, -40)
+                                print(f'找到确定按钮 {t_confirm}')
+                                pyautogui.moveRel(0, 100)
                                 pyautogui.leftClick()
                                 return True
 
     if change_translate_language('translate_DE.png'):
         thread_check_bottom = threading.Thread(target=check_bottom)
         thread_check_bottom.start()
-        pyautogui.scroll(-100)
-        pyautogui.sleep(0.5)
-        if _is_bottom:
-            _file_name = get_folder_name() + 'DE'
+        while not _is_bottom:
+            pyautogui.scroll(-500)
+            pyautogui.sleep(0.4)
+        else:
+            thread_check_bottom.do_run = False
+            _file_name = get_folder_name() + '_' + 'DE'
+            pyautogui.moveRel(0, 100)
+            pyautogui.sleep(0.5)
+            pyautogui.leftClick()
+            select_all()
             save_with_file_name(_file_name)
