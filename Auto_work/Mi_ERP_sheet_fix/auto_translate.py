@@ -137,8 +137,32 @@ if __name__ == '__main__':
                 select_all()
                 save_with_file_name(_file_name)
 
+    def select_languages() -> dict:
+        index = 0
+        selections = {}
+        result_dict = {}
+        for key, value in LANGUAGES_PNG.items():
+            print(f'{index} \t {key}')
+            selections[index] = (key, value)
+            index += 1
 
-    for _key_lang, _value_png in LANGUAGES_PNG.items():
+        ui = input('请选择需要的语言：')
+        if len(ui.split(' ')) > 1:
+            ui = ui.split(' ')
+            for each_ui in ui:
+                for index, value in selections.items():
+                    if each_ui == str(index):
+                        result_dict[value[0]] = value[1]
+            return result_dict
+        else:
+            ui = ui
+            for index, value in selections.items():
+                if ui == str(index):
+                    result_dict[value[0]] = value[1]
+                    return result_dict
+
+
+    for _key_lang, _value_png in select_languages().items():
         auto_translate(_key_lang, _value_png)
         _is_bottom = False
     os.startfile('c:\\hotkey_folder')
