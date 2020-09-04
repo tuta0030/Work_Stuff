@@ -4,6 +4,14 @@ import os
 import pyautogui
 import threading
 
+LANGUAGES_PNG = {'DE': 'translate_DE.png',
+                 'FR': 'translate_FR.png',
+                 'IT': 'translate_IT.png',
+                 'ES': 'translate_ES.png',
+                 'JP': 'translate_JP.png',
+                 'NL': 'translate_NL.png',
+                 }
+
 
 def make_txt_hotkey(**kwargs):
     """使用剪贴板生成utf-8文本文件的全局快捷键"""
@@ -106,7 +114,7 @@ if __name__ == '__main__':
                                 pyautogui.leftClick()
                                 return True
 
-    if change_translate_language('translate_DE.png'):
+    if change_translate_language(LANGUAGES_PNG['DE']):
         thread_check_bottom = threading.Thread(target=check_bottom)
         thread_check_bottom.start()
         while not _is_bottom:
