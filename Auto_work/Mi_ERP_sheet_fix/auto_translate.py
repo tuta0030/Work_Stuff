@@ -6,10 +6,10 @@ import threading
 
 LANGUAGES_PNG = {'DE': 'translate_DE.png',
                  'FR': 'translate_FR.png',
-                 'IT': 'translate_IT.png',
-                 'ES': 'translate_ES.png',
-                 'JP': 'translate_JP.png',
-                 'NL': 'translate_NL.png',
+                 # 'IT': 'translate_IT.png',
+                 # 'ES': 'translate_ES.png',
+                 # 'JP': 'translate_JP.png',
+                 # 'NL': 'translate_NL.png',
                  }
 
 
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     def select_all():
         pyautogui.hotkey('ctrl', 'a')
         pyautogui.hotkey('ctrl', 'c')
-        pyautogui.sleep(0.5)
+        pyautogui.sleep(1)
 
     def save_with_file_name(file_name: str):
         out_path = 'c:\\hotkey_folder'
@@ -67,7 +67,6 @@ if __name__ == '__main__':
             os.mkdir(out_path)
         with open(f'{out_path}\\{file_name}.txt', 'w', encoding='utf-8') as f:
             f.write(pyperclip.paste())
-        os.startfile(out_path)
 
     def get_folder_name() -> str:
         while True:
@@ -98,9 +97,12 @@ if __name__ == '__main__':
                 pyautogui.sleep(0.5)
                 pyautogui.leftClick()
                 pyautogui.sleep(0.5)
+                pyautogui.moveRel(180, 0)
                 while True:
                     t_lang = pyautogui.locateCenterOnScreen(target_lang)
-                    if t_lang:
+                    if not t_lang:
+                        pyautogui.scroll(-1000)
+                    elif t_lang:
                         pyautogui.moveTo(t_lang)
                         pyautogui.leftClick()
                         pyautogui.sleep(0.5)
@@ -114,17 +116,29 @@ if __name__ == '__main__':
                                 pyautogui.leftClick()
                                 return True
 
-    if change_translate_language(LANGUAGES_PNG['DE']):
-        thread_check_bottom = threading.Thread(target=check_bottom)
-        thread_check_bottom.start()
-        while not _is_bottom:
-            pyautogui.scroll(-500)
-            pyautogui.sleep(0.4)
-        else:
-            thread_check_bottom.do_run = False
-            _file_name = get_folder_name() + '_' + 'DE'
-            pyautogui.moveRel(0, 100)
-            pyautogui.sleep(0.5)
-            pyautogui.leftClick()
-            select_all()
-            save_with_file_name(_file_name)
+
+    def auto_translate(key_lang, value_png):
+        if change_translate_language(value_png):
+            thread_check_bottom = threading.Thread(target=check_bottom)
+            thread_check_bottom.start()
+            while not _is_bottom:
+                pyautogui.scroll(-500)
+                pyautogui.sleep(0.4)
+            else:
+                thread_check_bottom.do_run = False
+                _file_name = get_folder_name() + '_' + key_lang
+                pyautogui.moveRel(0, 200)
+                pyautogui.sleep(0.5)
+                pyautogui.leftClick()
+                pyautogui.keyDown('home')
+                pyautogui.sleep(0.5)
+                pyautogui.keyUp('home')
+                pyautogui.sleep(0.5)
+                select_all()
+                save_with_file_name(_file_name)
+
+
+    for _key_lang, _value_png in LANGUAGES_PNG.items():
+        auto_translate(_key_lang, _value_png)
+        _is_bottom = False
+    os.startfile('c:\\hotkey_folder')

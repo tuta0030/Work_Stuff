@@ -5,6 +5,7 @@ import main_menu
 import collections
 from lxml import etree
 import re
+import threading
 
 HOW_MANY_WORDS_IN_COUNTER = 100
 MENU_RESTRICTION = 200
@@ -344,6 +345,8 @@ def multiple_file_process(process_class, class_parameter: dict, **pas_args):
 
 def main_menu_quit():
     try:
+        t = threading.current_thread()
+        t.on_run = False
         os.system('exit')
     except Exception as e:
         print(e)
