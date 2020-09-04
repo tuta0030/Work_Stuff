@@ -4,12 +4,13 @@ import os
 import pyautogui
 import threading
 
-LANGUAGES_PNG = {'DE': 'translate_DE.png',
+LANGUAGES_PNG = {
+                 'DE': 'translate_DE.png',
                  'FR': 'translate_FR.png',
-                 # 'IT': 'translate_IT.png',
-                 # 'ES': 'translate_ES.png',
-                 # 'JP': 'translate_JP.png',
-                 # 'NL': 'translate_NL.png',
+                 'IT': 'translate_IT.png',
+                 'ES': 'translate_ES.png',
+                 'JP': 'translate_JP.png',
+                 'NL': 'translate_NL.png',
                  }
 
 
