@@ -12,6 +12,7 @@ LANGUAGES_PNG = {
                  'JP': 'translate_JP.png',
                  'NL': 'translate_NL.png',
                  }
+_is_bottom = False
 
 
 def make_txt_hotkey(**kwargs):
@@ -53,116 +54,123 @@ def check_bottom():
     print('停止查找页面底部线程...')
 
 
-if __name__ == '__main__':
-    js_auto_scroll = """setInterval(function(){window.scrollBy(0,50);},100);"""
-    _is_bottom = False
-
-    def select_all():
-        pyautogui.hotkey('ctrl', 'a')
-        pyautogui.hotkey('ctrl', 'c')
-        pyautogui.sleep(1)
-
-    def save_with_file_name(file_name: str):
-        out_path = 'c:\\hotkey_folder'
-        if not os.path.isdir(out_path):
-            os.mkdir(out_path)
-        with open(f'{out_path}\\{file_name}.txt', 'w', encoding='utf-8') as f:
-            f.write(pyperclip.paste())
-
-    def get_folder_name() -> str:
-        while True:
-            t_icon = pyautogui.locateCenterOnScreen('translate_icon.png')
-            print(t_icon)
-            if t_icon:
-                pyautogui.moveTo(t_icon)
-                pyautogui.moveRel(-100, 0)
-                pyautogui.leftClick()
-                select_all()
-                content = pyperclip.paste()
-                return str(content).split('/')[-2]
-
-    def change_translate_language(target_lang):
-        """which_language 需要传入需要定位的语言的png图像"""
-        while True:
-            t_icon = pyautogui.locateCenterOnScreen('translate_icon.png')
-            print(f'找到翻译按钮 {t_icon}')
-            if t_icon:
-                pyautogui.moveTo(t_icon)
-                pyautogui.leftClick()
-                pyautogui.moveRel(0, 40)
-                pyautogui.leftClick()
-                pyautogui.sleep(0.5)
-                pyautogui.moveRel(0, 40)
-                pyautogui.leftClick()
-                pyautogui.sleep(0.5)
-                pyautogui.leftClick()
-                pyautogui.sleep(0.5)
-                pyautogui.moveRel(180, 0)
-                while True:
-                    t_lang = pyautogui.locateCenterOnScreen(target_lang)
-                    if not t_lang:
-                        pyautogui.scroll(-1000)
-                    elif t_lang:
-                        pyautogui.moveTo(t_lang)
-                        pyautogui.leftClick()
-                        pyautogui.sleep(0.5)
-                        while True:
-                            t_confirm = pyautogui.locateCenterOnScreen('translate_confirm_button.png')
-                            if t_confirm:
-                                pyautogui.moveTo(t_confirm)
-                                pyautogui.leftClick()
-                                print(f'找到确定按钮 {t_confirm}')
-                                pyautogui.moveRel(0, 100)
-                                pyautogui.leftClick()
-                                return True
+def select_all():
+    pyautogui.hotkey('ctrl', 'a')
+    pyautogui.hotkey('ctrl', 'c')
+    pyautogui.sleep(1)
 
 
-    def auto_translate(key_lang, value_png):
-        if change_translate_language(value_png):
-            thread_check_bottom = threading.Thread(target=check_bottom)
-            thread_check_bottom.start()
-            while not _is_bottom:
-                pyautogui.scroll(-500)
-                pyautogui.sleep(0.4)
-            else:
-                thread_check_bottom.do_run = False
-                _file_name = get_folder_name() + '_' + key_lang
-                pyautogui.moveRel(0, 200)
-                pyautogui.sleep(0.5)
-                pyautogui.leftClick()
-                pyautogui.keyDown('home')
-                pyautogui.sleep(0.5)
-                pyautogui.keyUp('home')
-                pyautogui.sleep(0.5)
-                select_all()
-                save_with_file_name(_file_name)
+def save_with_file_name(file_name: str):
+    out_path = 'c:\\hotkey_folder'
+    if not os.path.isdir(out_path):
+        os.mkdir(out_path)
+    with open(f'{out_path}\\{file_name}.txt', 'w', encoding='utf-8') as f:
+        f.write(pyperclip.paste())
 
-    def select_languages() -> dict:
-        index = 0
-        selections = {}
-        result_dict = {}
-        for key, value in LANGUAGES_PNG.items():
-            print(f'{index} \t {key}')
-            selections[index] = (key, value)
-            index += 1
 
-        ui = input('请选择需要的语言：')
-        if len(ui.split(' ')) > 1:
-            ui = ui.split(' ')
-            for each_ui in ui:
-                for index, value in selections.items():
-                    if each_ui == str(index):
-                        result_dict[value[0]] = value[1]
-            return result_dict
+def get_folder_name() -> str:
+    while True:
+        t_icon = pyautogui.locateCenterOnScreen('translate_icon.png')
+        print(t_icon)
+        if t_icon:
+            pyautogui.moveTo(t_icon)
+            pyautogui.moveRel(-100, 0)
+            pyautogui.leftClick()
+            select_all()
+            content = pyperclip.paste()
+            return str(content).split('/')[-2]
+
+
+def change_translate_language(target_lang):
+    """which_language 需要传入需要定位的语言的png图像"""
+    while True:
+        t_icon = pyautogui.locateCenterOnScreen('translate_icon.png')
+        print(f'找到翻译按钮 {t_icon}')
+        if t_icon:
+            pyautogui.moveTo(t_icon)
+            pyautogui.leftClick()
+            pyautogui.moveRel(0, 40)
+            pyautogui.leftClick()
+            pyautogui.sleep(0.5)
+            pyautogui.moveRel(0, 40)
+            pyautogui.leftClick()
+            pyautogui.sleep(0.5)
+            pyautogui.leftClick()
+            pyautogui.sleep(0.5)
+            pyautogui.moveRel(180, 0)
+            while True:
+                t_lang = pyautogui.locateCenterOnScreen(target_lang)
+                if not t_lang:
+                    pyautogui.scroll(-1000)
+                elif t_lang:
+                    pyautogui.moveTo(t_lang)
+                    pyautogui.leftClick()
+                    pyautogui.sleep(0.5)
+                    while True:
+                        t_confirm = pyautogui.locateCenterOnScreen('translate_confirm_button.png')
+                        if t_confirm:
+                            pyautogui.moveTo(t_confirm)
+                            pyautogui.leftClick()
+                            print(f'找到确定按钮 {t_confirm}')
+                            pyautogui.moveRel(0, 100)
+                            pyautogui.leftClick()
+                            return True
+
+
+def auto_translate(key_lang, value_png):
+    if change_translate_language(value_png):
+        thread_check_bottom = threading.Thread(target=check_bottom)
+        thread_check_bottom.start()
+        while not _is_bottom:
+            pyautogui.scroll(-500)
+            pyautogui.sleep(0.4)
         else:
-            ui = ui
+            thread_check_bottom.do_run = False
+            _file_name = get_folder_name() + '_' + key_lang
+            pyautogui.moveRel(0, 200)
+            pyautogui.sleep(0.5)
+            pyautogui.leftClick()
+            pyautogui.keyDown('home')
+            pyautogui.sleep(0.5)
+            pyautogui.keyUp('home')
+            pyautogui.sleep(0.5)
+            select_all()
+            save_with_file_name(_file_name)
+
+
+def select_languages() -> dict:
+    index = 0
+    selections = {}
+    result_dict = {}
+    for key, value in LANGUAGES_PNG.items():
+        print(f'{index} \t {key}')
+        selections[index] = (key, value)
+        index += 1
+
+    ui = input('请选择需要的语言：')
+    if len(ui.split(' ')) > 1:
+        ui = ui.split(' ')
+        for each_ui in ui:
             for index, value in selections.items():
-                if ui == str(index):
+                if each_ui == str(index):
                     result_dict[value[0]] = value[1]
-                    return result_dict
+        return result_dict
+    else:
+        ui = ui
+        for index, value in selections.items():
+            if ui == str(index):
+                result_dict[value[0]] = value[1]
+                return result_dict
 
 
+def main():
     for _key_lang, _value_png in select_languages().items():
         auto_translate(_key_lang, _value_png)
+        global _is_bottom
         _is_bottom = False
     os.startfile('c:\\hotkey_folder')
+
+
+if __name__ == '__main__':
+    js_auto_scroll = """setInterval(function(){window.scrollBy(0,50);},100);"""
+    main()
