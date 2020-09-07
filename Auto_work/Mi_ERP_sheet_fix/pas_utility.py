@@ -189,7 +189,6 @@ def process_price(sheet, coordinate: tuple, lowest_price: int, current_file: str
         updated_price = update_price(lowest_price, _price_loop_index)
         _price_loop_index += 1
         if int(float(item.value)) < 1:
-            # 删除低于最低价格的行
             print(f"表格中{item}的价格过低于1，正在删除")
             for col in range(1, COL_MAX):
                 sheet.cell(coordinate_to_tuple(str(item).split('.')[-1][:-1])[0], col).value = None
