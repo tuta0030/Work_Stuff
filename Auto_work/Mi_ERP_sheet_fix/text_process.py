@@ -159,20 +159,6 @@ class ReadTranslatedTxt(object):
         self.get_langs_dict(files)
 
     def main(self):
-        files = self.find_all_txt_file()
-        self.get_langs_and_langs_dict(files)
-        oc_file = pasu.index_files(ui_msg='输入 <表格文件> 所在的路径:', which_file_msg='请选择原始表格文件:')[-1]
-        original_wb = openpyxl.load_workbook(str(oc_file))
-        original_sheet = original_wb.get_sheet_by_name('sheet1')
-
-        # 获取价格和节点的成员函数
-        def get_node_price_list():
-            _new_wb = openpyxl.load_workbook(str(oc_file))
-            _new_sheet = _new_wb.get_sheet_by_name('sheet1')
-            _node_list = get_content_list(_new_sheet, 'recommended_browse_nodes')
-            _price_list = get_content_list(_new_sheet, 'standard_price')
-            _price_list = [each_cell for each_cell in _price_list if each_cell.value != '']
-            return _node_list, _price_list, _new_wb, _new_sheet
 
         if check_if_the_same_day(get_time_stamp()):
             excr_node = {}
@@ -189,6 +175,21 @@ class ReadTranslatedTxt(object):
                         f'"{datetime.datetime.strftime(datetime.datetime.now(), "%Y, %m, %d, %I, %M, %S")}"')
             while True:
                 input('已根据输入的数据更新汇率和节点，请重新启动程序')
+
+        files = self.find_all_txt_file()
+        self.get_langs_and_langs_dict(files)
+        oc_file = pasu.index_files(ui_msg='输入 <表格文件> 所在的路径:', which_file_msg='请选择原始表格文件:')[-1]
+        original_wb = openpyxl.load_workbook(str(oc_file))
+        original_sheet = original_wb.get_sheet_by_name('sheet1')
+
+        # 获取价格和节点的成员函数
+        def get_node_price_list():
+            _new_wb = openpyxl.load_workbook(str(oc_file))
+            _new_sheet = _new_wb.get_sheet_by_name('sheet1')
+            _node_list = get_content_list(_new_sheet, 'recommended_browse_nodes')
+            _price_list = get_content_list(_new_sheet, 'standard_price')
+            _price_list = [each_cell for each_cell in _price_list if each_cell.value != '']
+            return _node_list, _price_list, _new_wb, _new_sheet
 
         # 处理文本文件
         for lang, file_list in self.langs_dict.items():
