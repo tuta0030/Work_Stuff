@@ -238,38 +238,8 @@ def make_menu(functions: dict) -> None:
                 func()
 
 
-def make_menu_part_functions(functions: dict):
-    r"""创建菜单函数，仅返回函数名称，不执行函数
-
-    传入functions: dict
-    key为描述，value函数的名称
-
-    :Return:
-        func_name  函数的名称
-    """
-    _menu = {}
-    index = 0
-    for descreption, func_name in functions.items():
-        _menu[(index, descreption)] = func_name
-        index = index + 1
-
-    for item in _menu.keys():
-        print(str(item[0]) + '\t' + item[1])
-    ui = input('输入选项：')
-    if len(ui.split(' ')) > 1:
-        for each_ui in ui.split(' '):
-            for item, func_name in _menu.items():
-                if each_ui == str(item[0]):
-                    return func_name
-    else:
-        for item, func_name in _menu.items():
-            if ui == str(item[0]):
-                return func_name
-
-
-# 索引用户输入的文件夹中的文件
 def index_files(**kwargs) -> tuple:
-    r"""请求用户输入一个文件夹，返回文件夹的路径和选择的文件路径
+    r"""请求用户输入一个文件夹，打印文件中的文件，请求用户输入文件序列号，返回文件夹的路径和选择的文件路径
 
     :Keyword Arguments:
         ui_msg: 请求输入是提示的字符串
@@ -301,6 +271,8 @@ def index_files(**kwargs) -> tuple:
                 which_file.append(files[int(each_ui)])
         if ui == str(selection):
             which_file = files[selection]
+        if ui == '999':
+            which_file = [each_file for each_file in files.values()]
     return folder, which_file
 
 
