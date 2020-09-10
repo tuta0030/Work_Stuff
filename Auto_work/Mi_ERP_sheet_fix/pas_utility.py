@@ -273,6 +273,8 @@ def index_files(**kwargs) -> tuple:
             which_file = files[selection]
         if ui == '999':
             which_file = [each_file for each_file in files.values()]
+        if ui[0] == '.':
+            which_file = [each_file for each_file in files.values() if ui in each_file]
     return folder, which_file
 
 
