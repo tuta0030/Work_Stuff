@@ -25,7 +25,7 @@ class Invoice(object):
         self.HTML_bs4 = os.curdir+'\\Order_Page.html'  # Order_Page_with_phone  Order_Page
         self.HTML_etree = os.curdir+'\\Order_Page.html'  # Order_Page_clothes Order_Page_with_no_buyer_info_atall
         self.manual_info_msg = '需要手动添加'
-        self.book = ''
+        self.book = openpyxl.load_workbook(self.inovice_path)
         self.sheet = ''
         self.xpath = selector_path.path_xpath
         self.info = info
@@ -74,7 +74,7 @@ class Invoice(object):
 
     def write_invoice_content(self):
         self.set_PINO(self.sheet)
-        invoice_parse_page.parse_page_lxml(self, self.sheet_info)
+        invoice_parse_page.parse_page_lxml(self, self.sheet_info, self.sheet)
 
     def save_by_order(self):
         addToClipBoard()
