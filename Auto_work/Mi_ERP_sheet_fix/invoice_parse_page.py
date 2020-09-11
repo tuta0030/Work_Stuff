@@ -17,9 +17,9 @@ def parse_page_lxml(self, sheet_info: dict):
         td_text = \
             [each_text for each_text in each_order.xpath('td//text()') if str(each_text).strip() != ':']
         name = td_text[1]
-        asin = td_text[3]
         sku = td_text[5].split(' ')[-1]
         sub_total = td_text[-3]
+        price = td_text[-5]
         num = td_text[-6]
         order_id = td_text[-7].split(' ')[-1]
 
@@ -28,7 +28,7 @@ def parse_page_lxml(self, sheet_info: dict):
         elements_product_name = td_text[1]  # html.xpath(self.xpath['product_name']+'//text()')[0]
         elements_sku = td_text[5].split(' ')[-1]  # html.xpath(self.xpath['SKU']+'//text()')[-1][2:].strip()
 
-        td_list = [name, asin, sku, sub_total, num, order_id]
+        td_list = [name, price, sku, sub_total, num, order_id]
         print(td_text)
         for i in td_list:
             print(i)
