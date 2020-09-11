@@ -8,6 +8,9 @@ from order_info import info
 import pas_utility as pasu
 import pyperclip
 
+first_out_path = True
+out_path = ''
+
 
 def addToClipBoard():
     command = 'echo ' + info["order_id"] + '| clip'
@@ -31,7 +34,7 @@ class Invoice(object):
     def get_html_etree(self):
         if '<html' not in pyperclip.paste():
             print('没有在剪贴板中找到html标签，请确保复制了整个html页面的文本')
-            pasu.back_to_main_menu(enter_quit=True)
+            again()
         with open(self.HTML_etree, 'w', encoding='utf-8') as f:
             f.write(pyperclip.paste())
         src = open(self.HTML_etree, 'r', encoding='utf-8').read()
@@ -75,15 +78,35 @@ class Invoice(object):
 
     def save_by_order(self):
         addToClipBoard()
-        _out_path = input('输入输出文件目录：')
-        self.book.save(_out_path+f"\\{info['order_id']}.xlsx")
-        self.book.close()
-        os.startfile(_out_path+f"\\{info['order_id']}.xlsx")
+        global first_out_path
+        if first_out_path:
+            _out_path = input('输入输出文件目录：')
+            global out_path
+            out_path = _out_path
+            self.book.save(_out_path+f"\\{info['order_id']}.xlsx")
+            self.book.close()
+            os.startfile(_out_path+f"\\{info['order_id']}.xlsx")
+            first_out_path = False
+        else:
+            self.book.save(out_path + f"\\{info['order_id']}.xlsx")
+            self.book.close()
+            os.startfile(out_path + f"\\{info['order_id']}.xlsx")
+        again()
 
     def main(self):
         self.read_invoice_content()
         self.write_invoice_content()
         self.save_by_order()
+
+
+def again():
+    _again = input('是否再次生成？(y/n):')
+    if _again == 'y':
+        main()
+    elif _again == 'n':
+        pasu.back_to_main_menu(enter_quit='回车返回主菜单')
+    else:
+        pasu.back_to_main_menu(enter_quit='无法识别的输入，返回主菜单')
 
 
 def main():

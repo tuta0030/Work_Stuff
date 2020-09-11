@@ -11,27 +11,32 @@ def search_in_text(item: str, txt: str):
 def parse_page_lxml(self, sheet_info: dict):
     html = self.get_html_etree()
     shipping_raw_info = '_'.join(html.xpath(self.xpath['quantity']+'//text()'))
-    orders = html.xpath(self.xpath['items_table']+'//tr')
+    orders_table = html.xpath(self.xpath['items_table']+'//tr')
 
-    for each_order in orders:
-        td_text = \
-            [each_text for each_text in each_order.xpath('td//text()') if str(each_text).strip() != ':']
-        name = td_text[1]
-        sku = td_text[5].split(' ')[-1]
-        sub_total = td_text[-3]
-        price = td_text[-5]
-        num = td_text[-6]
-        order_id = td_text[-7].split(' ')[-1]
+    def get_orders_table_items(orders) -> list:
+        orders_list = []
+        for each_order in orders:
+            td_text = \
+                [each_text for each_text in each_order.xpath('td//text()') if str(each_text).strip() != ':']
+            name = td_text[1]
+            sku = td_text[5].split(' ')[-1]
+            sub_total = td_text[-3]
+            price = td_text[-5]
+            num = td_text[-6]
+            order_id = td_text[-7].split(' ')[-1]
 
-        elements_quantity = td_text[-6]  # html.xpath(self.xpath['quantity']+'//text()')[22]
-        elements_sub_total = sub_total  # html.xpath(self.xpath['sub_total']+'//text()')[0]
-        elements_product_name = td_text[1]  # html.xpath(self.xpath['product_name']+'//text()')[0]
-        elements_sku = td_text[5].split(' ')[-1]  # html.xpath(self.xpath['SKU']+'//text()')[-1][2:].strip()
+            elements_quantity = td_text[-6]  # html.xpath(self.xpath['quantity']+'//text()')[22]
+            elements_sub_total = sub_total  # html.xpath(self.xpath['sub_total']+'//text()')[0]
+            elements_product_name = td_text[1]  # html.xpath(self.xpath['product_name']+'//text()')[0]
+            elements_sku = td_text[5].split(' ')[-1]  # html.xpath(self.xpath['SKU']+'//text()')[-1][2:].strip()
 
-        td_list = [name, price, sku, sub_total, num, order_id]
-        print(td_text)
-        for i in td_list:
-            print(i)
+            td_list = [name, price, sku, sub_total, num, order_id]
+            print(td_text)
+            for i in td_list:
+                print(i)
+        return orders_list
+
+    get_orders_table_items(orders_table)
 
     elements_buyer_info = html.xpath(self.xpath['buyer_info']+'//text()')
     elements_order_num = html.xpath(self.xpath['order_id'] + '//text()')[0]
@@ -97,7 +102,7 @@ def parse_page_lxml(self, sheet_info: dict):
     print("签名：" + info['signature'])
     print("买家信息：" + '\n' + info['buyer_info'])
     print("电话：" + elements_phone)
-    print('订单:' + str(orders))
+    print('订单:' + str(orders_table))
 
 
 
