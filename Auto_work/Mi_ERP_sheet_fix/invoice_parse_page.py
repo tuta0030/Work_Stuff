@@ -1,5 +1,6 @@
 from order_info import info
 import re
+from lxml import etree
 
 
 def search_in_text(item: str, txt: str):
@@ -10,16 +11,39 @@ def search_in_text(item: str, txt: str):
 def parse_page_lxml(self, sheet_info: dict):
     html = self.get_html_etree()
     shipping_raw_info = '_'.join(html.xpath(self.xpath['quantity']+'//text()'))
+    orders = html.xpath(self.xpath['items_table']+'//tr')
+
+    for each_order in orders:
+        td_text = \
+            [each_text for each_text in each_order.xpath('td//text()') if str(each_text).strip() != ':']
+        name = td_text[1]
+        asin = td_text[3]
+        sku = td_text[5].split(' ')[-1]
+        sub_total = td_text[-3]
+        num = td_text[-6]
+        order_id = td_text[-7].split(' ')[-1]
+
+        elements_quantity = td_text[-6]  # html.xpath(self.xpath['quantity']+'//text()')[22]
+        elements_sub_total = sub_total  # html.xpath(self.xpath['sub_total']+'//text()')[0]
+        elements_product_name = td_text[1]  # html.xpath(self.xpath['product_name']+'//text()')[0]
+        elements_sku = td_text[5].split(' ')[-1]  # html.xpath(self.xpath['SKU']+'//text()')[-1][2:].strip()
+
+        td_list = [name, asin, sku, sub_total, num, order_id]
+        print(td_text)
+        for i in td_list:
+            print(i)
 
     elements_buyer_info = html.xpath(self.xpath['buyer_info']+'//text()')
-    elements_product_name = html.xpath(self.xpath['product_name']+'//text()')[0]
-    elements_sku = html.xpath(self.xpath['SKU']+'//text()')[-1][2:].strip()
     elements_order_num = html.xpath(self.xpath['order_id'] + '//text()')[0]
     elements_date = html.xpath(self.xpath['date']+'//text()')[0]
     elements_price = html.xpath(self.xpath['price']+'//text()')[-1]
+    elements_signature = html.xpath(self.xpath['signature']+'//text()')[0]
+
     elements_quantity = html.xpath(self.xpath['quantity']+'//text()')[22]
     elements_sub_total = html.xpath(self.xpath['sub_total']+'//text()')[0]
-    elements_signature = html.xpath(self.xpath['signature']+'//text()')[0]
+    elements_product_name = html.xpath(self.xpath['product_name']+'//text()')[0]
+    elements_sku = html.xpath(self.xpath['SKU']+'//text()')[-1][2:].strip()
+
     try:
         elements_shipping_cost = search_in_text('Shipping total', shipping_raw_info)[0]
     except TypeError:
@@ -73,6 +97,12 @@ def parse_page_lxml(self, sheet_info: dict):
     print("签名：" + info['signature'])
     print("买家信息：" + '\n' + info['buyer_info'])
     print("电话：" + elements_phone)
+    print('订单:' + str(orders))
+
+
+
+def mk_new_html(html_element):
+    return etree.HTML(etree.tostring(html_element), etree.HTMLParser())
 
 
 if __name__ == '__main__':

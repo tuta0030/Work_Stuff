@@ -24,7 +24,8 @@ path_xpath = {
             'signature': r'//*[@class="sc-mkt-picker-switcher-txt sc-mkt-picker-bold"]',
             'total': r'//*[@class="a-color- a-text-bold"]',
             'phone': r'//*[@data-test-id="shipping-section-phone"]',
-            'refund': r'//*[@class="a-row a-spacing-large"]//*[@class="a-color-state"]'
+            'refund': r'//*[@class="a-row a-spacing-large"]//*[@class="a-color-state"]',
+            'items_table': r'/html/body/div[1]/div[2]/div/div/div[1]/div[1]/div/div[5]/div/table/tbody'
 
               }
 
