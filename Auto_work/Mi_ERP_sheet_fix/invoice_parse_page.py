@@ -24,7 +24,6 @@ def parse_page_lxml(self, sheet_info: dict, sheet):
             sub_total = td_text[-3]
             price = td_text[-5]
             num = td_text[-6]
-            order_id = td_text[-7].split(' ')[-1]
 
             td_dict = {'name': name,
                        'price': price,
@@ -41,22 +40,21 @@ def parse_page_lxml(self, sheet_info: dict, sheet):
     orders_lists = get_orders_table_items(orders_table)
 
     def mk_more_orders_in_sheet():
-        if len(orders_lists) == 1:
-            elements_quantity = orders_lists[0]['num']
-            elements_sub_total = orders_lists[0]['sub_total']
-            elements_product_name = orders_lists[0]['name']
-            elements_sku = orders_lists[0]['sku']
-        else:
-            index = 0
+        if len(orders_lists) != 1:
+            row = 16
+            total = []
+            money_sign = ''
             for each_order in orders_lists:
-                if index != 0:
-                    sheet.move_range('A10:F15', rows=1)
-                    sheet.insert_rows(9)
-                elements_quantity = each_order['num']
-                elements_sub_total = each_order['sub_total']
-                elements_product_name = each_order['name']
-                elements_sku = each_order['sku']
-                index += 1
+                sheet.insert_rows(row)
+                sheet.cell(row, 5).value = each_order['num']
+                sheet.cell(row, 6).value = each_order['sub_total']
+                money_sign = each_order['sub_total'][:1]
+                total.append(float(each_order['sub_total'][1:]))
+                sheet.cell(row, 3).value = each_order['name']
+                sheet.cell(row, 1).value = each_order['sku']
+                sheet.cell(row, 4).value = each_order['price']
+            nonlocal sheet_info
+            sheet_info['total'].value = money_sign + str(sum(total))
 
     elements_buyer_info = html.xpath(self.xpath['buyer_info']+'//text()')
     elements_order_num = html.xpath(self.xpath['order_id'] + '//text()')[0]
@@ -108,6 +106,8 @@ def parse_page_lxml(self, sheet_info: dict, sheet):
     sheet_info['signature'].value = info['signature']
     sheet_info['buyer_info'].value = info['buyer_info']
     sheet_info['order_id'] = info['order_id']
+
+    mk_more_orders_in_sheet()
 
     print("订单号：" + info['order_id'])
     print("下单日期：" + info['date'])
