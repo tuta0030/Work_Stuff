@@ -1,6 +1,5 @@
 from order_info import info
 import re
-from lxml import etree
 
 
 def search_in_text(item: str, txt: str):
@@ -125,10 +124,5 @@ def parse_page_lxml(self, sheet_info: dict, sheet):
     print('订单:' + str(orders_table))
 
 
-def mk_new_html(html_element):
-    return etree.HTML(etree.tostring(html_element), etree.HTMLParser())
-
-
 if __name__ == '__main__':
     pass
-
