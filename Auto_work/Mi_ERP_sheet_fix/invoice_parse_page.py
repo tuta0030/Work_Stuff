@@ -54,6 +54,7 @@ def parse_page_lxml(self, sheet_info: dict, sheet):
                 sheet.cell(row, 4).value = each_order['price']
             nonlocal sheet_info
             sheet_info['total'].value = money_sign + str(sum(total))
+            sheet_info['sub_total'].value = money_sign + str(sum(total))
 
     elements_buyer_info = html.xpath(self.xpath['buyer_info']+'//text()')
     elements_order_num = html.xpath(self.xpath['order_id'] + '//text()')[0]
