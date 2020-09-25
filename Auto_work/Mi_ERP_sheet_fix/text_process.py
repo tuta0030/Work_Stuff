@@ -167,9 +167,9 @@ class ReadTranslatedTxt(object):
             excr_node_result = [each_line for each_line in excr_node_result if each_line != '' or each_line != ':']
             for each_line in excr_node_result:
                 excr_node[each_line.split(':')[0].strip()] = \
-                    EXCHANGE_RATE_NODE[0]+str(each_line.split(':')[-1].strip())+EXCHANGE_RATE_NODE[1]
+                    EXCHANGE_RATE_NODE[0] + str(each_line.split(':')[-1].strip()) + EXCHANGE_RATE_NODE[1]
             with open('excr_node.py', 'w', encoding='utf-8') as t:
-                t.write('excr_node = '+str(excr_node))
+                t.write('excr_node = ' + str(excr_node))
             with open('_time_stamp_for_excr_node.py', 'w', encoding='utf-8') as t:
                 t.write('time_stamp = ' +
                         f'"{datetime.datetime.strftime(datetime.datetime.now(), "%Y, %m, %d, %I, %M, %S")}"')
@@ -203,8 +203,6 @@ class ReadTranslatedTxt(object):
                     for lang_excr_node, _excr_node in template.items():
                         if lang_excr_node in each_file.split('\\')[-1]:
                             line_prepender(each_file, _excr_node)
-
-                # TODO 这里出了语言错乱问题
                 content, content_list = parse_each_file_content(each_file)
                 parse_txt_content_into_sheet(content_list, original_sheet, each_file)
                 print(f'正在使用的txt文件  {each_file}')
@@ -234,6 +232,7 @@ class ReadTranslatedTxt(object):
                 else:
                     class NoExchangeNodeError(Exception):
                         pass
+
                     raise NoExchangeNodeError('No exchange rate and node')
                 original_wb.save(out_file_name)
         pasu.back_to_main_menu(enter_quit=True)
@@ -242,24 +241,28 @@ class ReadTranslatedTxt(object):
 # 全局函数
 
 def parse_txt_content_into_sheet(content_list, original_sheet, each_file):
-
     def replace_comma_in_coordinate(which_line: list) -> tuple:
         _row = int(which_line[0].strip()[1:-1].replace('、', ',').replace('・', ',').split(',')[0])
         _col = int(which_line[0].strip()[1:-1].replace('、', ',').replace('・', ',').split(',')[1])
         return _row, _col
 
+    # generate DEBUG txt file
+    with open(each_file.replace(each_file.split('\\')[-1],
+                                'DEBUG_' + each_file.split('\\')[-1]), 'w', encoding='utf-8') as f:
+        f.write('\n'.join(content_list))
+
     # 处理txt文件中的每行内容
     for each_content in content_list:
         try:
-            if len(each_content.split(SEPARATOR)[0]) <= 9:
-                each_content = str(each_content).split(SEPARATOR)
-                row = replace_comma_in_coordinate(each_content)[0]
-                col = replace_comma_in_coordinate(each_content)[1]
-                original_sheet.cell(row, col).value = each_content[-1].strip().replace(BR_PATTERN, ' <br> ') \
-                    .replace('$$ $', ' <br> ').replace('$ $$', ' <br> ')
+            each_content = str(each_content).split(SEPARATOR)
+            row = replace_comma_in_coordinate(each_content)[0]
+            col = replace_comma_in_coordinate(each_content)[1]
+            text_content = each_content[-1].strip() \
+                .replace(BR_PATTERN, ' <br> ').replace('$$ $', ' <br> ').replace('$ $$', ' <br> ')
+            original_sheet.cell(row, col).value = text_content
         except Exception as e:
             print(f'{each_file} 中的内容： {each_content} 发生了错误 {e} 跳过当前文件')
-            raise e
+            # raise e
 
 
 def parse_each_file_content(txt_file) -> tuple:
@@ -284,8 +287,8 @@ def find_cell(sheet, cell_name: str):
 
 def check_if_the_same_day(_time_stamp: datetime.datetime):
     if _time_stamp.day == datetime.datetime.now().day and \
-       _time_stamp.year == datetime.datetime.now().year and \
-       _time_stamp.month == datetime.datetime.now().month:
+            _time_stamp.year == datetime.datetime.now().year and \
+            _time_stamp.month == datetime.datetime.now().month:
         return False
     elif (datetime.datetime.now().day - _time_stamp.day) > 1:
         return True
