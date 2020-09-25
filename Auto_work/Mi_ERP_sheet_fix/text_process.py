@@ -209,16 +209,15 @@ class ReadTranslatedTxt(object):
                 content_list = [each_line for each_line in content_list if SEPARATOR in each_line]
                 for each_content in content_list:
                     try:
-                        if len(each_content.split(SEPARATOR)[0]) > 9:
-                            continue
-                        each_content = str(each_content).split(SEPARATOR)
-                        row = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[0])
-                        col = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[1])
-                        original_sheet.cell(row, col).value = each_content[-1].strip().replace(BR_PATTERN, ' <br> ')\
-                            .replace('$$ $', ' <br> ').replace('$ $$', ' <br> ')
+                        if len(each_content.split(SEPARATOR)[0]) <= 9:
+                            each_content = str(each_content).split(SEPARATOR)
+                            row = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[0])
+                            col = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[1])
+                            original_sheet.cell(row, col).value = each_content[-1].strip().replace(BR_PATTERN, ' <br> ')\
+                                .replace('$$ $', ' <br> ').replace('$ $$', ' <br> ')
                     except Exception as e:
                         print(f'{each_file} 中的内容： {each_content} 发生了错误 {e}')
-                        continue
+                print(f'正在使用的txt文件  {each_file}')
 
                 if EXCHANGE_RATE_NODE[0] not in content:
                     input(f'\n文本文件: ({each_file}) 当中没有标明汇率和节点，请检查文件（回车继续）')
