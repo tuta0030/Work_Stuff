@@ -195,6 +195,7 @@ class ReadTranslatedTxt(object):
         for lang, file_list in self.langs_dict.items():
             import excr_node
             template = {key: value for key, value in excr_node.excr_node.items() if key != ''}
+            # 处理每个txt文件
             for each_file in file_list:
                 out_file_name = self.directory + '\\' + lang + '_' + str(oc_file).split('\\')[-1]
                 print(f'\n正在处理  {out_file_name}')
@@ -203,28 +204,20 @@ class ReadTranslatedTxt(object):
                         if lang_excr_node in each_file.split('\\')[-1]:
                             line_prepender(each_file, _excr_node)
 
-                content = open(each_file, encoding='utf-8').read()
-                content_list = content.split('\n')
-                content_list = [each_line for each_line in content_list if each_line != '']
-                content_list = [each_line for each_line in content_list if SEPARATOR in each_line]
-                for each_content in content_list:
-                    try:
-                        if len(each_content.split(SEPARATOR)[0]) <= 9:
-                            each_content = str(each_content).split(SEPARATOR)
-                            row = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[0])
-                            col = int(each_content[0].strip()[1:-1].replace('、', ',').split(',')[1])
-                            original_sheet.cell(row, col).value = each_content[-1].strip().replace(BR_PATTERN, ' <br> ')\
-                                .replace('$$ $', ' <br> ').replace('$ $$', ' <br> ')
-                    except Exception as e:
-                        print(f'{each_file} 中的内容： {each_content} 发生了错误 {e}')
+                # TODO 这里出了语言错乱问题
+                content, content_list = parse_each_file_content(each_file)
+                parse_txt_content_into_sheet(content_list, original_sheet, each_file)
                 print(f'正在使用的txt文件  {each_file}')
 
+                # 处理txt文件中没有标明价格和汇率的情况
                 if EXCHANGE_RATE_NODE[0] not in content:
                     input(f'\n文本文件: ({each_file}) 当中没有标明汇率和节点，请检查文件（回车继续）')
                     continue
+                # 处理txt文件中标明价格和汇率的情况
                 elif EXCHANGE_RATE_NODE[0] in content:
-                    search_result = re.search(re.compile(r'(?<=!!\[).+(?=]!!)'), content)
-                    if search_result is None:
+                    search_result = re.search(re.compile(r'(?<=!![).+(?=]!!)'), content)
+                    if search_result is not None:
+                        print('txt文件当中是有汇率的，但是程序未能找到')
                         continue
                     exchange_rate, node = str(re.search(re.compile(r'(?<=!!\[).+(?=]!!)'), content)[0]).split(',')
                     node_list, price_list, new_wb, new_sheet = get_node_price_list()
@@ -247,6 +240,34 @@ class ReadTranslatedTxt(object):
 
 
 # 全局函数
+
+def parse_txt_content_into_sheet(content_list, original_sheet, each_file):
+
+    def replace_comma_in_coordinate(which_line: list) -> tuple:
+        _row = int(which_line[0].strip()[1:-1].replace('、', ',').split(',')[0])
+        _col = int(which_line[0].strip()[1:-1].replace('、', ',').split(',')[1])
+        return _row, _col
+
+    # 处理txt文件中的每行内容
+    for each_content in content_list:
+        try:
+            if len(each_content.split(SEPARATOR)[0]) <= 9:
+                each_content = str(each_content).split(SEPARATOR)
+                row = replace_comma_in_coordinate(each_content)[0]
+                col = replace_comma_in_coordinate(each_content)[1]
+                original_sheet.cell(row, col).value = each_content[-1].strip().replace(BR_PATTERN, ' <br> ') \
+                    .replace('$$ $', ' <br> ').replace('$ $$', ' <br> ')
+        except Exception as e:
+            print(f'{each_file} 中的内容： {each_content} 发生了错误 {e} 跳过当前文件')
+            raise e
+
+
+def parse_each_file_content(txt_file) -> tuple:
+    content_list = \
+        [each_line for each_line in open(txt_file, encoding='utf-8').read().split('\n') if SEPARATOR in each_line]
+    return open(txt_file, encoding='utf-8').read(), content_list
+
+
 def get_content_list(sheet, cell_name: str) -> list:
     cell = find_cell(sheet, cell_name)
     cell_coordinate = pasu.get_coordinate(cell)
