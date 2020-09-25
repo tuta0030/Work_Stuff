@@ -244,8 +244,8 @@ class ReadTranslatedTxt(object):
 def parse_txt_content_into_sheet(content_list, original_sheet, each_file):
 
     def replace_comma_in_coordinate(which_line: list) -> tuple:
-        _row = int(which_line[0].strip()[1:-1].replace('、', ',').split(',')[0])
-        _col = int(which_line[0].strip()[1:-1].replace('、', ',').split(',')[1])
+        _row = int(which_line[0].strip()[1:-1].replace('、', ',').replace('・', ',').split(',')[0])
+        _col = int(which_line[0].strip()[1:-1].replace('、', ',').replace('・', ',').split(',')[1])
         return _row, _col
 
     # 处理txt文件中的每行内容
