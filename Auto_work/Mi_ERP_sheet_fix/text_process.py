@@ -247,9 +247,9 @@ def parse_txt_content_into_sheet(content_list, original_sheet, each_file):
         return _row, _col
 
     # generate DEBUG txt file
-    with open(each_file.replace(each_file.split('\\')[-1],
-                                'DEBUG_' + each_file.split('\\')[-1]), 'w', encoding='utf-8') as f:
-        f.write('\n'.join(content_list))
+    # with open(each_file.replace(each_file.split('\\')[-1],
+    #                             'DEBUG_' + each_file.split('\\')[-1]), 'w', encoding='utf-8') as f:
+    #     f.write('\n'.join(content_list))
 
     # 处理txt文件中的每行内容
     for each_content in content_list:

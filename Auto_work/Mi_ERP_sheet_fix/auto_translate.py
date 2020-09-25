@@ -136,6 +136,10 @@ def auto_translate(key_lang, value_png):
             pyautogui.sleep(0.5)
             select_all()
             save_with_file_name(_file_name)
+            if key_lang == 'ES':
+                import shutil
+                o_path = 'c:\\hotkey_folder\\'
+                shutil.copy(o_path+_file_name, o_path+_file_name.replace('ES', 'MX'))
 
 
 def select_languages() -> dict:
