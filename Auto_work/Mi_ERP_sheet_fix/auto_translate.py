@@ -139,7 +139,7 @@ def auto_translate(key_lang, value_png):
             if key_lang == 'ES':
                 import shutil
                 o_path = 'c:\\hotkey_folder\\'
-                shutil.copy(o_path+_file_name, o_path+_file_name.replace('ES', 'MX'))
+                shutil.copy(o_path+_file_name+'.txt', o_path+_file_name.replace('ES', 'MX')+'.txt')
 
 
 def select_languages() -> dict:
