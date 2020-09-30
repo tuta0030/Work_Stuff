@@ -142,6 +142,22 @@ def auto_translate(key_lang, value_png):
                 shutil.copy(o_path+_file_name+'.txt', o_path+_file_name.replace('ES', 'MX')+'.txt')
 
 
+def save_en():
+    _file_name = get_folder_name()+'_US'
+    pyautogui.moveRel(0, 200)
+    pyautogui.sleep(0.5)
+    pyautogui.leftClick()
+    pyautogui.keyDown('home')
+    pyautogui.sleep(0.5)
+    pyautogui.keyUp('home')
+    pyautogui.sleep(0.5)
+    select_all()
+    save_with_file_name(_file_name)
+    import shutil
+    o_path = 'c:\\hotkey_folder\\'
+    shutil.copy(o_path + _file_name + '.txt', o_path + _file_name.replace('US', 'CA') + '.txt')
+
+
 def select_languages() -> dict:
     index = 0
     selections = {}
@@ -152,6 +168,7 @@ def select_languages() -> dict:
         index += 1
 
     ui = input('请选择需要的语言：')
+    save_en()
     if len(ui.split(' ')) > 1:
         ui = ui.split(' ')
         for each_ui in ui:
@@ -168,20 +185,6 @@ def select_languages() -> dict:
 
 
 def main():
-    _file_name = get_folder_name()+'_US'
-    pyautogui.moveRel(0, 200)
-    pyautogui.sleep(0.5)
-    pyautogui.leftClick()
-    pyautogui.keyDown('home')
-    pyautogui.sleep(0.5)
-    pyautogui.keyUp('home')
-    pyautogui.sleep(0.5)
-    select_all()
-    save_with_file_name(_file_name)
-    import shutil
-    o_path = 'c:\\hotkey_folder\\'
-    shutil.copy(o_path + _file_name + '.txt', o_path + _file_name.replace('US', 'CA') + '.txt')
-
     for _key_lang, _value_png in select_languages().items():
         auto_translate(_key_lang, _value_png)
         global _is_bottom
