@@ -5,7 +5,15 @@ import os
 _meta_path = r'D:\上传表格文件\test\auto_all'
 
 
-def check_sub_folders(meta_path):
+def check_sub_folders(meta_path) -> tuple:
+    """Check if there is sub folders.
+
+    Pass in a path wanna to check,
+    return a tuple (bool, list)
+    True if there are sub folders, list of the sub folders path
+    False if there are none sub folders, list of the files path
+
+    """
     files = []
     folders = []
     for dir_path, dir_names, dir_files in os.walk(meta_path):
@@ -14,9 +22,9 @@ def check_sub_folders(meta_path):
         for d_name in dir_names:
             folders.append(os.path.join(dir_path, d_name))
     if not folders:
-        return files
+        return False, files
     else:
-        return folders
+        return True, folders
 
 
 if __name__ == '__main__':

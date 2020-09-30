@@ -168,6 +168,20 @@ def select_languages() -> dict:
 
 
 def main():
+    _file_name = get_folder_name()+'_US'
+    pyautogui.moveRel(0, 200)
+    pyautogui.sleep(0.5)
+    pyautogui.leftClick()
+    pyautogui.keyDown('home')
+    pyautogui.sleep(0.5)
+    pyautogui.keyUp('home')
+    pyautogui.sleep(0.5)
+    select_all()
+    save_with_file_name(_file_name)
+    import shutil
+    o_path = 'c:\\hotkey_folder\\'
+    shutil.copy(o_path + _file_name + '.txt', o_path + _file_name.replace('US', 'CA') + '.txt')
+
     for _key_lang, _value_png in select_languages().items():
         auto_translate(_key_lang, _value_png)
         global _is_bottom
