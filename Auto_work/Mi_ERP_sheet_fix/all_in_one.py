@@ -1,8 +1,22 @@
 import text_process
 import process_amazon_sheet
+import pas_utility
+import openpyxl
+import xlsxwriter
 import os
 
 _meta_path = r'D:\上传表格文件\test\auto_all'
+
+
+def merge_all_sheet() -> None:
+    """
+    保留前三行，合并剩下的所有行
+    """
+    filename = r'D:\上传表格文件\test\FENGRUDING_UK_亚马逊表_20200828142908.xlsx'
+    wb = openpyxl.load_workbook(filename)
+    sheet = wb['sheet1']
+    print(sheet.max_row)
+    pass
 
 
 def check_sub_folders(meta_path) -> tuple:
@@ -28,5 +42,6 @@ def check_sub_folders(meta_path) -> tuple:
 
 
 if __name__ == '__main__':
-    print('Starting All In One Process...')
-    print(check_sub_folders(_meta_path))
+    # print('Starting All In One Process...')
+    # print(check_sub_folders(_meta_path))
+    merge_all_sheet()
