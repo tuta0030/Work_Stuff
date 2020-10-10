@@ -9,8 +9,9 @@ _meta_path = r'D:\上传表格文件\test\auto_all'
 
 
 def merge_all_sheet(file_list, **kwargs) -> None:
-    """
-    保留前三行，合并剩下的所有行
+    """保留前三行，合并剩下的所有行
+
+    file_list, **kwargs: ignore_error
     """
     def main():
         all_in_one = []
