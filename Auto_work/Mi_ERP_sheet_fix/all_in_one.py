@@ -8,19 +8,51 @@ import os
 _meta_path = r'D:\上传表格文件\test\auto_all'
 
 
-def merge_all_sheet() -> None:
+def merge_all_sheet(file_list, **kwargs) -> None:
     """
     保留前三行，合并剩下的所有行
     """
-    filename = r'D:\上传表格文件\test\FENGRUDING_UK_亚马逊表_20200828142908.xlsx'
-    wb = openpyxl.load_workbook(filename)
-    sheet = wb['sheet1']
-    print(sheet.max_row)
-    pass
+    def main():
+        all_in_one = []
+
+        def all_into_list(all_in_one_list, _file_list):
+            row_off_set = 0
+            for file in _file_list:
+                wb = openpyxl.load_workbook(file)
+                sheet = wb['sheet1']
+                print('\n', file)
+                print('max row:', sheet.max_row)
+                print('max column:', sheet.max_column)
+
+                if not row_off_set:
+                    start_row = 1
+                else:
+                    start_row = 4
+                for row in range(start_row, sheet.max_row+1):
+                    for col in range(1, sheet.max_column+1):
+                        all_in_one_list.append(((row+row_off_set, col), sheet.cell(row, col).value))
+                row_off_set += sheet.max_row-3
+            return all_in_one_list
+
+        all_in_one = all_into_list(all_in_one, file_list)
+        out_wb = xlsxwriter.Workbook(r'G:\BaiduYunDownload\test_Fix_Price_problem\out\_AIO_sheet.xlsx')
+        out_ws = out_wb.add_worksheet('sheet1')
+        for _ in all_in_one:
+            out_ws.write(_[0][0]-1, _[0][1]-1, _[1])
+        out_wb.close()
+        print('处理完成')
+
+    if kwargs['ignore_error']:
+        try:
+            main()
+        except Exception as e:
+            print(e)
+    else:
+        main()
 
 
 def check_sub_folders(meta_path) -> tuple:
-    """Check if there is sub folders.
+    """Check if there are sub folders.
 
     Pass in a path wanna to check,
     return a tuple (bool, list)
@@ -44,4 +76,4 @@ def check_sub_folders(meta_path) -> tuple:
 if __name__ == '__main__':
     # print('Starting All In One Process...')
     # print(check_sub_folders(_meta_path))
-    merge_all_sheet()
+    merge_all_sheet(pas_utility.index_files(which_file_msg='选择需要合并的文件：')[1], ignore_error=True)
