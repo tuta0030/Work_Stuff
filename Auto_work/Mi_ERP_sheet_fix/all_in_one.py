@@ -6,6 +6,7 @@ import xlsxwriter
 import os
 
 _meta_path = r'D:\上传表格文件\test\auto_all'
+AIO_PATH = r'D:\AIO'
 
 
 def merge_all_sheet(file_list, **kwargs) -> None:
@@ -36,7 +37,7 @@ def merge_all_sheet(file_list, **kwargs) -> None:
             return all_in_one_list
 
         all_in_one = all_into_list(all_in_one, file_list)
-        out_wb = xlsxwriter.Workbook(r'G:\BaiduYunDownload\test_Fix_Price_problem\out\_AIO_sheet.xlsx')
+        out_wb = xlsxwriter.Workbook(AIO_PATH)
         out_ws = out_wb.add_worksheet('sheet1')
         for _ in all_in_one:
             out_ws.write(_[0][0]-1, _[0][1]-1, _[1])
