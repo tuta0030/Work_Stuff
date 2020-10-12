@@ -11,10 +11,9 @@ import json
 from Auto_work.Mi_ERP_sheet_fix import pas_utility as pasu
 import pyperclip
 from random import sample
-from send2trash import send2trash
 
 UNI_CHAR = r'[\u4E00-\u9FA5\u00A0-\u00FF\u0100-\u017F\u0180-\u024F\u2E80-\u9FFFa-zA-Z0-9\'?]+\s'
-PATH_MAIN = os.curdir
+PATH_MAIN = os.pardir+'\\Auto_oofay\\Generate_random_keywords_bulletpoints'
 PATH_DATA_BASE = PATH_MAIN + r'\KW_data_base.txt'
 NO_DB_MSG = r'没有找到关键词数据，请确认关键词已经添加到以下文件：E:\TUTA\文档\Python\创建工作日志和工作文件夹\KW_data_base.txt， 已自动创建文件模板'
 BP_HINT = '在此文件中添加新的五点描述，每条描述用回车隔开'
@@ -87,7 +86,7 @@ def check_data_base():
 def process_new_kw():
     ui = input("输入添加的关键词名称：")
     new_kw_content = open('new_kw_temp.txt', 'r', encoding='utf-8').read().replace('格式示例，如果没有这些国家可以删掉', '')
-    with open('KW_data_base.txt', 'a', encoding='utf-8') as f:
+    with open(PATH_DATA_BASE, 'a', encoding='utf-8') as f:
         f.write('\n')
         f.write('\n')
         f.write(ui+':{')

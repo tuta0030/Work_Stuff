@@ -1,0 +1,12 @@
+﻿格式示例，如果没有这些国家可以删掉
+
+
+EN:test test2 test3
+
+FR:test test2 test3
+
+DE:test test2 test3
+
+IT:test test2 test3
+
+ES:test test2 test3
