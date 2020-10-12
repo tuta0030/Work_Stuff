@@ -102,7 +102,7 @@ def edit_bullet_points():
     #           0.2: remove bullet points
     #           0.3: edit specific catagory's bullet points
     def save_json_file(file):
-        with open('random_bullet_points.json', 'w', encoding='utf-8') as f:
+        with open(PATH_MAIN+'\\random_bullet_points.json', 'w', encoding='utf-8') as f:
             json.dump(file, f, ensure_ascii=False)
 
     def index_rbp_json(json_content: dict):
@@ -149,7 +149,7 @@ def edit_bullet_points():
             print('未添加完成，取消添加...')
 
     def add_bullet_points():
-        file = open('random_bullet_points.json', 'r', encoding='utf-8').read()
+        file = open(PATH_MAIN+'\\random_bullet_points.json', 'r', encoding='utf-8').read()
         file = json.loads(file)
         
         which_product = input('请输入需要添加的内容名称：')
@@ -158,7 +158,7 @@ def edit_bullet_points():
             file[which_product] = add_bp([])
             save_json_file(file)
         else:
-            file = open('random_bullet_points.json', 'r', encoding='utf-8').read()
+            file = open(PATH_MAIN+'\\random_bullet_points.json', 'r', encoding='utf-8').read()
             file = json.loads(file)
             print('已有名称，添加更多...')
             file[which_product] = add_bp(file[which_product])
@@ -166,7 +166,7 @@ def edit_bullet_points():
         pasu.back_to_main_menu()
 
     def remove_bullet_points():
-        file = open('random_bullet_points.json', 'r', encoding='utf-8').read()
+        file = open(PATH_MAIN+'\\random_bullet_points.json', 'r', encoding='utf-8').read()
         file = json.loads(file)
         which_product = index_rbp_json(file)
         print(f'删除{file[which_product]}')
@@ -183,7 +183,7 @@ def edit_bullet_points():
 
 
 def mk_random_bulletpoints() -> str:
-    content = open('random_bullet_points.json', 'r', encoding='utf-8').read()
+    content = open(PATH_MAIN+'\\random_bullet_points.json', 'r', encoding='utf-8').read()
     content = json.loads(content)
 
     def index_rbp_json(json_content: dict):

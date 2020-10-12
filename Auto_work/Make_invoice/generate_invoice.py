@@ -19,10 +19,10 @@ def addToClipBoard():
 class Invoice(object):
 
     def __init__(self):
-        self.inovice_path = os.curdir+'\\发票.xlsx'
-        self.PINO_num_path = os.curdir+'\\PINO_num.txt'         # Order_Page_two_order.html
-        self.HTML_bs4 = os.curdir+'\\Order_Page.html'  # Order_Page_with_phone  Order_Page
-        self.HTML_etree = os.curdir+'\\Order_Page.html'  # Order_Page_clothes Order_Page_with_no_buyer_info_atall
+        self.inovice_path = os.pardir+'\\Make_invoice\\发票.xlsx'
+        self.PINO_num_path = os.pardir+'\\Make_invoice\\PINO_num.txt'         # Order_Page_two_order.html
+        self.HTML_bs4 = os.pardir+'\\Make_invoice\\Order_Page.html'  # Order_Page_with_phone  Order_Page
+        self.HTML_etree = os.pardir+'\\Make_invoice\\Order_Page.html'
         self.manual_info_msg = '需要手动添加'
         self.book = openpyxl.load_workbook(self.inovice_path)
         self.sheet = ''
