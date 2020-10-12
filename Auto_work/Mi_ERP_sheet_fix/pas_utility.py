@@ -76,7 +76,7 @@ def get_column_except_none_cell(sheet, row_start: int, column_const: int) -> lis
     return cell_list
 
 
-def _process_title(item_name: str) -> str:
+def process_title(item_name: str) -> str:
     """处理一条标题
     :Requirement:
         openpyxl
@@ -111,8 +111,15 @@ def _process_title(item_name: str) -> str:
     return new_item_name
 
 
-def process_info(sheet, info_coordinate: tuple, info, **kwargs):
-    """将传入的坐标表格的值全部修改为传入的INFO"""
+def process_info(sheet, info_coordinate: tuple, info, **kwargs) -> None:
+    """将传入的坐标表格的值全部修改为传入的INFO参数的数值
+    :Requirement:
+        openpyxl
+    :Argument:
+        sheet, info_coordinate: tuple, info: any, **kwargs['column_offset']
+    :Return:
+        None
+    """
     if info == str(-1):
         pass
     else:
@@ -125,7 +132,15 @@ def process_info(sheet, info_coordinate: tuple, info, **kwargs):
             item.value = info
 
 
-def high_frequent_words(key_words_list: list):
+def high_frequent_words(key_words_list: list) -> list:
+    """反馈高频率单词的list
+    :Requirement:
+        collections
+    :Argument:
+        key_words_list: list
+    :Return:
+        kw_list: list
+    """
     key_words_list = ' '.join(key_words_list)
     for each_char in KW_FILTER_CHAR.split(' '):
         key_words_list = key_words_list.replace(each_char, ' ')
@@ -141,27 +156,30 @@ def high_frequent_words(key_words_list: list):
     return kw_list
 
 
-def process_description(sheet, desc_coordinate: tuple):
+def process_description(sheet, desc_coordinate: tuple) -> None:
+    """处理产品描述
+    :Requirement:
+        openpyxl
+    :Argument:
+        sheet, desc_coordinate: tuple
+    :Return:
+        None
+    """
     info_list = get_column_except_none_cell(sheet, desc_coordinate[0], desc_coordinate[1])
     for index, item in enumerate(info_list):
         if len(item.value) > 1500:
             info_list[index].value = ' '.join(str(item.value)[:-(len(item.value) - 1499)].split(' ')[:-1])
 
 
-def cap_title(title: str, brand: str) -> str:
-    title = title.split(' ')
-    title = [word.capitalize() for word in title]
-    title = ' '.join(title)
-    title = title.replace(brand.capitalize(), brand)
-    return title
-
-
-def process_item_name(item_name: str) -> str:
-    item_name = _process_title(item_name)
-    return item_name
-
-
-def process_bulletpoints(sheet, bullet_point_coordinate: tuple):
+def process_bulletpoints(sheet, bullet_point_coordinate: tuple) -> None:
+    """处理五点描述
+    :Requirement:
+        openpyxl
+    :Arguments:
+        sheet, bullet_point_coordinate: tuple
+    :Return:
+        None
+    """
     bullet_points_dict = {'first_column': get_column_except_none_cell(sheet, bullet_point_coordinate[0],
                                                                       bullet_point_coordinate[1] + 0),
                           'second_column': get_column_except_none_cell(sheet, bullet_point_coordinate[0],
@@ -181,7 +199,15 @@ def process_bulletpoints(sheet, bullet_point_coordinate: tuple):
                 bullet_points_dict[each_column][index].value = STANDARD_MESSAGE
 
 
-def process_price(sheet, coordinate: tuple, lowest_price: int, current_file: str):
+def process_price(sheet, coordinate: tuple, lowest_price: int, current_file: str) -> None:
+    """处理价格
+    :Requirement:
+        openpyxl, excr_node
+    :Argument:
+        sheet, coordinate: tuple, lowest_price: int, current_file: str
+    :Return:
+        None
+    """
     def update_price(input_price: int, price_loop_index: int) -> int:
         import excr_node
         excr_node.excr_node = \
@@ -218,7 +244,8 @@ def make_menu(functions: dict) -> None:
 
     传入dict，key为描述，value为需要执行的函数
     **将会执行选中的函数
-
+    :Requirements:
+        os
     :Return:
         None
     """
@@ -228,11 +255,9 @@ def make_menu(functions: dict) -> None:
     for descreption, func in functions.items():
         _menu[(index, descreption)] = func
         index = index + 1
-
     for item in _menu.keys():
         print(str(item[0]) + '\t' + item[1])
         print('')
-
     ui = input('输入选项：')
     _menu_options = [str(_index_desc[0]) for _index_desc in _menu.keys()]
     if ui not in _menu_options:
@@ -253,8 +278,10 @@ def make_menu(functions: dict) -> None:
 def index_files(**kwargs) -> tuple:
     r"""请求用户输入一个文件夹，打印文件中的文件，请求用户输入文件序列号，返回文件夹的路径和选择的文件路径
 
-    :Keyword Arguments:
-        ui_msg: 请求输入是提示的字符串
+    :Requirement:
+        os
+    :Arguments:
+        kwargs["ui_msg"]: 请求输入是提示的字符串
     :Return:
         (文件夹路径，文件路径)
     """
@@ -290,21 +317,31 @@ def index_files(**kwargs) -> tuple:
     return folder, which_file
 
 
-def back_to_main_menu(**kwargs):
+def back_to_main_menu(**kwargs) -> None:
     r"""返回主菜单
-    :Keyword Arguments:
-            enter_quit: 按回车返回
+    :Requirement:
+        os, main_menu
+    :Arguments:
+        kwargs["enter_quit"]: 按回车返回
+    :Return:
+        None
     """
     if kwargs.get('enter_quit', False):
         input('\n输入回车返回主菜单')
     os.system('cls')
     main_menu.main_menu()
-    return 0
 
 
 # 使用统一参数处理多个文件
-def multiple_file_process(process_class, class_parameter: dict, **pas_args):
-    """可以传入的选项：method_para, process_method, 自动调用save_sheet """
+def multiple_file_process(process_class, class_parameter: dict, **pas_args) -> None:
+    """可以传入的选项：method_para, process_method, 自动调用save_sheet
+    :Requirement:
+        openpyxl
+    :Arguments:
+        process_class, class_parameter: dict, **pas_args['process_method', 'method_para']
+    :Return:
+        None
+    """
     folder, which_file = index_files()
     if type(which_file) is list:
         for each_file in which_file:
@@ -329,6 +366,14 @@ def multiple_file_process(process_class, class_parameter: dict, **pas_args):
 
 
 def main_menu_quit():
+    """退出主菜单，有bug
+    :Requirement:
+        os
+    :Arguments:
+        None
+    :Return:
+        None
+    """
     try:
         t = threading.current_thread()
         t.on_run = False
@@ -341,13 +386,29 @@ def main_menu_quit():
         raise QuitMainMenu('退出程序')
 
 
-def asin_price_menu():
+def asin_price_menu() -> None:
+    """创建获取爬取ASIN，价格和主图链接的菜单
+    :Requirement:
+        get_asin_price
+    :Argument:
+        None
+    :Return:
+        None
+    """
     _menu = {'回主菜单': back_to_main_menu,
              '爬取ASIN，价格和主图链接': get_asin_price}
     make_menu(_menu)
 
 
-def get_asin_price():
+def get_asin_price() -> None:
+    """获取爬取ASIN，价格和主图链接
+    :Requirement:
+        lxml, xlsxwriter
+    :Argument:
+        None
+    :Return:
+        None
+    """
     folder, which_file = index_files()
     out_path = '\\'.join(str(which_file).split('\\')[:-1])+'\\输出文件_'+str(which_file).split("\\")[-1]+'.xlsx'
     listing_xpath = '//*[@id="search"]/div[1]/div[2]/div/span[3]/div[2]'

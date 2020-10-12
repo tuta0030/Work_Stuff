@@ -35,7 +35,7 @@ class ProcessAmazonSheet(load_amazon_sheet.LoadAmazonSheet):
                                                       item_name_coordinate[1])
         self.all_titles = [each_title.value for each_title in title_list]
         for index, title in enumerate(title_list):
-            title_list[index].value = pasu.process_item_name(title.value)
+            title_list[index].value = pasu.process_title(title.value)
 
     def process_part_number(self):
         part_number_coordinate = pasu.get_coordinate(self.part_number_cell)
