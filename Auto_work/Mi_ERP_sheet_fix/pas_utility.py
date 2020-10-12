@@ -46,22 +46,26 @@ def cjk_detect(texts: str):
 
 
 def get_coordinate(which_cell) -> tuple:
+    """获取openpyxl中cell的坐标
+    :Requirement:
+        openpyxl
+    :Argument:
+        openpyxl.cell
+    :Return:
+        tuple
+    """
     return coordinate_to_tuple(str(which_cell).split('.')[-1][:-1])
 
 
-def validate_product() -> str:
-    print('')
-    print(f'当前产品类别：' + open(os.curdir + '\\product_type.txt', 'r', encoding='utf-8').read())
-    wanna_change = str(input("(0：继续，1：修改)："))
-    if wanna_change == str(1):
-        with open(os.curdir + '\\product_type.txt', 'w', encoding='utf-8') as pt:
-            pt.write(input("请输入产品类别："))
-        return open(os.curdir + '\\product_type.txt', 'r', encoding='utf-8').read()
-    elif wanna_change == str(0):
-        return open(os.curdir + '\\product_type.txt', 'r', encoding='utf-8').read()
-
-
 def get_column_except_none_cell(sheet, row_start: int, column_const: int) -> list:
+    """获取非 None 的表格
+    :Requirement:
+        openpyxl
+    :Argument:
+        sheet, row_start, column_const
+    :Return:
+        list
+    """
     cell_list = []
     for i in range(row_start + 1, ROW_RESTRICTION):
         if sheet.cell(i, column_const).value is not None:
@@ -73,6 +77,14 @@ def get_column_except_none_cell(sheet, row_start: int, column_const: int) -> lis
 
 
 def _process_title(item_name: str) -> str:
+    """处理一条标题
+    :Requirement:
+        openpyxl
+    :Argument:
+        item_name: str
+    :Return:
+        str
+    """
     item_name = item_name[:200]
     if cjk_detect(item_name) is not None:
         return item_name
