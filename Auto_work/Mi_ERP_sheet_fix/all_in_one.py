@@ -5,13 +5,17 @@ import os
 
 _meta_path = r'D:\上传表格文件\test\auto_all'
 AIO_FILE_NAME = r'\_AIO_FILE.xlsx'
-AIO_PATH = r'D:\AIO'+AIO_FILE_NAME
+AIO_PATH = pas_utility.asking_for_dir_path(ui_msg='请输入全部表格文件需要输出的文件夹：')+AIO_FILE_NAME
 
 
 def merge_all_sheet(file_list, **kwargs) -> None:
-    """保留前三行，合并剩下的所有行
-
-    file_list, **kwargs: ignore_error
+    """合并所有表格，保留前三行，合并剩下的所有行
+    :Requirement:
+        openpyxl, xlsxwriter
+    :Arguments:
+        file_list, **kwargs['ignore_error']
+    :Return:
+        None
     """
     def main():
         all_in_one = []

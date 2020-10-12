@@ -1,13 +1,13 @@
 import os
 import xlsxwriter as xw
 from openpyxl.utils import coordinate_to_tuple
-import main_menu
+from Auto_work import main_menu
 import collections
 from lxml import etree
 import re
 import threading
 
-HOW_MANY_WORDS_IN_COUNTER = 100
+HOW_MANY_WORDS_FOR_MOST_COMMON = 100
 MENU_RESTRICTION = 200
 ROW_RESTRICTION = 3000
 COL_MAX = 3000
@@ -20,6 +20,7 @@ KW_FILTER_CHAR = ': * ( ) [ ] { } ,'
 
 def intro():
     print("\n图沓的工具\n主菜单")
+    print('表格行数限制：', ROW_RESTRICTION, '表格列数限制：', COL_MAX)
     print("请选择需要的操作：")
     print('')
 
@@ -43,6 +44,24 @@ def cjk_detect(texts: str):
     if re.search("[\u4e00-\u9FFF]", texts):
         return "zh"
     return None
+
+
+def asking_for_dir_path(**kwargs) -> str:
+    """请求输入路径
+    :Requirement:
+        os
+    :Arguments:
+        None
+    :Return:
+        ui: str
+    """
+    ui = input(kwargs.get('ui_msg', '请输入路径：'))
+    if os.path.isdir(ui):
+        return ui
+    elif os.path.isfile(ui):
+        return ui
+    else:
+        asking_for_dir_path(ui_msg='不是正确的文件夹或文件路径，请重新输入：')
 
 
 def get_coordinate(which_cell) -> tuple:
@@ -148,7 +167,7 @@ def high_frequent_words(key_words_list: list) -> list:
     key_words_list = [each_word.lower() for each_word in key_words_list]
     key_words_list = list(dict.fromkeys(key_words_list))
     kw_list = []
-    for word, count in collections.Counter(key_words_list).most_common(HOW_MANY_WORDS_IN_COUNTER):
+    for word, count in collections.Counter(key_words_list).most_common(HOW_MANY_WORDS_FOR_MOST_COMMON):
         kw_list.append(word.capitalize())
     for each_word in BRAND_TO_REPLACE_KW.split(' '):
         if each_word.capitalize() in kw_list:
@@ -448,6 +467,4 @@ def get_asin_price() -> None:
 
 
 if __name__ == '__main__':
-    while True:
-        get_asin_price()
-    pass
+    print(asking_for_dir_path())

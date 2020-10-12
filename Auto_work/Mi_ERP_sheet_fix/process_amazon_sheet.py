@@ -1,6 +1,6 @@
-import pas_utility as pasu
-import pas_class as pasc
-import output_usable_sheet_head as opsh
+import Auto_work.Mi_ERP_sheet_fix.pas_utility as pasu
+import Auto_work.Mi_ERP_sheet_fix.pas_class as pasc
+import Auto_work.Mi_ERP_sheet_fix.output_usable_sheet_head as opsh
 
 
 # 统一处理选择的表格文件（全部）

@@ -5,11 +5,11 @@
 # @File    : pas_class.py
 # @Software: PyCharm
 
-import load_amazon_sheet
+from Auto_work.Mi_ERP_sheet_fix import load_amazon_sheet
 import send2trash
-import output_usable_sheet_head
+from Auto_work.Mi_ERP_sheet_fix import output_usable_sheet_head
 from openpyxl.utils import coordinate_to_tuple
-import pas_utility as pasu
+from Auto_work.Mi_ERP_sheet_fix import pas_utility as pasu
 import random
 
 
