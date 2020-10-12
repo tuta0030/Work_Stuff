@@ -1,12 +1,11 @@
-import text_process
-import process_amazon_sheet
 import pas_utility
 import openpyxl
 import xlsxwriter
 import os
 
 _meta_path = r'D:\上传表格文件\test\auto_all'
-AIO_PATH = r'D:\AIO'
+AIO_FILE_NAME = r'\_AIO_FILE.xlsx'
+AIO_PATH = r'D:\AIO'+AIO_FILE_NAME
 
 
 def merge_all_sheet(file_list, **kwargs) -> None:
@@ -18,6 +17,7 @@ def merge_all_sheet(file_list, **kwargs) -> None:
         all_in_one = []
 
         def all_into_list(all_in_one_list, _file_list):
+            _process_file_count = 0
             row_off_set = 0
             for file in _file_list:
                 wb = openpyxl.load_workbook(file)
@@ -34,6 +34,9 @@ def merge_all_sheet(file_list, **kwargs) -> None:
                     for col in range(1, sheet.max_column+1):
                         all_in_one_list.append(((row+row_off_set, col), sheet.cell(row, col).value))
                 row_off_set += sheet.max_row-3
+                _process_file_count += 1
+                print('当前处理文件：', _process_file_count)
+            print('共处理文件：', _process_file_count)
             return all_in_one_list
 
         all_in_one = all_into_list(all_in_one, file_list)
